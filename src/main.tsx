@@ -1,17 +1,22 @@
 import * as React from 'react'
 import { App } from '@TRE/playground/app'
+import { Nav } from '@TRE/playground/components/nav'
 
-const { useEffect } = React
+const { useState, useEffect } = React
 
 export const Main: React.FC = () => {
+  const [app, setApp] = useState<any>()
 
   useEffect(() => {
-    new App()
+    if (!app) {
+      setApp(new App())
+    }
   })
 
   return (
     <>
       <canvas id="main-canvas" />
+      <Nav app={app} />
     </>
   )
 }
