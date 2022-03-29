@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { App } from './app/app'
+import { App } from '@TRE/playground/app'
 
 const { useEffect } = React
 

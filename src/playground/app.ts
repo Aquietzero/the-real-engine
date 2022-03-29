@@ -2,7 +2,6 @@ import {
   Color,
   PerspectiveCamera,
   Scene,
-  Vector3,
   WebGLRenderer,
   AmbientLight,
   PCFSoftShadowMap,
@@ -15,6 +14,7 @@ import {
 } from 'three'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { Coordinate } from './primitive-helpers/coordinate'
 
 export class App {
   private readonly scene = new Scene()
@@ -24,23 +24,24 @@ export class App {
     canvas: document.getElementById('main-canvas') as HTMLCanvasElement,
     powerPreference: "high-performance",
   })
-  private readonly light = new AmbientLight(0x404040)
+  private readonly ambientLight = new AmbientLight(0xffffff)
 
   private readonly hasControl
   private readonly controls
   private readonly hasStats
   private readonly stats
 
-  cube
+  // cube
 
   constructor() {
     this.hasControl = true
     this.hasStats = true
 
-    this.scene.add(this.light)
+    this.scene.background = new Color(0xffffff)
+    this.scene.add(this.ambientLight)
 
     // this.camera.up = new Vector3(0, 1, 0)
-    this.camera.position.set(0, 1, 5)
+    this.camera.position.set(15, 15, 15)
 
     this.renderer.setSize(innerWidth, innerHeight)
     this.renderer.setClearColor(new Color('rgb(0,0,0)'))
@@ -58,15 +59,17 @@ export class App {
       document.body.appendChild(this.stats.dom)
     }
 
-    const geometry = new BoxGeometry(1, 1, 1)
-    const material = new MeshPhongMaterial({
-      color: 0x00ff00,
-      side: DoubleSide,
-      flatShading: true,
-    })
-    this.cube = new Mesh(geometry, material)
+    // const geometry = new BoxGeometry(1, 1, 1)
+    // const material = new MeshPhongMaterial({
+    //   color: 0x00ff00,
+    //   side: DoubleSide,
+    //   flatShading: true,
+    // })
+    // this.cube = new Mesh(geometry, material)
+    // this.scene.add(this.cube)
 
-    this.scene.add(this.cube)
+    const c = new Coordinate()
+    this.scene.add(c.obj)
 
     const pointLight = new PointLight(0xff0000, 10, 100)
     pointLight.position.set(0, 0, 3)
@@ -88,7 +91,7 @@ export class App {
       this.renderer.render(this.scene, this.camera)
     }
 
-    this.cube.rotation.y += 0.01
+    // this.cube.rotation.y += 0.01
 
     this.renderer.render(this.scene, this.camera)
     this.hasStats && this.stats.end()

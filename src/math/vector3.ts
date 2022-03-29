@@ -20,6 +20,10 @@ export class Vector3 {
     return new Vector3(this.x, this.y, this.z)
   }
 
+  public isZero(): boolean {
+    return this.x === 0 && this.y === 0 && this.z === 0
+  }
+
   public add(v: Vector3): Vector3 {
     return new Vector3(
       this.x + v.x,
@@ -82,10 +86,25 @@ export class Vector3 {
   }
 
   public static crossProduct(v1: Vector3, v2: Vector3): Vector3 {
-    return new Vector3(
+    const cp = new Vector3(
       v1.y * v2.z - v1.z * v2.y,
       v1.z * v2.x - v1.x * v2.z,
       v1.x * v2.y - v1.y * v2.x,
     )
+
+    if (cp.isZero()) return Y_AXIS
+    return cp
+  }
+
+  // return the angle between two given vectors by radians.
+  public static angleBetween(v1: Vector3, v2: Vector3): number {
+    return Math.acos(Vector3.dotProduct(v1, v2) / (v1.len() * v2.len()))
   }
 }
+
+export const X_AXIS_UNIT = new Vector3(1, 0, 0)
+export const Y_AXIS_UNIT = new Vector3(0, 1, 0)
+export const Z_AXIS_UNIT = new Vector3(0, 0, 1)
+export const X_AXIS = X_AXIS_UNIT
+export const Y_AXIS = Y_AXIS_UNIT
+export const Z_AXIS = Z_AXIS_UNIT

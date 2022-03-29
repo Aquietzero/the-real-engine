@@ -19,7 +19,10 @@ module.exports = {
     publicPath: devMode ? '/dist/' : '/'
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
+    alias: {
+      '@TRE': path.resolve(__dirname, 'src'),
+    }
   },
   module: {
     rules: [

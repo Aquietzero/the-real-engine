@@ -78,4 +78,27 @@ describe('Vector3', () => {
       expect(v1.len2()).to.equal(14)
     })
   })
+
+  describe('crossProduct', () => {
+    it('should return the correct cross product between two vectors.', () => {
+      const x = new Vector3(1, 0, 0)
+      const y = new Vector3(0, 1, 0)
+      const z = new Vector3(0, 0, 1)
+
+      const cxy = Vector3.crossProduct(x, y)
+      expect(cxy.x).to.equal(0)
+      expect(cxy.y).to.equal(0)
+      expect(cxy.z).to.equal(1)
+      expect(cxy.len()).to.equal(1)
+
+      const czx = Vector3.crossProduct(z, x)
+      expect(czx.x).to.equal(0)
+      expect(czx.y).to.equal(1)
+      expect(czx.z).to.equal(0)
+      expect(czx.len()).to.equal(1)
+
+      const a = new Vector3(10, 10, 10)
+      console.log(Vector3.crossProduct(y, a))
+    })
+  })
 })

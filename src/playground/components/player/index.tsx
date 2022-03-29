@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Events } from '../../core/events'
 import classnames from 'classnames'
 
 interface Props {
