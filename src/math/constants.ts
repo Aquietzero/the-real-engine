@@ -6,3 +6,8 @@ export {
   Y_AXIS,
   Z_AXIS,
 } from './vector3'
+
+export {
+  ZERO_MATRIX,
+  IDENTITY_MATRIX,
+} from './matrix4'

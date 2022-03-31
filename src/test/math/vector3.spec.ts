@@ -98,7 +98,6 @@ describe('Vector3', () => {
       expect(czx.len()).to.equal(1)
 
       const a = new Vector3(10, 10, 10)
-      console.log(Vector3.crossProduct(y, a))
     })
   })
 })
