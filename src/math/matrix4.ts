@@ -86,11 +86,29 @@ export class Matrix4 {
       && this.e[15] === m.e[15]
   }
 
-  public static makeFromScale(s1: number, s2: number, s3: number) {
+  public static makeFromScale(x: number, y: number, z: number) {
     return new Matrix4([
-      s1, 0, 0, 0,
-      0, s2, 0, 0,
-      0, 0, s3, 0,
+      x, 0, 0, 0,
+      0, y, 0, 0,
+      0, 0, z, 0,
+      0, 0, 0, 1,
+    ])
+  }
+
+  public static makeFromTranslate(x: number, y: number, z: number) {
+    return new Matrix4([
+      1, 0, 0, x,
+      0, 1, 0, y,
+      0, 0, 1, z,
+      0, 0, 0, 1,
+    ])
+  }
+
+  public static makeFromRotate(x: number, y: number, z: number) {
+    return new Matrix4([
+      Math.cos(y)*Math.cos(z), Math.sin(z), Math.sin(y), 0,
+      -Math.sin(z), Math.cos(x)*Math.cos(z), Math.sin(x), 0,
+      -Math.sin(y), -Math.sin(x), Math.cos(x)*Math.cos(y), 0,
       0, 0, 0, 1,
     ])
   }

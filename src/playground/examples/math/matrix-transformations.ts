@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Matrix4 } from '@TRE/math'
 import { Coordinate, Ray } from '@TRE/playground/primitive-helpers'
+import { Events } from '@TRE/core/events'
 
 export default {
   description: 'Matrix transformations.',
@@ -23,11 +24,32 @@ export default {
     m4.set(...s2.e)
     box2.applyMatrix4(m4)
 
-
     g.add(box1)
     g.add(box2)
 
     app.scene.add(g)
+
+    Events.on('scale', ({ x, y, z }) => {
+      const scale = Matrix4.makeFromScale(x, y, z)
+      const m4 = new THREE.Matrix4()
+      m4.set(...scale.e)
+      box2.applyMatrix4(m4)
+    })
+
+    Events.on('translate', ({ x, y, z }) => {
+      const translate = Matrix4.makeFromTranslate(x, y, z)
+      const m4 = new THREE.Matrix4()
+      m4.set(...translate.e)
+      box2.applyMatrix4(m4)
+    })
+
+    Events.on('rotate', ({ x, y, z }) => {
+      const rotate = Matrix4.makeFromRotate(x, y, z)
+      const m4 = new THREE.Matrix4()
+      m4.set(...rotate.e)
+      box2.applyMatrix4(m4)
+    })
+
     return g
   }
 }

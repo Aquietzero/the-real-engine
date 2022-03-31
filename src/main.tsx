@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { App } from '@TRE/playground/app'
 import { Nav } from '@TRE/playground/components/nav'
+import { Panel } from '@TRE/playground/components/panel'
 
 const { useState, useEffect } = React
 
@@ -17,6 +18,7 @@ export const Main: React.FC = () => {
     <>
       <canvas id="main-canvas" />
       <Nav app={app} />
+      <Panel />
     </>
   )
 }
