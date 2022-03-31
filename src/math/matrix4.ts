@@ -53,6 +53,7 @@ export class Matrix4 {
       b31, b32, b33, b34,
       b41, b42, b43, b44,
     ] = m.e
+
     return new Matrix4([
       a11*b11 + a12*b21 + a13*b31 + a14*b41,
       a11*b12 + a12*b22 + a13*b32 + a14*b42,
@@ -83,6 +84,15 @@ export class Matrix4 {
       && this.e[9] === m.e[9] && this.e[10] === m.e[10] && this.e[11] === m.e[11]
       && this.e[12] === m.e[12] && this.e[13] === m.e[13] && this.e[14] === m.e[14]
       && this.e[15] === m.e[15]
+  }
+
+  public static makeFromScale(s1: number, s2: number, s3: number) {
+    return new Matrix4([
+      s1, 0, 0, 0,
+      0, s2, 0, 0,
+      0, 0, s3, 0,
+      0, 0, 0, 1,
+    ])
   }
 }
 
