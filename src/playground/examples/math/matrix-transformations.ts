@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Matrix4 } from '@TRE/math'
-import { Coordinate, Ray } from '@TRE/playground/primitive-helpers'
+import { Coordinate } from '@TRE/playground/primitive-helpers'
 import { Events } from '@TRE/core/events'
 
 export default {
