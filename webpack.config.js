@@ -11,12 +11,13 @@ module.exports = {
     static: {
       serveIndex: true,
       directory: __dirname
-    }
+    },
+    historyApiFallback: true,
   },
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: devMode ? '/dist/' : '/'
+    publicPath: devMode ? '/dist/' : '/',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],

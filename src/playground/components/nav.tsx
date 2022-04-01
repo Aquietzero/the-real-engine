@@ -1,36 +1,14 @@
 import * as React from 'react'
 import * as _ from 'lodash'
 import classnames from 'classnames'
-import VectorsExample from '@TRE/playground/examples/math/vectors'
-import ConnectedVectorsExample from '@TRE/playground/examples/math/connected-vectors'
-import MatrixTransformationsExample from '@TRE/playground/examples/math/matrix-transformations'
+import { Link, useParams } from 'react-router-dom'
+import examples from '@TRE/playground/examples'
 
 interface Props {
-  app: any
-}
-
-const { useEffect, useState } = React
-
-const examples = {
-  math: {
-    VectorsExample,
-    ConnectedVectorsExample,
-    MatrixTransformationsExample,
-  }
 }
 
 export const Nav: React.FC<Props> = (props: Props) => {
-  const { app } = props
-  const [currExample, setCurrExample] = useState('VectorsExample')
-
-  const runExample = (name: string, example: any) => {
-    setCurrExample(name)
-    app.runExample(example)
-  }
-
-  useEffect(() => {
-    if (app) app.runExample(VectorsExample)
-  }, [app])
+  const { example: currExample } = useParams()
 
   return (
     <div
@@ -43,10 +21,13 @@ export const Nav: React.FC<Props> = (props: Props) => {
             <div className="pl-5">
               {_.map(group, (example, name) => {
                 return (
-                  <div
-                    className={classnames(currExample === name && 'text-blue-500')}
-                    onClick={() => runExample(name, example)}>
-                    { name }
+                  <div>
+                    <Link
+                      className={classnames(currExample === name && 'text-blue-500')}
+                      to={`/examples/${name}`}
+                    >
+                      { name }
+                    </Link>
                   </div>
                 )
               })}
