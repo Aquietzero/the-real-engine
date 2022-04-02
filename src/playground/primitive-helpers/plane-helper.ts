@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { ORIGIN, Y_AXIS, Vector3 } from '@TRE/math'
-import { Plane, Point } from '@TRE/primitive'
+import { Plane } from '@TRE/primitive'
 import { PointHelper } from './point-helper'
 import { RayHelper } from './ray-helper'
 import { HelperConfig } from './config'
@@ -24,7 +24,7 @@ export class PlaneHelper {
 
     this.obj.add(p)
 
-    const center = this.plane.n.normalize().mul(this.plane.d)
+    const center = this.plane.n.mul(this.plane.d/this.plane.n.len2())
 
     // add center point to plane
     const c = new PointHelper(ORIGIN)
