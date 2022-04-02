@@ -9,7 +9,7 @@ export const Main: React.FC = () => {
     <>
       <Routes>
         <Route
-          path="/examples/:example"
+          path="/examples/:group/:example"
           element={
             <>
               <Playground />

@@ -1,13 +1,18 @@
-import VectorsExample from '@TRE/playground/examples/math/vectors'
-import ConnectedVectorsExample from '@TRE/playground/examples/math/connected-vectors'
-import MatrixTransformationsExample from '@TRE/playground/examples/math/matrix-transformations'
-import ObjTransformationsExample from '@TRE/playground/examples/math/obj-transformations'
+import VectorsExample from './math/vectors'
+import ConnectedVectorsExample from './math/connected-vectors'
+import MatrixTransformationsExample from './math/matrix-transformations'
+import ObjTransformationsExample from './math/obj-transformations'
+
+import AABBExample from './bounding-volumes/aabb'
 
 export default {
-  math: {
+  'math': {
     VectorsExample,
     ConnectedVectorsExample,
     MatrixTransformationsExample,
     ObjTransformationsExample,
-  } as any
+  } as any,
+  'bounding-volumes': {
+    AABBExample,
+  } as any,
 }

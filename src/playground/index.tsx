@@ -11,14 +11,13 @@ const { useEffect } = React
 let app: App
 
 export const Playground: React.FC<Props> = (props: Props) => {
-  const params = useParams()
+  const params: any = useParams()
 
   useEffect(() => {
     if (!app) {
       app = new App()
     }
-    const example: string = params.example
-    app.runExample(examples.math[example])
+    app.runExample((examples as any)[params.group][params.example])
   }, [params && params.example])
 
   return (

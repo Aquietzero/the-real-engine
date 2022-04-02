@@ -22,11 +22,14 @@ export default {
     const objLoader = new OBJLoader()
     const mtlLoader = new MTLLoader()
 
-    mtlLoader.load('assets/Mario/Mario.mtl', (materials) => {
+    const mtlPath = 'assets/Mario/Mario.mtl'
+    const objPath = 'assets/Mario/Mario.obj'
+
+    mtlLoader.load(mtlPath, (materials) => {
       materials.preload()
 
       objLoader.setMaterials(materials)
-      objLoader.load('assets/Mario/Mario.obj', (obj: any) => {
+      objLoader.load(objPath, (obj: any) => {
         mario = obj
         const m4 = new THREE.Matrix4()
         const s = 0.05

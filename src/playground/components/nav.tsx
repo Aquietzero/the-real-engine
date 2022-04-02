@@ -16,7 +16,7 @@ export const Nav: React.FC<Props> = (props: Props) => {
 
   return (
     <div
-      className="fixed h-full left-0 top-0 cursor-pointer pl-5 flex justify-center items-center"
+      className="fixed h-full left-0 top-0 cursor-pointer pl-5 flex flex-col justify-center items-start"
     >
       {_.map(examples, (group, title)  => {
         return (
@@ -28,7 +28,7 @@ export const Nav: React.FC<Props> = (props: Props) => {
                   <div key={name}>
                     <Link
                       className={classnames(currExample === name && 'text-blue-500')}
-                      to={`/examples/${name}`}
+                      to={`/examples/${title}/${name}`}
                     >
                       { formatName(name) }
                     </Link>
