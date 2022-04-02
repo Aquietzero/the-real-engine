@@ -5,6 +5,8 @@ import ObjTransformationsExample from './math/obj-transformations'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
 import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
+import SphereOfPointsExample from './bounding-volumes/sphere-of-points'
+import SphereOfObjExample from './bounding-volumes/sphere-of-obj'
 
 export default {
   'math': {
@@ -16,5 +18,7 @@ export default {
   'bounding-volumes': {
     AABBOfPointsExample,
     AABBOfObjExample,
+    SphereOfPointsExample,
+    SphereOfObjExample,
   } as any,
 }

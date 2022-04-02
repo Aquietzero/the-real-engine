@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
-import { AABB } from '@TRE/bounding-volumes'
-import { Coordinate, Box } from '@TRE/playground/primitive-helpers'
+import { Sphere as BoundingSphere } from '@TRE/bounding-volumes'
+import { Coordinate, Sphere } from '@TRE/playground/primitive-helpers'
 import ModelsManager from '@TRE/playground/lib/models-manager'
 
 export default {
@@ -23,9 +23,9 @@ export default {
           raw[i + 2] * mario.scale.z
         ))
       }
-      const aabb = AABB.calculateAABB(points)
-      const box = new Box(aabb.center, aabb.radius, { color: 0x999999 })
-      g.add(box.obj)
+      const bs = BoundingSphere.calculateSphere(points)
+      const sphere = new Sphere(bs.center, bs.radius, { color: 0x999999 })
+      g.add(sphere.obj)
       g.add(mario)
     }, {
       beforeCache: (obj: THREE.Object3D) => {
