@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Matrix4 } from '@TRE/math'
 import { Events } from '@TRE/core/events'
-import { Coordinate } from '@TRE/playground/primitive-helpers'
+import { CoordinateHelper } from '@TRE/playground/primitive-helpers'
 import ModelsManager from '@TRE/playground/lib/models-manager'
 
 export default {
@@ -9,7 +9,7 @@ export default {
   run(app: any): THREE.Group {
     const g = new THREE.Group()
 
-    const c = new Coordinate()
+    const c = new CoordinateHelper()
     g.add(c.obj)
 
     const light = new THREE.PointLight(0xffffff, 0.2)

@@ -1,16 +1,9 @@
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
+import { Sphere as BasicSphere } from '@TRE/primitive'
 import { AABB } from '@TRE/bounding-volumes'
 
-export class Sphere {
-  public center: Vector3 = new Vector3()
-  public radius: number = 0
-
-  constructor(center: Vector3 = new Vector3(), radius: number = 0) {
-    this.center = center
-    this.radius = radius
-  }
-
+export class Sphere extends BasicSphere {
   public static fromDistantPoints(vs: Vector3[]): Sphere {
     const { min, max } = AABB.mostSeparatedPoints(vs)
     const center = min.add(max).mul(0.5)

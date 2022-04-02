@@ -1,15 +1,15 @@
-import { Vector3 } from '@TRE/math'
+import { Point} from './point'
 
 export class Sphere {
-  public center: Vector3 = new Vector3()
+  public center: Point = new Point()
   public radius: number = 0
 
-  constructor(center: Vector3 = new Vector3(), radius: number = 0) {
+  constructor(center: Point = new Point(), radius: number = 0) {
     this.center = center
     this.radius = radius
   }
 
-  public set(center: Vector3, radius: number) {
+  public set(center: Point, radius: number) {
     this.center = center
     this.radius = radius
   }

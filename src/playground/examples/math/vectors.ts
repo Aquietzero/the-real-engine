@@ -1,13 +1,13 @@
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
-import { Coordinate, Ray } from '@TRE/playground/primitive-helpers'
+import { CoordinateHelper, RayHelper } from '@TRE/playground/primitive-helpers'
 
 export default {
   description: 'A bunch of vectors.',
   run(app: any): THREE.Group {
     const g = new THREE.Group()
 
-    const c = new Coordinate()
+    const c = new CoordinateHelper()
     g.add(c.obj)
 
     const R = 6
@@ -16,9 +16,9 @@ export default {
         const z = R*R - x*x - y*y
         if (z < 0) continue
         const v1 = new Vector3(x, y, Math.sqrt(z))
-        const r1 = new Ray(new Vector3(0, 0, 0), v1, { color: 0xff0000 })
+        const r1 = new RayHelper(new Vector3(0, 0, 0), v1, { color: 0xff0000 })
         const v2 = new Vector3(x, y, Math.sqrt(z)).negate()
-        const r2 = new Ray(new Vector3(0, 0, 0), v2, { color: 0x0000ff })
+        const r2 = new RayHelper(new Vector3(0, 0, 0), v2, { color: 0x0000ff })
         g.add(r1.obj)
         g.add(r2.obj)
       }

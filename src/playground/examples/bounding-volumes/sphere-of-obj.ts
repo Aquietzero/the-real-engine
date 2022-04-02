@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
-import { Sphere as BoundingSphere } from '@TRE/bounding-volumes'
-import { Coordinate, Sphere } from '@TRE/playground/primitive-helpers'
+import { Sphere } from '@TRE/bounding-volumes'
+import { CoordinateHelper, SphereHelper } from '@TRE/playground/primitive-helpers'
 import ModelsManager from '@TRE/playground/lib/models-manager'
 
 export default {
@@ -9,7 +9,7 @@ export default {
   run(app: any): THREE.Group {
     const g = new THREE.Group()
 
-    const c = new Coordinate()
+    const c = new CoordinateHelper()
     g.add(c.obj)
 
     ModelsManager.load('Mario', (obj: THREE.Object3D) => {
@@ -23,8 +23,9 @@ export default {
           raw[i + 2] * mario.scale.z
         ))
       }
-      const bs = BoundingSphere.calculateSphere(points)
-      const sphere = new Sphere(bs.center, bs.radius, { color: 0x999999 })
+      const s = Sphere.calculateSphere(points)
+      console.log('-----------', s)
+      const sphere = new SphereHelper(s, { color: 0x999999 })
       g.add(sphere.obj)
       g.add(mario)
     }, {

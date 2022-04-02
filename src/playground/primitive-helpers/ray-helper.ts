@@ -6,7 +6,7 @@ interface RayOptions {
   color?: number
 }
 
-export class Ray {
+export class RayHelper {
   obj: THREE.Group = new THREE.Group()
   from: Vector3 = new Vector3()
   to: Vector3 = new Vector3()

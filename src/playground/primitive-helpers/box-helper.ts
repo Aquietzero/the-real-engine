@@ -1,16 +1,16 @@
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
-import { Point } from './point'
+import { PointHelper } from './point-helper'
 import { HelperConfig } from './config'
 
-export class Sphere {
+export class BoxHelper {
   obj: THREE.Group = new THREE.Group()
   center: Vector3 = new Vector3()
-  radius: number = 0
+  radius: Vector3 = new Vector3()
 
   constructor(
     center: Vector3 = new Vector3(),
-    radius: number = 0,
+    radius: Vector3 = new Vector3(),
     config: HelperConfig = {}
   ) {
     const { color = 0x000000 } = config
@@ -21,13 +21,14 @@ export class Sphere {
       color,
       wireframe: true,
     })
-    const g = new THREE.SphereGeometry(this.radius, 16, 16)
+    const g = new THREE.BoxGeometry(2*radius.x, 2*radius.y, 2*radius.z)
 
-    const sphere = new THREE.Mesh(g, m)
-    const centroid = new Point(this.center, config)
+    const box = new THREE.Mesh(g, m)
+
+    const centroid = new PointHelper(this.center, config)
 
     this.obj.add(centroid.obj)
-    this.obj.add(sphere)
+    this.obj.add(box)
     this.obj.position.set(this.center.x, this.center.y, this.center.z)
   }
 }

@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
-import { Coordinate, Box } from '@TRE/playground/primitive-helpers'
+import { CoordinateHelper, BoxHelper } from '@TRE/playground/primitive-helpers'
 import ModelsManager from '@TRE/playground/lib/models-manager'
 
 export default {
@@ -9,7 +9,7 @@ export default {
   run(app: any): THREE.Group {
     const g = new THREE.Group()
 
-    const c = new Coordinate()
+    const c = new CoordinateHelper()
     g.add(c.obj)
 
     ModelsManager.load('Mario', (obj: THREE.Object3D) => {
@@ -24,7 +24,7 @@ export default {
         ))
       }
       const aabb = AABB.calculateAABB(points)
-      const box = new Box(aabb.center, aabb.radius, { color: 0x999999 })
+      const box = new BoxHelper(aabb.center, aabb.radius, { color: 0x999999 })
       g.add(box.obj)
       g.add(mario)
     }, {

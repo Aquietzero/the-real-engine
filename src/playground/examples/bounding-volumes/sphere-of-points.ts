@@ -2,14 +2,14 @@ import * as THREE from 'three'
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
 import { Sphere as BoundingSphere } from '@TRE/bounding-volumes'
-import { Coordinate, Point, Sphere } from '@TRE/playground/primitive-helpers'
+import { CoordinateHelper, PointHelper, SphereHelper } from '@TRE/playground/primitive-helpers'
 
 export default {
   description: 'A bunch of connected vectors.',
   run(app: any): THREE.Group {
     const g = new THREE.Group()
 
-    const c = new Coordinate()
+    const c = new CoordinateHelper()
     g.add(c.obj)
 
     const N = 30
@@ -19,12 +19,12 @@ export default {
     const points = _.times(N, () => new Vector3(random(), random(), random()))
 
     _.each(points, p => {
-      const point = new Point(p)
+      const point = new PointHelper(p)
       g.add(point.obj)
     })
 
     const bs = BoundingSphere.calculateSphere(points)
-    const sphere = new Sphere(bs.center, bs.radius, { color: 0x999999 })
+    const sphere = new SphereHelper(bs, { color: 0x999999 })
     g.add(sphere.obj)
 
     app.scene.add(g)
