@@ -1,9 +1,8 @@
 import * as THREE from 'three'
 import { Matrix4 } from '@TRE/math'
-import { Coordinate } from '@TRE/playground/primitive-helpers'
 import { Events } from '@TRE/core/events'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
+import { Coordinate } from '@TRE/playground/primitive-helpers'
+import ModelsManager from '@TRE/playground/lib/models-manager'
 
 export default {
   description: 'Matrix transformations.',
@@ -17,20 +16,13 @@ export default {
     light.position.set(100, 200, 100)
     g.add(light)
 
-    let mario: THREE.Mesh
+    let mario: THREE.Object3D
 
-    const objLoader = new OBJLoader()
-    const mtlLoader = new MTLLoader()
-
-    const mtlPath = 'assets/Mario/Mario.mtl'
-    const objPath = 'assets/Mario/Mario.obj'
-
-    mtlLoader.load(mtlPath, (materials) => {
-      materials.preload()
-
-      objLoader.setMaterials(materials)
-      objLoader.load(objPath, (obj: any) => {
-        mario = obj
+    ModelsManager.load('Mario', (obj: THREE.Object3D) => {
+      mario = obj
+      g.add(mario)
+    }, {
+      beforeCache: (obj: THREE.Object3D) => {
         const m4 = new THREE.Matrix4()
         const s = 0.05
         m4.set(
@@ -39,10 +31,9 @@ export default {
           0, 0, s, 0,
           0, 0, 0, 1
         )
-        mario.applyMatrix4(m4)
-        g.add(mario)
+        obj.applyMatrix4(m4)
+        return obj
       }
-      )
     })
 
     app.scene.add(g)
