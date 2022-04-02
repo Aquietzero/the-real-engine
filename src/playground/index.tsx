@@ -8,14 +8,18 @@ interface Props {
 
 const { useEffect } = React
 
+let app: App
+
 export const Playground: React.FC<Props> = (props: Props) => {
   const params = useParams()
 
   useEffect(() => {
+    if (!app) {
+      app = new App()
+    }
     const example: string = params.example
-    const app = new App()
     app.runExample(examples.math[example])
-  })
+  }, [params && params.example])
 
   return (
     <>

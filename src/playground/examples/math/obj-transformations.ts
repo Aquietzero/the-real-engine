@@ -3,34 +3,31 @@ import { Matrix4 } from '@TRE/math'
 import { Coordinate } from '@TRE/playground/primitive-helpers'
 import { Events } from '@TRE/core/events'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js'
 
 export default {
   description: 'Matrix transformations.',
   run(app: any): THREE.Group {
-    const loader = new OBJLoader()
     const g = new THREE.Group()
 
     const c = new Coordinate()
     g.add(c.obj)
 
-    const l1 = new THREE.PointLight(0xffffff, 0.5)
-    l1.position.set(50, 100, 50)
-    const l2 = new THREE.PointLight(0xffffff, 0.5)
-    l2.position.set(-50, 100, 50)
-    app.scene.add(l1)
-    app.scene.add(l2)
+    const light = new THREE.PointLight(0xffffff, 0.2)
+    light.position.set(100, 200, 100)
+    g.add(light)
 
     let mario: THREE.Mesh
 
-    loader.load(
-      'assets/Mario.obj',
-      (object: any) => {
-        console.log(object.children[0])
-        const mesh = object.children[0]
-        const red = new THREE.MeshPhongMaterial({
-          color: 0x999999,
-        })
-        mario = new THREE.Mesh(mesh.geometry, red)
+    const objLoader = new OBJLoader()
+    const mtlLoader = new MTLLoader()
+
+    mtlLoader.load('assets/Mario/Mario.mtl', (materials) => {
+      materials.preload()
+
+      objLoader.setMaterials(materials)
+      objLoader.load('assets/Mario/Mario.obj', (obj: any) => {
+        mario = obj
         const m4 = new THREE.Matrix4()
         const s = 0.05
         m4.set(
@@ -42,7 +39,8 @@ export default {
         mario.applyMatrix4(m4)
         g.add(mario)
       }
-    )
+      )
+    })
 
     app.scene.add(g)
 

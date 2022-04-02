@@ -1,6 +1,6 @@
 import * as React from 'react'
-import * as _ from 'lodash'
 import { Slider, InputNumber, Row, Col, Divider, Drawer } from 'antd'
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons'
 import { Events } from '@TRE/core/events'
 
 interface Props {
@@ -51,11 +51,19 @@ export const Panel: React.FC<Props> = (props: Props) => {
   const [scales, setScales] = useState({ x: 1, y: 1, z: 1 })
   const [translates, setTranslates] = useState({ x: 0, y: 0, z: 0 })
   const [rotates, setRotates] = useState({ x: 0, y: 0, z: 0 })
+  const [lockScaleRatio, setLockScaleRatio] = useState(false)
 
   const setScale = (d: 'x' | 'y' | 'z') => {
     return (value: number) => {
-      const ds = { ...{ x: 1, y: 1, z: 1 }, [d]: value / scales[d] }
-      setScales({ ...scales, [d]: value })
+      const ratio = value / scales[d]
+      const diffs = lockScaleRatio ? {
+        x: ratio, y: ratio, z: ratio,
+      } : { [d]: ratio }
+      const values = lockScaleRatio ? {
+        x: scales.x * ratio, y: scales.y * ratio, z: scales.z * ratio
+      } : { [d]: value }
+      const ds = { ...{ x: 1, y: 1, z: 1 }, ...diffs }
+      setScales({ ...scales, ...values })
       Events.emit('scale', ds)
     }
   }
@@ -76,6 +84,10 @@ export const Panel: React.FC<Props> = (props: Props) => {
     }
   }
 
+  const toggleLockScaleRatio = () => {
+    setLockScaleRatio(!lockScaleRatio)
+  }
+
   return (
     <Drawer
       title="编辑器"
@@ -84,15 +96,32 @@ export const Panel: React.FC<Props> = (props: Props) => {
       mask={false}
       closable={false}
     >
-      <Divider orientation="left">缩放</Divider>
+      <Divider
+        orientation="left"
+        children={
+          <div className="flex items-center">
+            <span className="mr-1">缩放</span>
+            {lockScaleRatio ? (
+              <LockOutlined
+                className="text-blue-500"
+                onClick={toggleLockScaleRatio}
+              />
+            ) : (
+              <UnlockOutlined
+                onClick={toggleLockScaleRatio}
+              />
+            )}
+          </div>
+        }
+      />
       <SliderInput label="x 轴" scale={scales.x} setScale={setScale('x')} />
       <SliderInput label="y 轴" scale={scales.y} setScale={setScale('y')} />
       <SliderInput label="z 轴" scale={scales.z} setScale={setScale('z')} />
 
       <Divider orientation="left">平移</Divider>
-      <SliderInput label="x 轴" min={0} scale={translates.x} setScale={setTranslate('x')} />
-      <SliderInput label="y 轴" min={0} scale={translates.y} setScale={setTranslate('y')} />
-      <SliderInput label="z 轴" min={0} scale={translates.z} setScale={setTranslate('z')} />
+      <SliderInput label="x 轴" min={-10} scale={translates.x} setScale={setTranslate('x')} />
+      <SliderInput label="y 轴" min={-10} scale={translates.y} setScale={setTranslate('y')} />
+      <SliderInput label="z 轴" min={-10} scale={translates.z} setScale={setTranslate('z')} />
 
       <Divider orientation="left">旋转</Divider>
       <SliderInput label="x 轴" min={0} scale={rotates.x} setScale={setRotate('x')} />

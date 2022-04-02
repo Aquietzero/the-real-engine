@@ -8,7 +8,7 @@ export class App {
   private readonly renderer = new THREE.WebGLRenderer({
     antialias: true,
     canvas: document.getElementById('main-canvas') as HTMLCanvasElement,
-    powerPreference: "high-performance",
+    // powerPreference: "high-performance",
   })
   private readonly ambientLight = new THREE.AmbientLight(0xffffff)
 
