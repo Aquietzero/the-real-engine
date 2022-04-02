@@ -106,6 +106,7 @@ export class Vector3 {
   }
 }
 
+export const ORIGIN = new Vector3(0, 0, 0)
 export const X_AXIS_UNIT = new Vector3(1, 0, 0)
 export const Y_AXIS_UNIT = new Vector3(0, 1, 0)
 export const Z_AXIS_UNIT = new Vector3(0, 0, 1)

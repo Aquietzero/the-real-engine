@@ -8,6 +8,8 @@ import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
 import SphereOfPointsExample from './bounding-volumes/sphere-of-points'
 import SphereOfObjExample from './bounding-volumes/sphere-of-obj'
 
+import ClosestPointOnPlaneExample from './primitive-tests/closest-point-on-plane'
+
 export default {
   'math': {
     VectorsExample,
@@ -21,4 +23,7 @@ export default {
     SphereOfPointsExample,
     SphereOfObjExample,
   } as any,
+  'primitive-tests': {
+    ClosestPointOnPlaneExample,
+  }
 }
