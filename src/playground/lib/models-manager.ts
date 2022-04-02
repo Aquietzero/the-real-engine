@@ -10,7 +10,9 @@ class ModelsManager {
 
   public load(name: string, cb: any, hooks: any = {}) {
     const cache = this.models[name]
-    if (cache) return cb(cache)
+    // Return a clone of the cache is really important.
+    // Since the object will be changed or modified by the user.
+    if (cache) return cb(cache.clone())
 
     const mtlPath = `assets/${name}/${name}.mtl`
     const objPath = `assets/${name}/${name}.obj`

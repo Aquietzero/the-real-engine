@@ -4,6 +4,7 @@ import MatrixTransformationsExample from './math/matrix-transformations'
 import ObjTransformationsExample from './math/obj-transformations'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
+import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
 
 export default {
   'math': {
@@ -14,5 +15,6 @@ export default {
   } as any,
   'bounding-volumes': {
     AABBOfPointsExample,
+    AABBOfObjExample,
   } as any,
 }
