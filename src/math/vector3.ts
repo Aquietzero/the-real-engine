@@ -100,6 +100,10 @@ export class Vector3 {
     return cp
   }
 
+  public static tripleScalarProduct(v1: Vector3, v2: Vector3, v3: Vector3): number {
+    return Vector3.dotProduct(v1, Vector3.crossProduct(v2, v3))
+  }
+
   // return the angle between two given vectors by radians.
   public static angleBetween(v1: Vector3, v2: Vector3): number {
     return Math.acos(Vector3.dotProduct(v1, v2) / (v1.len() * v2.len()))
