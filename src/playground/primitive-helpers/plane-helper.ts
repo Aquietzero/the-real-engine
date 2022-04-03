@@ -3,16 +3,16 @@ import { ORIGIN, Y_AXIS, Vector3 } from '@TRE/math'
 import { Plane } from '@TRE/primitive'
 import { PointHelper } from './point-helper'
 import { RayHelper } from './ray-helper'
-import { HelperConfig } from './config'
+import { PlaneHelperConfig } from './config'
 
 export class PlaneHelper {
   obj: THREE.Group = new THREE.Group()
   plane: Plane = new Plane()
 
-  constructor(plane: Plane = new Plane(), config: HelperConfig = {}) {
+  constructor(plane: Plane = new Plane(), config: PlaneHelperConfig = {}) {
     this.plane = plane
 
-    const { color = 0x000000 } = config
+    const { color = 0x000000, showNormal = true } = config
 
     const m = new THREE.MeshPhongMaterial({
       color,
@@ -30,9 +30,11 @@ export class PlaneHelper {
     const c = new PointHelper(ORIGIN)
     this.obj.add(c.obj)
 
-    const end = ORIGIN.add(Y_AXIS.mul(plane.n.len()))
-    const r = new RayHelper(ORIGIN, end)
-    this.obj.add(r.obj)
+    if (showNormal) {
+      const end = ORIGIN.add(Y_AXIS.mul(plane.n.len()))
+      const r = new RayHelper(ORIGIN, end)
+      this.obj.add(r.obj)
+    }
 
     // calculate plane center position
     this.obj.position.set(center.x, center.y, center.z)

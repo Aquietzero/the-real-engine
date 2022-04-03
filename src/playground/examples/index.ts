@@ -14,6 +14,8 @@ import ClosestPointOnAABBExample from './primitive-tests/closest-point-on-aabb'
 import ClosestPointOnTriangleExample from './primitive-tests/closest-point-on-triangle'
 import ClosestPointsBetweenLinesExample from './primitive-tests/closest-points-between-lines'
 
+import TestingSphereAgainstPlaneExample from './primitive-tests/testing-sphere-against-plane'
+
 export default {
   'math': {
     VectorsExample,
@@ -33,5 +35,6 @@ export default {
     ClosestPointOnAABBExample,
     ClosestPointOnTriangleExample,
     ClosestPointsBetweenLinesExample,
+    TestingSphereAgainstPlaneExample,
   }
 }

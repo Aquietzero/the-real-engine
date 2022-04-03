@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { ORIGIN } from '@TRE/math'
 import { Sphere } from '@TRE/primitive'
 import { PointHelper } from './point-helper'
 import { HelperConfig } from './config'
@@ -22,7 +23,7 @@ export class SphereHelper {
     const g = new THREE.SphereGeometry(this.sphere.radius, 16, 16)
 
     const s = new THREE.Mesh(g, m)
-    const centroid = new PointHelper(this.sphere.center, config)
+    const centroid = new PointHelper(ORIGIN, config)
 
     this.obj.add(centroid.obj)
     this.obj.add(s)

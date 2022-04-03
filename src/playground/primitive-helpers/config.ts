@@ -5,3 +5,7 @@ export interface HelperConfig {
 export interface RayHelperConfig extends HelperConfig {
   showArrow?: boolean
 }
+
+export interface PlaneHelperConfig extends HelperConfig {
+  showNormal?: boolean
+}
