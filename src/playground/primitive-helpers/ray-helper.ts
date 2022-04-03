@@ -1,21 +1,18 @@
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
 import { Y_AXIS } from '@TRE/math'
-
-interface RayOptions {
-  color?: number
-}
+import { RayHelperConfig } from './config'
 
 export class RayHelper {
   obj: THREE.Group = new THREE.Group()
   from: Vector3 = new Vector3()
   to: Vector3 = new Vector3()
 
-  constructor(from: Vector3, to: Vector3, opts: RayOptions = {}) {
+  constructor(from: Vector3, to: Vector3, config: RayHelperConfig = {}) {
     this.from = from
     this.to = to
 
-    const { color = 0x000000 } = opts
+    const { color = 0x000000, showArrow = true } = config
 
     const dir = this.to.sub(this.from)
     const len = dir.len()
@@ -25,15 +22,18 @@ export class RayHelper {
     const g = new THREE.CylinderGeometry(0.01, 0.01, len)
     const a = new THREE.ConeGeometry(0.1, 0.2)
 
-    const ray = new THREE.Mesh(g, m)
-    const arrow = new THREE.Mesh(a, m)
-
     const angleToV = Vector3.angleBetween(Y_AXIS, dir)
     const n = Vector3.crossProduct(Y_AXIS, dir).normalize()
 
+    const ray = new THREE.Mesh(g, m)
     this.obj.add(ray)
-    this.obj.add(arrow)
-    arrow.position.y = len/2
+
+    if (showArrow) {
+      const arrow = new THREE.Mesh(a, m)
+      arrow.position.y = len/2
+      this.obj.add(arrow)
+    }
+
     this.obj.rotateOnAxis(new THREE.Vector3(n.x, n.y, n.z), angleToV)
     this.obj.position.set(pos.x, pos.y, pos.z)
   }
