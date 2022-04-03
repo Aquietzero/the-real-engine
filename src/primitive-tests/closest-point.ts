@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
-import { Plane, Segment, Point, Triangle } from '@TRE/primitive'
+import { Plane, Segment, Point, Triangle, Line } from '@TRE/primitive'
 
 export class ClosestPoint {
   // Calculates a point on plane closest to the given point.
@@ -34,60 +34,80 @@ export class ClosestPoint {
   }
 
   public static onTriangleToPoint(triangle: Triangle, p: Point): Point {
-    const { dotProduct: dot, crossProduct: cross, tripleScalarProduct } = Vector3
+    const { dotProduct: dot } = Vector3
     const { a, b, c } = triangle
+
     const ab = b.sub(a)
     const ac = c.sub(a)
-    const bc = c.sub(b)
+    const ap = p.sub(a)
 
-    // Compute parametric position s for projection P' of P on AB.
-    // P' = A + s x AB, s = snom / (snom + sdenom)
-    const snom = dot(p.sub(a), ab)
-    const sdenom = dot(p.sub(b), a.sub(b))
+    // Check if P in vertex region outside A
+    const d1 = dot(ab, ap)
+    const d2 = dot(ac, ap)
+    // barycentric coordinate (1, 0, 0)
+    if (d1 <= 0 && d2 <= 0) return a.clone()
 
-    // Compute parametric position t for projection P' of P on AC.
-    // P' = A + t x AB, t = tnom / (tnom + tdenom)
-    const tnom = dot(p.sub(a), ac)
-    const tdenom = dot(p.sub(c), a.sub(c))
+    // Check if P in vertex region outside B
+    const bp = p.sub(b)
+    const d3 = dot(ab, bp)
+    const d4 = dot(ac, bp)
+    // barycentric coordinate (0, 1, 0)
+    if (d3 >= 0 && d4 <= d3) return b.clone()
 
-    if (snom <= 0 && tnom <= 0) return a.clone()
+    // Check if P in edge region of AB, if so return projection of P onto AB
+    const vc = d1*d4 - d3*d2
+    if (vc <= 0 && d1 >= 0 && d3 <= 0) {
+      const v = d1/(d1 - d3)
+      // barycentric coordinate (1-v, v, 0)
+      return a.add(ab.mul(v))
+    }
 
-    // Compute parametric position u for projection P' of P on BC.
-    // P' = B + u x BC, u = unom / (unom + udenom)
-    const unom = dot(p.sub(b), bc)
-    const udenom = dot(p.sub(c), b.sub(c))
+    // Check if P in vertex region outside C
+    const cp = p.sub(c)
+    const d5 = dot(ab, cp)
+    const d6 = dot(ac, cp)
+    // barycentric coordinate (0, 0, 1)
+    if (d6 >= 0 && d5 <= d6) return c.clone()
 
-    if (sdenom <= 0 && unom <= 0) return b.clone()
-    if (tdenom <= 0 && udenom <= 0) return c.clone()
+    // Check if P in edge region of AC, if so return projection of P onto AC
+    const vb = d5*d2 - d1*d6
+    if (vb <= 0 && d2 >= 0 && d6 <= 0) {
+      const w = d2 / (d2 - d6)
+      // barycentric coordinate (1-w, 0, w)
+      return a.add(ac.mul(w))
+    }
 
-    // P is outside (or on) AB if the triple scalar product [N PA PB] <= 0
-    const n = cross(b.sub(a), c.sub(a))
-    const vc = tripleScalarProduct(n, a.sub(p), b.sub(p))
+    // Check if P in edge region of BC, if so return projection of P onto BC
+    const va = d3*d6 - d5*d4
+    if (va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) {
+      const w = (d4 - d3) / ((d4 - d3) + (d5 - d6))
+      // barycentric coordinate (0, 1-w, w)
+      return b.add(c.sub(b).mul(w))
+    }
 
-    // If P outside AB and within feature region of AB,
-    // return projection of P onto AB
-    if (vc <= 0 && snom >= 0 && sdenom >= 0)
-      return a.add(ab.mul(snom / (snom + sdenom)))
+    // P inside face region. Compute Q through its barycentric coordinates (u, v, w)
+    const denom = 1 / (va + vb + vc)
+    const v = vb * denom
+    const w = vc * denom
+    return a.add(ab.mul(v)).add(ac.mul(w))
+  }
 
-    // P is outside (or on) BC if the triple scalar product [N PB PC] <= 0
-    const va = tripleScalarProduct(n, b.sub(p), c.sub(p))
-    // If P outside BC and within feature region of BC,
-    // return projection of P onto BC
-    if (va <= 0 && unom >= 0 && udenom >= 0)
-      return b.add(bc.mul(unom / (unom + udenom)))
+  public static betweenLines(l1: Line, l2: Line): { p1: Point, p2: Point } {
+    const { dotProduct: dot } = Vector3
+    const r = l1.p.sub(l2.p)
+    const a = dot(l1.dir, l1.dir)
+    const b = dot(l1.dir, l2.dir)
+    const c = dot(l1.dir, r)
+    const e = dot(l2.dir, l2.dir)
+    const f = dot(l2.dir, r)
+    const d = a*e - b*b
 
-    // P is outside (or on) CA if the triple scalar product [N PC PA] <= 0
-    const vb = tripleScalarProduct(n, c.sub(p), a.sub(p))
-    // If P outside BC and within feature region of BC,
-    // return projection of P onto BC
-    if (vb <= 0 && tnom >= 0 && tdenom >= 0)
-      return a.add(ac.mul(tnom / (tnom + tdenom)))
-
-    // P must project inside face region. Compute Q using barycentric coordinates
-    const u = va / (va + vb + vc)
-    const v = vb / (va + vb + vc)
-    const w = 1 - u - v
-    return a.mul(u).add(b.mul(v)).add(c.mul(w))
+    const s = (b*f - c*e)/d
+    const t = (a*f - b*c)/d
+    return {
+      p1: l1.parametric(s),
+      p2: l2.parametric(t),
+    }
   }
 }
 

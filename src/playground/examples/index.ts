@@ -12,6 +12,7 @@ import ClosestPointOnPlaneExample from './primitive-tests/closest-point-on-plane
 import ClosestPointOnSegmentExample from './primitive-tests/closest-point-on-segment'
 import ClosestPointOnAABBExample from './primitive-tests/closest-point-on-aabb'
 import ClosestPointOnTriangleExample from './primitive-tests/closest-point-on-triangle'
+import ClosestPointsBetweenLinesExample from './primitive-tests/closest-points-between-lines'
 
 export default {
   'math': {
@@ -31,5 +32,6 @@ export default {
     ClosestPointOnSegmentExample,
     ClosestPointOnAABBExample,
     ClosestPointOnTriangleExample,
+    ClosestPointsBetweenLinesExample,
   }
 }
