@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Vector3 } from '@TRE/math'
+import { Vector3, ORIGIN } from '@TRE/math'
 import { PointHelper } from './point-helper'
 import { HelperConfig } from './config'
 
@@ -25,7 +25,7 @@ export class BoxHelper {
 
     const box = new THREE.Mesh(g, m)
 
-    const centroid = new PointHelper(this.center, config)
+    const centroid = new PointHelper(ORIGIN, config)
 
     this.obj.add(centroid.obj)
     this.obj.add(box)

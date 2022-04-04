@@ -15,6 +15,9 @@ import ClosestPointOnTriangleExample from './primitive-tests/closest-point-on-tr
 import ClosestPointsBetweenLinesExample from './primitive-tests/closest-points-between-lines'
 
 import TestingSphereAgainstPlaneExample from './primitive-tests/testing-sphere-against-plane'
+import TestingAABBAgainstPlaneExample from './primitive-tests/testing-aabb-against-plane'
+import TestingSphereAgainstAABBExample from './primitive-tests/testing-sphere-against-aabb'
+import TestingSphereAgainstTriangleExample from './primitive-tests/testing-sphere-against-triangle'
 
 export default {
   'math': {
@@ -36,5 +39,8 @@ export default {
     ClosestPointOnTriangleExample,
     ClosestPointsBetweenLinesExample,
     TestingSphereAgainstPlaneExample,
+    TestingAABBAgainstPlaneExample,
+    TestingSphereAgainstAABBExample,
+    TestingSphereAgainstTriangleExample,
   }
 }
