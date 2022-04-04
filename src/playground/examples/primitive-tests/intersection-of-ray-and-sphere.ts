@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import * as THREE from 'three'
-import { Vector3, ORIGIN } from '@TRE/math'
+import { ORIGIN } from '@TRE/math'
 import { Sphere, Ray, Point } from '@TRE/primitive'
 import { Intersection } from '@TRE/primitive-tests'
 import { CoordinateHelper, SphereHelper, PointHelper, RayHelper } from '@TRE/playground/primitive-helpers'

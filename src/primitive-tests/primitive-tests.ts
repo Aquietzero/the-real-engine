@@ -2,7 +2,7 @@ import * as _ from 'lodash'
 import { Vector3, ORIGIN } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
 import {
-  Sphere, Plane, Triangle, Segment,
+  Sphere, Plane, Triangle, Segment, Ray,
 } from '@TRE/primitive'
 import { Distance } from './distance'
 import { ClosestPoint } from './closest-point'
@@ -132,11 +132,27 @@ export class PrimitiveTests {
     return PrimitiveTests.testAABBPlane(aabbOrigin, p)
   }
 
-  // Test whether the segment intersects with the plane
+  // Test whether a segment intersects with a plane
   public static testSegmentPlane(s: Segment, p: Plane): boolean {
     const { dotProduct: dot } = Vector3
     const ab = s.b.sub(s.a)
     const t = (p.d - dot(p.n, s.a)) / dot(p.n, ab)
     return 0 <= t && t <= 1
+  }
+
+  // Test wheter a ray intersects with a sphere
+  public static testRaySphere(r: Ray, s: Sphere): boolean {
+    const { dotProduct: dot } = Vector3
+    const m = r.p.sub(s.center)
+    const c = dot(m, m) - s.radius * s.radius
+
+    if (c <= 0) return true
+
+    const b = dot(m, r.dir)
+    if (b > 0) return false
+    const discriminant = b*b - c
+    if (discriminant < 0) return false
+
+    return true
   }
 }

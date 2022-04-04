@@ -1,3 +1,5 @@
+export const EPSILON = 0.000001
+
 export {
   ORIGIN,
   X_AXIS_UNIT,
