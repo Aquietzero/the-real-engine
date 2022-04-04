@@ -1,7 +1,6 @@
 import * as _ from 'lodash'
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
-import { ClosestPoint } from '@TRE/primitive-tests'
 import { Plane, Segment, Point } from '@TRE/primitive'
 import { Intersection } from '@TRE/primitive-tests'
 import { CoordinateHelper, PlaneHelper, PointHelper, RayHelper } from '@TRE/playground/primitive-helpers'

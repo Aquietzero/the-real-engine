@@ -21,6 +21,7 @@ import TestingSphereAgainstTriangleExample from './primitive-tests/testing-spher
 import TestingAABBAgainstTriangleExample from './primitive-tests/testing-aabb-against-triangle'
 
 import IntersectionOfSegmentAndPlaneExample from './primitive-tests/intersection-of-segment-and-plane'
+import IntersectionOfRayAndSphereExample from './primitive-tests/intersection-of-ray-and-sphere'
 
 export default {
   'math': {
@@ -41,11 +42,14 @@ export default {
     ClosestPointOnAABBExample,
     ClosestPointOnTriangleExample,
     ClosestPointsBetweenLinesExample,
+
     TestingSphereAgainstPlaneExample,
     TestingAABBAgainstPlaneExample,
     TestingSphereAgainstAABBExample,
     TestingSphereAgainstTriangleExample,
     TestingAABBAgainstTriangleExample,
+
     IntersectionOfSegmentAndPlaneExample,
+    IntersectionOfRayAndSphereExample,
   }
 }
