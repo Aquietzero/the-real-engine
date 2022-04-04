@@ -1,8 +1,8 @@
 import * as _ from 'lodash'
-import { Vector3 } from '@TRE/math'
+import { Vector3, ORIGIN } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
 import {
-  Sphere, Plane, Triangle,
+  Sphere, Plane, Triangle, Segment,
 } from '@TRE/primitive'
 import { Distance } from './distance'
 import { ClosestPoint } from './closest-point'
@@ -45,9 +45,98 @@ export class PrimitiveTests {
     return dist <= s.radius
   }
 
-  // Test if a sphere intersects a Triangle.
+  // Test if a sphere intersects a triangle.
   public static testSphereTriangle(s: Sphere, t: Triangle): boolean {
     const p = ClosestPoint.onTriangleToPoint(t, s.center)
     return p.sub(s.center).len2() <= s.radius * s.radius
+  }
+
+  // Test if an aabb intersects a triangle.
+  public static testAABBTriangle(aabb: AABB, t: Triangle): boolean {
+    let p0, p1, p2, r
+
+    const { x: e0, y: e1, z: e2 } = aabb.radius
+
+    // Translate the triangle as conceptually moving AABB to origin
+    const v0 = t.a.sub(aabb.center)
+    const v1 = t.b.sub(aabb.center)
+    const v2 = t.c.sub(aabb.center)
+
+    const f0 = v1.sub(v0)
+    const f1 = v2.sub(v1)
+    const f2 = v0.sub(v2)
+
+    // Test axis a00 = (0, -f0.z, f0.y)
+    p0 = v0.z*f0.y - v0.y*f0.z
+    p2 = v2.z*f0.y - v2.y*f0.z
+    r = e1 * Math.abs(f0.z) + e2 * Math.abs(f0.y)
+    if (Math.max(-Math.max(p0, p2), Math.min(p0, p2)) > r) return false
+
+    // Test axis a01 = (0, -f1.z, f1.y)
+    p0 = v0.z*f1.y - v0.y*f1.z
+    p1 = v1.z*f1.y - v1.y*f1.z
+    r = e1 * Math.abs(f1.z) + e2 * Math.abs(f1.y)
+    if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r) return false
+
+    // Test axis a02 = (0, -f2.z, f2.y)
+    p1 = v1.z*f2.y - v1.y*f2.z
+    p2 = v2.z*f2.y - v2.y*f2.z
+    r = e1 * Math.abs(f2.z) + e2 * Math.abs(f2.y)
+    if (Math.max(-Math.max(p1, p2), Math.min(p1, p2)) > r) return false
+
+    // Test axis a10 = (f0.z, 0, -f0.x)
+    p0 = v0.x*f0.z - v0.z*f0.x
+    p2 = v2.x*f0.z - v2.z*f0.x
+    r = e0 * Math.abs(f0.z) + e2 * Math.abs(f0.x)
+    if (Math.max(-Math.max(p0, p2), Math.min(p0, p2)) > r) return false
+
+    // Test axis a11 = (f1.z, 0, -f1.x)
+    p0 = v0.x*f1.z - v0.z*f1.x
+    p1 = v1.x*f1.z - v1.z*f1.x
+    r = e0 * Math.abs(f1.z) + e2 * Math.abs(f1.x)
+    if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r) return false
+
+    // Test axis a12 = (f2.z, 0, -f2.x)
+    p1 = v1.x*f2.z - v1.z*f2.x
+    p2 = v2.x*f2.z - v2.z*f2.x
+    r = e0 * Math.abs(f2.z) + e2 * Math.abs(f2.x)
+    if (Math.max(-Math.max(p1, p2), Math.min(p1, p2)) > r) return false
+
+    // Test axis a20 = (-f0.y, f0.x, 0)
+    p0 = v0.y*f0.x - v0.x*f0.y
+    p2 = v2.y*f0.z - v2.x*f0.y
+    r = e0 * Math.abs(f0.y) + e1 * Math.abs(f0.x)
+    if (Math.max(-Math.max(p0, p2), Math.min(p0, p2)) > r) return false
+
+    // Test axis a21 = (-f1.y, f1.x, 0)
+    p0 = v0.y*f1.x - v0.x*f1.y
+    p1 = v1.y*f1.x - v1.x*f1.y
+    r = e0 * Math.abs(f1.y) + e1 * Math.abs(f1.x)
+    if (Math.max(-Math.max(p0, p1), Math.min(p0, p1)) > r) return false
+
+    // Test axis a22 = (-f2.y, f2.x, 0)
+    p1 = v1.y*f2.x - v1.x*f2.y
+    p2 = v2.y*f2.x - v2.x*f2.y
+    r = e0 * Math.abs(f2.y) + e1 * Math.abs(f2.x)
+    if (Math.max(-Math.max(p1, p2), Math.min(p1, p2)) > r) return false
+
+    // Test the three axes corresponding to the face normals of AABB
+    if (Math.max(v0.x, v1.x, v2.x) < -e0 || Math.min(v0.x, v1.x, v2.x) > e0) return false;
+    if (Math.max(v0.y, v1.y, v2.y) < -e1 || Math.min(v0.y, v1.y, v2.y) > e1) return false;
+    if (Math.max(v0.z, v1.z, v2.z) < -e2 || Math.min(v0.z, v1.z, v2.z) > e2) return false;
+
+    // Test separating axis correspinding to triangle face nomral
+    const pn = Vector3.crossProduct(f0, f1)
+    const p = new Plane(pn, Vector3.dotProduct(pn, v0))
+    const aabbOrigin = new AABB(ORIGIN, aabb.radius.clone())
+    return PrimitiveTests.testAABBPlane(aabbOrigin, p)
+  }
+
+  // Test whether the segment intersects with the plane
+  public static testSegmentPlane(s: Segment, p: Plane): boolean {
+    const { dotProduct: dot } = Vector3
+    const ab = s.b.sub(s.a)
+    const t = (p.d - dot(p.n, s.a)) / dot(p.n, ab)
+    return 0 <= t && t <= 1
   }
 }
