@@ -1,5 +1,5 @@
 import * as _ from 'lodash'
-import { Vector3, ORIGIN } from '@TRE/math'
+import { Vector3, ORIGIN, EPSILON } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
 import {
   Sphere, Plane, Triangle, Segment, Ray,
@@ -140,7 +140,7 @@ export class PrimitiveTests {
     return 0 <= t && t <= 1
   }
 
-  // Test wheter a ray intersects with a sphere
+  // Test whether a ray intersects with a sphere
   public static testRaySphere(r: Ray, s: Sphere): boolean {
     const { dotProduct: dot } = Vector3
     const m = r.p.sub(s.center)
@@ -152,6 +152,36 @@ export class PrimitiveTests {
     if (b > 0) return false
     const discriminant = b*b - c
     if (discriminant < 0) return false
+
+    return true
+  }
+
+  // Test whether a segment intersects with an aabb
+  public static testSegmentAABB(s: Segment, aabb: AABB): boolean {
+    const { x: ex, y: ey, z: ez } = aabb.radius
+    // segment midpoint
+    let m = s.a.add(s.b).mul(0.5)
+    // segment halflength vector
+    const d = m.sub(s.a)
+    m = m.sub(aabb.center)
+
+    // Try world coordinate axes as separating axes
+    let adx = Math.abs(d.x)
+    if (Math.abs(m.x) > ex + adx) return false
+    let ady = Math.abs(d.y)
+    if (Math.abs(m.y) > ey + ady) return false
+    let adz = Math.abs(d.z)
+    if (Math.abs(m.z) > ez + adz) return false
+
+    // Add in an epsilon term to counteract arithmetic errors when segment is
+    // (near) parallel to a coordinate axis (see text for detail)
+    adx += EPSILON
+    ady += EPSILON
+    adz += EPSILON
+
+    if (Math.abs(m.y*d.z - m.z*d.y) > ey*adz + ez*ady) return false
+    if (Math.abs(m.y*d.x - m.x*d.z) > ex*adz + ez*adx) return false
+    if (Math.abs(m.x*d.y - m.y*d.x) > ex*ady + ey*adx) return false
 
     return true
   }

@@ -19,6 +19,7 @@ import TestingAABBAgainstPlaneExample from './primitive-tests/testing-aabb-again
 import TestingSphereAgainstAABBExample from './primitive-tests/testing-sphere-against-aabb'
 import TestingSphereAgainstTriangleExample from './primitive-tests/testing-sphere-against-triangle'
 import TestingAABBAgainstTriangleExample from './primitive-tests/testing-aabb-against-triangle'
+import TestingSegmentAgainstAABBExample from './primitive-tests/testing-segment-against-aabb'
 
 import IntersectionOfSegmentAndPlaneExample from './primitive-tests/intersection-of-segment-and-plane'
 import IntersectionOfRayAndSphereExample from './primitive-tests/intersection-of-ray-and-sphere'
@@ -49,6 +50,7 @@ export default {
     TestingSphereAgainstAABBExample,
     TestingSphereAgainstTriangleExample,
     TestingAABBAgainstTriangleExample,
+    TestingSegmentAgainstAABBExample,
 
     IntersectionOfSegmentAndPlaneExample,
     IntersectionOfRayAndSphereExample,
