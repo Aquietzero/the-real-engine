@@ -1,7 +1,9 @@
 import * as _ from 'lodash'
 import { Vector3, EPSILON } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
-import { Point, Segment, Plane, Ray, Sphere, } from '@TRE/primitive'
+import {
+  Point, Segment, Plane, Ray, Sphere, Triangle, Line,
+} from '@TRE/primitive'
 
 export class Intersection {
   public static ofSegmentAndPlane(s: Segment, p: Plane): Point | null {
@@ -65,5 +67,72 @@ export class Intersection {
       min: r.parametric(tMin),
       max: r.parametric(tMax),
     }
+  }
+
+  public static ofLineAndTriangle(l: Line, t: Triangle): Point | null {
+    const p = l.p
+    const q = l.p.add(l.dir)
+    const { a, b, c } = t
+    const { tripleScalarProduct: scalarProduct } = Vector3
+
+    const pq = q.sub(p)
+    const pa = a.sub(p)
+    const pb = b.sub(p)
+    const pc = c.sub(p)
+
+    let u = scalarProduct(pq, pc, pb)
+    if (u < 0) return
+    let v = scalarProduct(pq, pa, pc)
+    if (v < 0) return
+    let w = scalarProduct(pq, pb, pa)
+    if (w < 0) return
+
+    const denom = 1 / (u + v + w)
+    u *= denom
+    v *= denom
+    w *= denom
+    return a.mul(u).add(b.mul(v)).add(c.mul(w))
+  }
+
+  public static ofSegmentAndTriangle(s: Segment, triangle: Triangle): Point | null {
+    const { a, b, c } = triangle
+    const { a: p, b: q } = s
+
+    const ab = b.sub(a)
+    const ac = c.sub(a)
+    const qp = p.sub(q)
+
+    const { dotProduct: dot, crossProduct: cross } = Vector3
+
+    // Compute triangle normal. Can be precalculated or cached if
+    // intersecting multiple segments against the same triangle
+    const n = cross(ab, ac)
+
+    // Compute denominator d. If d <= 0, segment is parallel to or
+    // points away from triangle, so exit early
+    const d = dot(qp, n)
+    console.log(d, n, '---')
+    if (d <= 0) return
+
+    // Compute intersection t value of pq with plane of triangle. A ray
+    // intersects iff 0 <= t. Segment intersects iff 0 <= t <= 1. Delay
+    // deviding by d until intersection has been found to pierce triangle
+    const ap = p.sub(a)
+    let t = dot(ap, n)
+    if (t < 0) return
+    if (t > d) return // for segment
+
+    // Compute barycentric coordinate components and test if within bounds
+    const e = cross(qp, ap)
+    let v = dot(ac, e)
+    if (v < 0 || v > d) return
+    let w = -dot(ab, e)
+    if (w < 0 || v + w > d) return
+
+    t /= d
+    v /= d
+    w /= d
+    const u = 1 - v - w
+    return a.mul(u).add(b.mul(v)).add(c.mul(w))
   }
 }

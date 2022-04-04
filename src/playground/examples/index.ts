@@ -24,6 +24,8 @@ import TestingSegmentAgainstAABBExample from './primitive-tests/testing-segment-
 import IntersectionOfSegmentAndPlaneExample from './primitive-tests/intersection-of-segment-and-plane'
 import IntersectionOfRayAndSphereExample from './primitive-tests/intersection-of-ray-and-sphere'
 import IntersectionOfRayAndAABBExample from './primitive-tests/intersection-of-ray-and-aabb'
+import IntersectionOfLineAndTriangleExample from './primitive-tests/intersection-of-line-and-triangle'
+import IntersectionOfSegmentAndTriangleExample from './primitive-tests/intersection-of-segment-and-triangle'
 
 export default {
   'math': {
@@ -55,5 +57,7 @@ export default {
     IntersectionOfSegmentAndPlaneExample,
     IntersectionOfRayAndSphereExample,
     IntersectionOfRayAndAABBExample,
+    IntersectionOfLineAndTriangleExample,
+    IntersectionOfSegmentAndTriangleExample,
   }
 }
