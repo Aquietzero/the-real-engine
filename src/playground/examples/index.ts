@@ -26,6 +26,7 @@ import IntersectionOfRayAndSphereExample from './primitive-tests/intersection-of
 import IntersectionOfRayAndAABBExample from './primitive-tests/intersection-of-ray-and-aabb'
 import IntersectionOfLineAndTriangleExample from './primitive-tests/intersection-of-line-and-triangle'
 import IntersectionOfSegmentAndTriangleExample from './primitive-tests/intersection-of-segment-and-triangle'
+import IntersectionOfPlaneAndPlaneExample from './primitive-tests/intersection-of-plane-and-plane'
 
 export default {
   'math': {
@@ -59,5 +60,6 @@ export default {
     IntersectionOfRayAndAABBExample,
     IntersectionOfLineAndTriangleExample,
     IntersectionOfSegmentAndTriangleExample,
+    IntersectionOfPlaneAndPlaneExample,
   }
 }

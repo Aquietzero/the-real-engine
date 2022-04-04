@@ -135,4 +135,13 @@ export class Intersection {
     const u = 1 - v - w
     return a.mul(u).add(b.mul(v)).add(c.mul(w))
   }
+
+  public static ofPlaneAndPlane(p1: Plane, p2: Plane): Line | null {
+    const d = Vector3.crossProduct(p1.n, p2.n)
+    const denom = Vector3.dotProduct(d, d)
+    if (denom < EPSILON) return
+
+    const p = Vector3.crossProduct(p2.n.mul(p1.d).sub(p1.n.mul(p2.d)), d).div(denom)
+    return new Line(p, d)
+  }
 }
