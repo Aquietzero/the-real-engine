@@ -38,13 +38,14 @@ export class AABB {
     const dist2z = maxZ.sub(minZ).len2()
 
     // Pick the pair (min,max) of points most distant
+    // It has to be greater or equal to avoid same point
     let min = minX
     let max = maxX
-    if (dist2y > dist2x && dist2y > dist2z) {
+    if (dist2y >= dist2x && dist2y >= dist2z) {
       max = maxY
       min = minY
     }
-    if (dist2z > dist2x && dist2z > dist2y) {
+    if (dist2z >= dist2x && dist2z >= dist2y) {
       max = maxZ
       min = minZ
     }

@@ -111,7 +111,6 @@ export class Intersection {
     // Compute denominator d. If d <= 0, segment is parallel to or
     // points away from triangle, so exit early
     const d = dot(qp, n)
-    console.log(d, n, '---')
     if (d <= 0) return
 
     // Compute intersection t value of pq with plane of triangle. A ray

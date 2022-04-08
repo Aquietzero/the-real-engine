@@ -1,7 +1,6 @@
-export const EPSILON = 0.000001
-
 export {
   ORIGIN,
+  EPSILON,
   X_AXIS_UNIT,
   Y_AXIS_UNIT,
   Z_AXIS_UNIT,

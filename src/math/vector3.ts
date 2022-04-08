@@ -21,7 +21,9 @@ export class Vector3 {
   }
 
   public isZero(): boolean {
-    return this.x === 0 && this.y === 0 && this.z === 0
+    return Math.abs(this.x) < EPSILON
+      && Math.abs(this.y) < EPSILON
+      && Math.abs(this.z) < EPSILON
   }
 
   public equals(v: Vector3): boolean {
@@ -85,6 +87,18 @@ export class Vector3 {
     )
   }
 
+  public strictLessThan(v: Vector3): boolean {
+    return this.x < v.x && this.y < v.y && this.z < v.z
+  }
+
+  public strictGreaterThan(v: Vector3): boolean {
+    return this.x > v.x && this.y > v.y && this.z > v.z
+  }
+
+  public equalTo(v: Vector3): boolean {
+    return this.x === v.x && this.y === v.y && this.z === v.z
+  }
+
   public static dotProduct(v1: Vector3, v2: Vector3): number {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
   }
@@ -111,6 +125,8 @@ export class Vector3 {
 }
 
 export const ORIGIN = new Vector3(0, 0, 0)
+export const EPSILON = 0.000001
+
 export const X_AXIS_UNIT = new Vector3(1, 0, 0)
 export const Y_AXIS_UNIT = new Vector3(0, 1, 0)
 export const Z_AXIS_UNIT = new Vector3(0, 0, 1)

@@ -28,6 +28,8 @@ import IntersectionOfLineAndTriangleExample from './primitive-tests/intersection
 import IntersectionOfSegmentAndTriangleExample from './primitive-tests/intersection-of-segment-and-triangle'
 import IntersectionOfPlaneAndPlaneExample from './primitive-tests/intersection-of-plane-and-plane'
 
+import BVTreeExample from './bounding-volume-hierarchy/bvtree'
+
 export default {
   'math': {
     VectorsExample,
@@ -61,5 +63,8 @@ export default {
     IntersectionOfLineAndTriangleExample,
     IntersectionOfSegmentAndTriangleExample,
     IntersectionOfPlaneAndPlaneExample,
+  },
+  'bounding-volume-hierarchy': {
+    BVTreeExample,
   }
 }
