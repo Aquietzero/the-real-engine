@@ -1,51 +1,12 @@
 import * as React from 'react'
-import { Slider, InputNumber, Row, Col, Divider, Drawer } from 'antd'
+import { Divider, Drawer } from 'antd'
 import { LockOutlined, UnlockOutlined } from '@ant-design/icons'
 import { Events } from '@TRE/core/events'
+import { SliderInput } from '@TRE/playground/components/slider-input'
 
-interface Props {
-}
+const { useState } = React
 
-const { useEffect, useState } = React
-
-interface SliderInputProps {
-  label: string
-  scale: number
-  setScale: any
-  min?: number
-  max?: number
-}
-
-const SliderInput: React.FC<SliderInputProps> = (props: SliderInputProps) => {
-  const { label, scale, setScale, min = 1, max = 10 } = props
-
-  return (
-    <Row className="flex items-center">
-      <Col span={3}>
-        { label }
-      </Col>
-      <Col span={14}>
-        <Slider
-          min={min}
-          max={max}
-          step={0.01}
-          onChange={setScale}
-          value={scale}
-        />
-      </Col>
-      <Col span={7}>
-        <InputNumber
-          min={min}
-          max={max}
-          step={0.01}
-          style={{ margin: '0 16px' }}
-          value={scale}
-          onChange={setScale}
-        />
-      </Col>
-    </Row>
-  )
-}
+interface Props {}
 
 export const Panel: React.FC<Props> = (props: Props) => {
   const [scales, setScales] = useState({ x: 1, y: 1, z: 1 })

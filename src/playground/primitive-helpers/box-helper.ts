@@ -16,7 +16,6 @@ export class BoxHelper {
     const { color = 0x000000, showCentroid = false } = config
     this.center = center
     this.radius = radius
-    console.log(color)
 
     const m = new THREE.MeshPhongMaterial({ color })
     const { x: rx, y: ry, z: rz } = this.radius

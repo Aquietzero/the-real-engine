@@ -24,7 +24,7 @@ export default {
     })
 
     const bs = BoundingSphere.calculateSphere(points)
-    const sphere = new SphereHelper(bs, { color: 0x999999 })
+    const sphere = new SphereHelper(bs)
     g.add(sphere.obj)
 
     app.scene.add(g)

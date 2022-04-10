@@ -1,3 +1,5 @@
-import * as EventEmitter from 'event-emitter'
+import { EventEmitter2 } from 'eventemitter2'
 
-export const Events = EventEmitter()
+export const Events = new EventEmitter2({
+  wildcard: true,
+})

@@ -24,8 +24,7 @@ export default {
         ))
       }
       const s = Sphere.calculateSphere(points)
-      console.log('-----------', s)
-      const sphere = new SphereHelper(s, { color: 0x999999 })
+      const sphere = new SphereHelper(s)
       g.add(sphere.obj)
       g.add(mario)
     }, {

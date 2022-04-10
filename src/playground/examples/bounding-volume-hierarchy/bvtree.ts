@@ -49,12 +49,12 @@ export default {
       0xCCCCCC,
       0xDDDDDD,
       0xEEEEEE,
-    ]
+    ].reverse()
 
     const height = bvtree.height()
     bvtree.traverse((node: any, context: any) => {
       const aabbHelper = new BoxHelper(node.bv.center, node.bv.radius, {
-        color: palette[Math.floor(context.level/height*palette.length)],
+        color: palette[Math.ceil(context.level/height*palette.length)],
       })
       g.add(aabbHelper.obj)
     })

@@ -24,7 +24,7 @@ export default {
         ))
       }
       const aabb = AABB.calculateAABB(points)
-      const box = new BoxHelper(aabb.center, aabb.radius, { color: 0x999999 })
+      const box = new BoxHelper(aabb.center, aabb.radius)
       g.add(box.obj)
       g.add(mario)
     }, {
