@@ -15,7 +15,7 @@ export default {
     g.add(c.obj)
 
     const aabb = new AABB(ORIGIN, new Vector3(2, 2, 2))
-    const aabbHelper = new BoxHelper(aabb.center, aabb.radius, { color: 0x999999 })
+    const aabbHelper = new BoxHelper(aabb.center, aabb.radius)
     g.add(aabbHelper.obj)
 
     _.times(10, () => {

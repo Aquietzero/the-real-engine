@@ -29,6 +29,7 @@ import IntersectionOfSegmentAndTriangleExample from './primitive-tests/intersect
 import IntersectionOfPlaneAndPlaneExample from './primitive-tests/intersection-of-plane-and-plane'
 
 import BVTreeExample from './bounding-volume-hierarchy/bvtree'
+import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 
 export default {
   'math': {
@@ -66,5 +67,6 @@ export default {
   },
   'bounding-volume-hierarchy': {
     BVTreeExample,
+    KDTreeExample,
   }
 }

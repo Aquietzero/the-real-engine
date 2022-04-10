@@ -12,4 +12,5 @@ export interface PlaneHelperConfig extends HelperConfig {
 
 export interface BoxHelperConfig extends HelperConfig {
   showCentroid?: boolean
+  showFace?: boolean
 }

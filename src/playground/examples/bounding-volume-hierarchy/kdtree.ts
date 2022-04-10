@@ -2,9 +2,8 @@ import * as THREE from 'three'
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
-import { Point } from '@TRE/primitive'
 import { CoordinateHelper, PointHelper, BoxHelper, RayHelper } from '@TRE/playground/primitive-helpers'
-import { BinaryBVTree } from '@TRE/structures/bvtree'
+import { KDTree } from '@TRE/structures/kdtree'
 
 export default {
   description: 'A bunch of connected vectors.',
@@ -32,38 +31,8 @@ export default {
     })
 
     const points = _.map(bodies, 'point')
-    const bvtree = new BinaryBVTree(bodies)
-    const palette = [
-      0x000000,
-      0x111111,
-      0x222222,
-      0x333333,
-      0x444444,
-      0x555555,
-      0x666666,
-      0x777777,
-      0x888888,
-      0x999999,
-      0xAAAAAA,
-      0xBBBBBB,
-      0xCCCCCC,
-      0xDDDDDD,
-      0xEEEEEE,
-    ].reverse()
-
-    const height = bvtree.height()
-    bvtree.traverse((node: any, context: any) => {
-      const aabbHelper = new BoxHelper(node.bv.center, node.bv.radius, {
-        color: palette[Math.ceil(context.level/height*palette.length)],
-        showFace: false,
-      })
-      g.add(aabbHelper.obj)
-    })
-
-    const { min, max } = AABB.mostSeparatedPoints(points)
-    const r = new RayHelper(min, max)
-    g.add(r.obj)
-
+    const kdtree = new KDTree(bodies)
+    console.log(kdtree)
 
     app.scene.add(g)
     return g

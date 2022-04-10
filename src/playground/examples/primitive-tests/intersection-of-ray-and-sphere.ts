@@ -14,7 +14,7 @@ export default {
     g.add(c.obj)
 
     const s = new Sphere(ORIGIN, 4)
-    const sHelper = new SphereHelper(s, { color: 0x999999 })
+    const sHelper = new SphereHelper(s)
     g.add(sHelper.obj)
 
     _.times(10, () => {

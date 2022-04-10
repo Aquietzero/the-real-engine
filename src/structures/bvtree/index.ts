@@ -1,17 +1,12 @@
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
+import { BVObject } from '@TRE/structures/types'
 
 enum NODE_TYPE {
   NODE = 'NODE',
   LEAF = 'LEAF',
 }
-
-interface withBV {
-  bv: any
-}
-
-type BVObject = Required<withBV>
 
 class BVNode {
   type: NODE_TYPE
