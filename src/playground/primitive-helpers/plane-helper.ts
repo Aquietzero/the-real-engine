@@ -16,13 +16,26 @@ export class PlaneHelper {
 
     const m = new THREE.MeshPhongMaterial({
       color,
-      wireframe: true,
+      opacity: 0.05,
+      transparent: true,
+    })
+    const m2 = new THREE.MeshPhongMaterial({
+      color,
     })
     const g = new THREE.BoxGeometry(10, 0.01, 10)
-
     const p = new THREE.Mesh(g, m)
-
     this.obj.add(p)
+
+    const p1 = new THREE.Vector3(-5, 0, -5)
+    const p2 = new THREE.Vector3(-5, 0, +5)
+    const p3 = new THREE.Vector3(+5, 0, +5)
+    const p4 = new THREE.Vector3(+5, 0, -5)
+    const points = [p1, p2, p3, p4, p1]
+
+    const line = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints(points), m2
+    )
+    this.obj.add(line)
 
     const center = this.plane.n.mul(this.plane.d/this.plane.n.len2())
 

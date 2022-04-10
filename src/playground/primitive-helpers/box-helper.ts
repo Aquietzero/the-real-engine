@@ -58,6 +58,20 @@ export class BoxHelper {
     this.obj.add(v3)
     this.obj.add(v4)
 
+    const m2 = new THREE.MeshPhongMaterial({
+      color,
+      opacity: 0.05,
+      transparent: true
+    })
+
+    const g = new THREE.BoxGeometry(
+      this.radius.x * 2,
+      this.radius.y * 2,
+      this.radius.z * 2
+    )
+    const box = new THREE.Mesh(g, m2)
+    this.obj.add(box)
+
     if (showCentroid) {
       const centroid = new PointHelper(ORIGIN, config)
       this.obj.add(centroid.obj)

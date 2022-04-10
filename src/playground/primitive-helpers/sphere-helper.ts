@@ -17,7 +17,15 @@ export class SphereHelper {
 
     const { color = 0x000000 } = config
 
-    const m = new THREE.MeshPhongMaterial({ color })
+    // const m = new THREE.MeshPhongMaterial({
+    //   color,
+    //   opacity: 0.05,
+    //   transparent: true,
+    // })
+    const m2 = new THREE.MeshPhongMaterial({ color })
+    // const g = new THREE.SphereGeometry(this.sphere.radius)
+    // const s = new THREE.Mesh(g, m)
+    // this.obj.add(s)
 
     const curve = new THREE.EllipseCurve(
       0, 0,
@@ -27,14 +35,14 @@ export class SphereHelper {
       0
     )
     const points = curve.getPoints(50)
-    const g = new THREE.BufferGeometry().setFromPoints(points)
-    const sxz = new THREE.Line(g, m)
+    const circle = new THREE.BufferGeometry().setFromPoints(points)
+    const sxz = new THREE.Line(circle, m2)
     sxz.rotation.x = Math.PI/2
     this.obj.add(sxz)
 
     _.times(12, n => {
       const r = Math.PI*2*n/8
-      const sv = new THREE.Line(g, m)
+      const sv = new THREE.Line(circle, m2)
       sv.rotation.y = r
       this.obj.add(sv)
     })
