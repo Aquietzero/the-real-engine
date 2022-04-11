@@ -26,20 +26,34 @@ export class SphereHelper {
     // const g = new THREE.SphereGeometry(this.sphere.radius)
     // const s = new THREE.Mesh(g, m2)
     // this.obj.add(s)
+    const step = Math.PI/2/4
+    _.each([-3.5*step, -2*step, -step, 0, step, 2*step, 3.5*step], theta => {
+      const cos = Math.cos(theta)
+      const sin = Math.sin(theta)
+      const c = new THREE.EllipseCurve(
+        0, 0,
+        cos*this.sphere.radius, cos*this.sphere.radius,
+        0, 2 * Math.PI,
+        false,
+        0
+      )
+      const points = c.getPoints(50)
+      const circle = new THREE.BufferGeometry().setFromPoints(points)
+      const sxz = new THREE.Line(circle, m)
+      sxz.rotation.x = Math.PI/2
+      sxz.position.y = sin*this.sphere.radius
+      this.obj.add(sxz)
+    })
 
-    const curve = new THREE.EllipseCurve(
+    const c0 = new THREE.EllipseCurve(
       0, 0,
       this.sphere.radius, this.sphere.radius,
       0, 2 * Math.PI,
       false,
       0
     )
-    const points = curve.getPoints(50)
+    const points = c0.getPoints(50)
     const circle = new THREE.BufferGeometry().setFromPoints(points)
-    const sxz = new THREE.Line(circle, m)
-    sxz.rotation.x = Math.PI/2
-    this.obj.add(sxz)
-
     _.times(12, n => {
       const r = Math.PI*2*n/8
       const sv = new THREE.Line(circle, m)

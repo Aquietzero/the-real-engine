@@ -4,8 +4,8 @@ import { AABB } from '@TRE/bounding-volumes'
 import { BVObject } from '@TRE/structures/types'
 
 enum NODE_TYPE {
-  NODE = 'NODE',
-  LEAF = 'LEAF',
+  NODE,
+  LEAF,
 }
 
 class BVNode {

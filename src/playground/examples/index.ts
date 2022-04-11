@@ -2,6 +2,7 @@ import VectorsExample from './math/vectors'
 import ConnectedVectorsExample from './math/connected-vectors'
 import MatrixTransformationsExample from './math/matrix-transformations'
 import ObjTransformationsExample from './math/obj-transformations'
+import PolyhedronExample from './math/polyhedron'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
 import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
@@ -37,6 +38,7 @@ export default {
     ConnectedVectorsExample,
     MatrixTransformationsExample,
     ObjTransformationsExample,
+    PolyhedronExample,
   } as any,
   'bounding-volumes': {
     AABBOfPointsExample,
