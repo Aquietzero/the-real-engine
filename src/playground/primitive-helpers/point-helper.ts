@@ -11,7 +11,7 @@ export class PointHelper {
     this.point = point
 
     const m = new THREE.MeshPhongMaterial({ color })
-    const g = new THREE.SphereGeometry(0.1, 32, 32)
+    const g = new THREE.SphereGeometry(0.08, 32, 32)
 
     const p = new THREE.Mesh(g, m)
 

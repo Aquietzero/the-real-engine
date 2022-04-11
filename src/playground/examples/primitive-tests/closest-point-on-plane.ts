@@ -1,8 +1,9 @@
+import * as _ from 'lodash'
 import * as THREE from 'three'
 import { Vector3 } from '@TRE/math'
 import { ClosestPoint } from '@TRE/primitive-tests'
 import { Plane, Point } from '@TRE/primitive'
-import { CoordinateHelper, PlaneHelper, PointHelper } from '@TRE/playground/primitive-helpers'
+import { CoordinateHelper, PlaneHelper, PointHelper, RayHelper } from '@TRE/playground/primitive-helpers'
 
 export default {
   description: 'A bunch of vectors.',
@@ -14,16 +15,25 @@ export default {
 
     const plane = new Plane(new Vector3(1, 2, 1), 3)
     const planeHelper = new PlaneHelper(plane)
-
-    const p1 = new Point(3, 3, 3)
-    const p2 = ClosestPoint.onPlaneToPoint(plane, p1)
-
-    const p1Helper = new PointHelper(p1, { color: 0x0000ff })
-    const p2Helper = new PointHelper(p2, { color: 0xff0000 })
-
     g.add(planeHelper.obj)
-    g.add(p1Helper.obj)
-    g.add(p2Helper.obj)
+
+    const range = 3
+    const random = () => Math.floor(-range + Math.random() * 2*range)
+
+    _.times(10, () => {
+      const p = new Point(random(), random(), random())
+      const cp = ClosestPoint.onPlaneToPoint(plane, p)
+
+      const pHelper = new PointHelper(p, { color: 0x0000ff })
+      const cpHelper = new PointHelper(cp, { color: 0xff0000 })
+      const rayHelper = new RayHelper(p, cp, { showArrow: false })
+
+      g.add(pHelper.obj)
+      g.add(cpHelper.obj)
+      g.add(rayHelper.obj)
+    })
+
+
     app.scene.add(g)
     return g
   }

@@ -31,5 +31,21 @@ export class TriangleHelper {
     this.obj.add(ab.obj)
     this.obj.add(ac.obj)
     this.obj.add(bc.obj)
+
+    const g = new THREE.BufferGeometry()
+    const vertices = new Float32Array([
+      a.x, a.y, a.z,
+      b.x, b.y, b.z,
+      c.x, c.y, c.z,
+    ])
+    g.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+    const m2 = new THREE.MeshPhongMaterial({
+      color,
+      opacity: 0.05,
+      transparent: true,
+      side: THREE.DoubleSide,
+    })
+    const t = new THREE.Mesh(g, m2)
+    this.obj.add(t)
   }
 }

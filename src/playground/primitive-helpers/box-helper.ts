@@ -23,45 +23,14 @@ export class BoxHelper {
     this.radius = radius
 
     const m = new THREE.MeshPhongMaterial({ color })
-    const { x: rx, y: ry, z: rz } = this.radius
-
-    const b1 = new THREE.Vector3(-rx, -ry, -rz)
-    const b2 = new THREE.Vector3(-rx, -ry, +rz)
-    const b3 = new THREE.Vector3(+rx, -ry, +rz)
-    const b4 = new THREE.Vector3(+rx, -ry, -rz)
-
-    const t1 = new THREE.Vector3(-rx, ry, -rz)
-    const t2 = new THREE.Vector3(-rx, ry, +rz)
-    const t3 = new THREE.Vector3(+rx, ry, +rz)
-    const t4 = new THREE.Vector3(+rx, ry, -rz)
-
-    const bottomPoints = [b1, b2, b3, b4, b1]
-    const topPoints = [t1, t2, t3, t4, t1]
-
-    const bottom = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(bottomPoints), m
+    const g = new THREE.BoxGeometry(
+      this.radius.x * 2,
+      this.radius.y * 2,
+      this.radius.z * 2
     )
-    const top = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(topPoints), m
-    )
-    const v1 = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([b1, t1]), m
-    )
-    const v2 = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([b2, t2]), m
-    )
-    const v3 = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([b3, t3]), m
-    )
-    const v4 = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([b4, t4]), m
-    )
-    this.obj.add(bottom)
-    this.obj.add(top)
-    this.obj.add(v1)
-    this.obj.add(v2)
-    this.obj.add(v3)
-    this.obj.add(v4)
+    const edges = new THREE.EdgesGeometry(g)
+    const line = new THREE.LineSegments(edges, m)
+    this.obj.add(line)
 
     if (showFace) {
       const m2 = new THREE.MeshPhongMaterial({
@@ -70,11 +39,6 @@ export class BoxHelper {
         transparent: true
       })
 
-      const g = new THREE.BoxGeometry(
-        this.radius.x * 2,
-        this.radius.y * 2,
-        this.radius.z * 2
-      )
       const box = new THREE.Mesh(g, m2)
       this.obj.add(box)
     }

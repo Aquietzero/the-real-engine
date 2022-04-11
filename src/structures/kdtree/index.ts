@@ -57,4 +57,27 @@ export class KDTree {
 
     return iter(objs, 0)
   }
+
+  traverse(
+    visitor: any,
+    contextWrapper: any = (node: KDNode, context: any) => context
+  ) {
+    const context = { level: 0, dir: 'root' }
+    const iter = (node: KDNode, context: any = {}) => {
+      if (!node) return
+
+      visitor(node, context)
+      iter(node.left, contextWrapper(node, {
+        ...context,
+        level: context.level + 1,
+        dir: 'left',
+      }))
+      iter(node.right, contextWrapper(node, {
+        ...context,
+        level: context.level + 1,
+        dir: 'right',
+      }))
+    }
+    iter(this.root, contextWrapper(this.root, context))
+  }
 }

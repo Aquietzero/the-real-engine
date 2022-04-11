@@ -1,5 +1,6 @@
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
+import { AXIS } from '@TRE/structures/types'
 
 export class AABB {
   public center: Vector3 = new Vector3()
@@ -8,6 +9,36 @@ export class AABB {
   constructor(center: Vector3 = new Vector3(), radius: Vector3 = new Vector3()) {
     this.center = center
     this.radius = radius
+  }
+
+  public clone(): AABB {
+    return new AABB(this.center, this.radius)
+  }
+
+  public clamp(axis: AXIS, minOrMax: 'min' | 'max', value: number): AABB  {
+    let min = this.center[axis] - this.radius[axis]
+    let max = this.center[axis] + this.radius[axis]
+
+    if (minOrMax === 'min') {
+      // if the min clamp value is smaller than the current min,
+      // then no clamp is needed.
+      if (value < min) return this.clone()
+      min = value
+    }
+    if (minOrMax === 'max') {
+      // if the max clamp value is larger than the current max,
+      // then no clamp is needed.
+      if (value > max) return this.clone()
+      max = value
+    }
+
+    const newCenter = this.center.clone()
+    const newRadius = this.radius.clone()
+
+    newCenter[axis] = (min + max) / 2
+    newRadius[axis] = (max - min) / 2
+
+    return new AABB(newCenter, newRadius)
   }
 
   public static mostSeparatedPoints(vs: Vector3[]): { min: Vector3, max: Vector3 } {
