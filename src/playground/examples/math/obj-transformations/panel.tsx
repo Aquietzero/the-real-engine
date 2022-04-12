@@ -75,19 +75,19 @@ export const Panel: React.FC<Props> = (props: Props) => {
           </div>
         }
       />
-      <SliderInput label="x 轴" scale={scales.x} setScale={setScale('x')} />
-      <SliderInput label="y 轴" scale={scales.y} setScale={setScale('y')} />
-      <SliderInput label="z 轴" scale={scales.z} setScale={setScale('z')} />
+      <SliderInput label="x 轴" value={scales.x} setValue={setScale('x')} />
+      <SliderInput label="y 轴" value={scales.y} setValue={setScale('y')} />
+      <SliderInput label="z 轴" value={scales.z} setValue={setScale('z')} />
 
       <Divider orientation="left">平移</Divider>
-      <SliderInput label="x 轴" min={-10} scale={translates.x} setScale={setTranslate('x')} />
-      <SliderInput label="y 轴" min={-10} scale={translates.y} setScale={setTranslate('y')} />
-      <SliderInput label="z 轴" min={-10} scale={translates.z} setScale={setTranslate('z')} />
+      <SliderInput label="x 轴" min={-10} value={translates.x} setValue={setTranslate('x')} />
+      <SliderInput label="y 轴" min={-10} value={translates.y} setValue={setTranslate('y')} />
+      <SliderInput label="z 轴" min={-10} value={translates.z} setValue={setTranslate('z')} />
 
       <Divider orientation="left">旋转</Divider>
-      <SliderInput label="x 轴" min={0} scale={rotates.x} setScale={setRotate('x')} />
-      <SliderInput label="y 轴" min={0} scale={rotates.y} setScale={setRotate('y')} />
-      <SliderInput label="z 轴" min={0} scale={rotates.z} setScale={setRotate('z')} />
+      <SliderInput label="x 轴" min={0} value={rotates.x} setValue={setRotate('x')} />
+      <SliderInput label="y 轴" min={0} value={rotates.y} setValue={setRotate('y')} />
+      <SliderInput label="z 轴" min={0} value={rotates.z} setValue={setRotate('z')} />
     </Drawer>
   )
 }

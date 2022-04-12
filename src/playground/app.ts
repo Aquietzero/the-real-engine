@@ -27,7 +27,7 @@ export class App {
     this.scene.add(this.ambientLight)
 
     // this.camera.up = new Vector3(0, 1, 0)
-    this.camera.position.set(15, 15, 15)
+    this.camera.position.set(12, 15, 18)
 
     this.renderer.setSize(innerWidth, innerHeight)
     this.renderer.setClearColor(new THREE.Color('rgb(0,0,0)'))
