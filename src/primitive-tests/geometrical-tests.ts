@@ -1,13 +1,28 @@
-import { Vector3, Determinant, EPSILON } from '@TRE/math'
+import { Vector2, Vector3, Determinant, EPSILON } from '@TRE/math'
 import { Point } from '@TRE/primitive'
 
 export enum ORIENT {
   CLOCKWISE,
   COUNTERCLOCKWISE,
+  COLLINEAR,
   COPLANAR,
 }
 
 export class GeometricalTests {
+  // if orient < 0
+  //    `abc` is in a clockwise order
+  public static orient2d(a: Vector2, b: Vector2, c: Vector2): ORIENT {
+    const orient = Determinant.ofMatrix3x3([
+      a.x, a.y, 1,
+      b.x, b.y, 1,
+      c.x, c.y, 1,
+    ])
+
+    if (orient === 0) return ORIENT.COLLINEAR
+    if (orient < 0) return ORIENT.CLOCKWISE
+    return ORIENT.COUNTERCLOCKWISE
+  }
+
   // if orient < 0
   //   `d` lies above the supporting plane of triangle `abc`, in the sense
   //   that `abc` appears in counterclockwise order when viewed from `d`.

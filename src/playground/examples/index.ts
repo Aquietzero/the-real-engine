@@ -2,7 +2,8 @@ import VectorsExample from './math/vectors'
 import ConnectedVectorsExample from './math/connected-vectors'
 import MatrixTransformationsExample from './math/matrix-transformations'
 import ObjTransformationsExample from './math/obj-transformations'
-import ConvexHullExample from './math/convex-hull'
+import ConvexHull2dExample from './math/convex-hull-2d'
+import ConvexHull3dExample from './math/convex-hull-3d'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
 import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
@@ -38,7 +39,8 @@ export default {
     ConnectedVectorsExample,
     MatrixTransformationsExample,
     ObjTransformationsExample,
-    ConvexHullExample,
+    ConvexHull2dExample,
+    ConvexHull3dExample,
   } as any,
   'bounding-volumes': {
     AABBOfPointsExample,

@@ -31,7 +31,6 @@ export default {
 
       const { showNormal, showPoints } = configs
 
-
       const polyhedron = Polyhedron.convexHull(points)
       const pHelper = new PolyhedronHelper(polyhedron)
       g.add(pHelper.obj)
@@ -61,23 +60,23 @@ export default {
       app.scene.add(g)
     }
 
-    Events.on('ConvexHullExample:numOfPoints', n => {
+    Events.on('ConvexHull3DExample:numOfPoints', n => {
       const { range } = configs
       points = _.times(n, () => new Point(random(range), random(range), random(range)))
       gen(points)
     })
 
-    Events.on('ConvexHullExample:showNormal', showNormal => {
+    Events.on('ConvexHull3DExample:showNormal', showNormal => {
       configs.showNormal = showNormal
       gen(points)
     })
 
-    Events.on('ConvexHullExample:showPoints', showPoints => {
+    Events.on('ConvexHull3DExample:showPoints', showPoints => {
       configs.showPoints = showPoints
       gen(points)
     })
 
-    Events.on('ConvexHullExample:range', range => {
+    Events.on('ConvexHull3DExample:range', range => {
       configs.range = range
       points = _.times(configs.n, () => new Point(random(range), random(range), random(range)))
       gen(points)
