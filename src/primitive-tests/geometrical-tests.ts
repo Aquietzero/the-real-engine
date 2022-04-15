@@ -1,11 +1,20 @@
-import { Vector2, Vector3, Determinant, EPSILON } from '@TRE/math'
-import { Point } from '@TRE/primitive'
+import {
+  Vector2, Vector3, Determinant,
+  EPSILON, PLANE_THICKNESS_EPSILON,
+} from '@TRE/math'
+import { Point, Plane } from '@TRE/primitive'
 
 export enum ORIENT {
   CLOCKWISE,
   COUNTERCLOCKWISE,
   COLLINEAR,
   COPLANAR,
+}
+
+export enum POSITION {
+  FRONT,
+  BEHIND,
+  INSIDE,
 }
 
 export class GeometricalTests {
@@ -44,5 +53,16 @@ export class GeometricalTests {
     const ac = c.sub(a)
     const cos = Vector3.dotProduct(ab, ac) / (ab.len()*ac.len())
     return 1 - Math.abs(cos) < EPSILON
+  }
+
+  public static classifyPointToPlane(v: Point, p: Plane): POSITION {
+    const dist = Vector3.dotProduct(p.n, v) - p.d
+    if (dist > PLANE_THICKNESS_EPSILON) {
+      return POSITION.FRONT
+    }
+    if (dist < -PLANE_THICKNESS_EPSILON) {
+      return POSITION.BEHIND
+    }
+    return POSITION.INSIDE
   }
 }

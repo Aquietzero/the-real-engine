@@ -30,6 +30,8 @@ import IntersectionOfLineAndTriangleExample from './primitive-tests/intersection
 import IntersectionOfSegmentAndTriangleExample from './primitive-tests/intersection-of-segment-and-triangle'
 import IntersectionOfPlaneAndPlaneExample from './primitive-tests/intersection-of-plane-and-plane'
 
+import ClassifyPointAndPlaneExample from './primitive-tests/classify-point-and-plane'
+
 import BVTreeExample from './bounding-volume-hierarchy/bvtree'
 import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 
@@ -68,6 +70,8 @@ export default {
     IntersectionOfLineAndTriangleExample,
     IntersectionOfSegmentAndTriangleExample,
     IntersectionOfPlaneAndPlaneExample,
+
+    ClassifyPointAndPlaneExample,
   },
   'bounding-volume-hierarchy': {
     BVTreeExample,

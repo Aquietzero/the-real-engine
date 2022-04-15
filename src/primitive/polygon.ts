@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 import { Vector2, Vector3 } from '@TRE/math'
-import { Point } from '@TRE/primitive'
+import { Plane, Point } from '@TRE/primitive'
 import { GeometricalTests, ORIENT } from '@TRE/primitive-tests'
 
 export class Polygon {
@@ -10,6 +10,14 @@ export class Polygon {
   constructor(vertices: Vector3[] = []) {
     this.vertices = vertices
   }
+
+  // splitByPlane(p: Plane): { front: Polygon, back: Polygon } {
+  //   const frontVertices = []
+  //   const backVertices = []
+
+  //   const a: Point = _.last(this.vertices)
+  //   const aSide = 
+  // }
 
   public static convexHull(vertices: Vector3[]): Polygon | null {
     if (vertices.length < 3) return

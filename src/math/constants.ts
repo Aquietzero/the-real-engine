@@ -13,3 +13,5 @@ export {
   ZERO_MATRIX,
   IDENTITY_MATRIX,
 } from './matrix4'
+
+export const PLANE_THICKNESS_EPSILON = 0.001
