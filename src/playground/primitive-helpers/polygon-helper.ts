@@ -42,7 +42,5 @@ export class PolygonHelper {
     const edges = new THREE.EdgesGeometry(g)
     const line = new THREE.LineSegments(edges, m)
     this.obj.add(line)
-
-    // this.obj.position.set(pos.x, pos.y, pos.z)
   }
 }

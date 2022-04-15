@@ -4,11 +4,17 @@ import { Plane, Point } from '@TRE/primitive'
 import { GeometricalTests, ORIENT } from '@TRE/primitive-tests'
 
 export class Polygon {
-  centroid: Vector3 = new Vector3()
   vertices: Vector3[] = []
 
   constructor(vertices: Vector3[] = []) {
     this.vertices = vertices
+  }
+
+  get centroid(): Vector3 {
+    const sum = _.reduce(this.vertices, (v, sum) => {
+      return sum.add(v)
+    }, new Vector3())
+    return sum.div(this.vertices.length)
   }
 
   // splitByPlane(p: Plane): { front: Polygon, back: Polygon } {
@@ -18,6 +24,19 @@ export class Polygon {
   //   const a: Point = _.last(this.vertices)
   //   const aSide = 
   // }
+  public static random(configs: any = {}): Polygon {
+    const { radius = 5, range = 5, n = 20 } = configs
+    const random = (r: number) => -r + Math.random() * 2*r
+    const e1 = new Point(random(radius), random(radius), random(radius)).normalize()
+    const e2 = new Point(random(radius), random(radius), random(radius)).normalize()
+    const pos = new Point(random(range), random(range), random(range))
+    const points = _.times(n, () => {
+      const c1 = random(radius)
+      const c2 = random(radius)
+      return e1.mul(c1).add(e2.mul(c2)).add(pos)
+    })
+    return Polygon.convexHull(points)
+  }
 
   public static convexHull(vertices: Vector3[]): Polygon | null {
     if (vertices.length < 3) return

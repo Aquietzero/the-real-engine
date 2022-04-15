@@ -31,6 +31,7 @@ import IntersectionOfSegmentAndTriangleExample from './primitive-tests/intersect
 import IntersectionOfPlaneAndPlaneExample from './primitive-tests/intersection-of-plane-and-plane'
 
 import ClassifyPointAndPlaneExample from './primitive-tests/classify-point-and-plane'
+import ClassifyPolygonAndPlaneExample from './primitive-tests/classify-polygon-and-plane'
 
 import BVTreeExample from './bounding-volume-hierarchy/bvtree'
 import KDTreeExample from './bounding-volume-hierarchy/kdtree'
@@ -43,13 +44,13 @@ export default {
     ObjTransformationsExample,
     ConvexHull2dExample,
     ConvexHull3dExample,
-  } as any,
+  },
   'bounding-volumes': {
     AABBOfPointsExample,
     AABBOfObjExample,
     SphereOfPointsExample,
     SphereOfObjExample,
-  } as any,
+  },
   'primitive-tests': {
     ClosestPointOnPlaneExample,
     ClosestPointOnSegmentExample,
@@ -72,6 +73,7 @@ export default {
     IntersectionOfPlaneAndPlaneExample,
 
     ClassifyPointAndPlaneExample,
+    ClassifyPolygonAndPlaneExample,
   },
   'bounding-volume-hierarchy': {
     BVTreeExample,

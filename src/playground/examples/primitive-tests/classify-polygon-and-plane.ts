@@ -2,9 +2,9 @@ import * as THREE from 'three'
 import * as _ from 'lodash'
 import { Vector3 } from '@TRE/math'
 import { GeometricalTests, POSITION } from '@TRE/primitive-tests'
-import { Point, Plane } from '@TRE/primitive'
+import { Polygon, Plane } from '@TRE/primitive'
 import {
-  CoordinateHelper, PointHelper, PlaneHelper,
+  CoordinateHelper, PolygonHelper, PlaneHelper,
 } from '@TRE/playground/primitive-helpers'
 
 export default {
@@ -15,16 +15,13 @@ export default {
     const c = new CoordinateHelper()
     g.add(c.obj)
 
-    const range = 3
-    const random = () => Math.floor(-range + Math.random() * 2*range)
-
-    const plane = new Plane(new Vector3(0, 1, 0), 1)
+    const plane = new Plane(new Vector3(0.3, 1, 0), -0.5)
     const planeHelper = new PlaneHelper(plane)
     g.add(planeHelper.obj)
 
-    _.times(20, () => {
-      const p = new Point(random(), random(), random())
-      const position = GeometricalTests.classifyPointToPlane(p, plane)
+    _.times(10, () => {
+      const polygon = Polygon.random({ radius: 1, range: 2 })
+      const position = GeometricalTests.classifyPolygonToPlane(polygon, plane)
 
       let color = 0x000000
       switch (position) {
@@ -34,13 +31,12 @@ export default {
         case POSITION.BEHIND:
           color = 0x0000ff
           break
-        case POSITION.INSIDE:
+        case POSITION.STRADDLING:
           color = 0x009900
           break
       }
-
-      const pHelper = new PointHelper(p, { color })
-      g.add(pHelper.obj)
+      const polygonHelper = new PolygonHelper(polygon, { color })
+      g.add(polygonHelper.obj)
     })
 
     app.scene.add(g)

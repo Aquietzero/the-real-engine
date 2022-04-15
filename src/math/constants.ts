@@ -14,4 +14,4 @@ export {
   IDENTITY_MATRIX,
 } from './matrix4'
 
-export const PLANE_THICKNESS_EPSILON = 0.001
+export const PLANE_THICKNESS_EPSILON = 0.00001

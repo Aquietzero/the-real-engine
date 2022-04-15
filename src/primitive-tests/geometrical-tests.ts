@@ -1,8 +1,9 @@
+import * as _ from 'lodash'
 import {
   Vector2, Vector3, Determinant,
   EPSILON, PLANE_THICKNESS_EPSILON,
 } from '@TRE/math'
-import { Point, Plane } from '@TRE/primitive'
+import { Point, Plane, Polygon } from '@TRE/primitive'
 
 export enum ORIENT {
   CLOCKWISE,
@@ -15,6 +16,8 @@ export enum POSITION {
   FRONT,
   BEHIND,
   INSIDE,
+  STRADDLING,
+  COPLANAR,
 }
 
 export class GeometricalTests {
@@ -55,8 +58,8 @@ export class GeometricalTests {
     return 1 - Math.abs(cos) < EPSILON
   }
 
-  public static classifyPointToPlane(v: Point, p: Plane): POSITION {
-    const dist = Vector3.dotProduct(p.n, v) - p.d
+  public static classifyPointToPlane(point: Point, plane: Plane): POSITION {
+    const dist = Vector3.dotProduct(plane.n, point) - plane.d
     if (dist > PLANE_THICKNESS_EPSILON) {
       return POSITION.FRONT
     }
@@ -64,5 +67,30 @@ export class GeometricalTests {
       return POSITION.BEHIND
     }
     return POSITION.INSIDE
+  }
+
+  public static classifyPolygonToPlane(polygon: Polygon, plane: Plane): POSITION {
+    let numOfVerticesFront = 0
+    let numOfVerticesBehind = 0
+    _.each(polygon.vertices, v => {
+      switch (GeometricalTests.classifyPointToPlane(v, plane)) {
+        case POSITION.FRONT:
+          numOfVerticesFront++
+          break
+        case POSITION.BEHIND:
+          numOfVerticesBehind++
+          break
+      }
+    })
+
+    if (numOfVerticesBehind != 0 && numOfVerticesFront != 0)
+      return POSITION.STRADDLING
+
+    if (numOfVerticesBehind != 0)
+      return POSITION.BEHIND
+    if (numOfVerticesFront != 0)
+      return POSITION.FRONT
+
+    return POSITION.COPLANAR
   }
 }
