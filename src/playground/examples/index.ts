@@ -4,6 +4,7 @@ import MatrixTransformationsExample from './math/matrix-transformations'
 import ObjTransformationsExample from './math/obj-transformations'
 import ConvexHull2dExample from './math/convex-hull-2d'
 import ConvexHull3dExample from './math/convex-hull-3d'
+import SplitPolygonByPlaneExample from './math/split-polygon-by-plane'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
 import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
@@ -44,6 +45,7 @@ export default {
     ObjTransformationsExample,
     ConvexHull2dExample,
     ConvexHull3dExample,
+    SplitPolygonByPlaneExample,
   },
   'bounding-volumes': {
     AABBOfPointsExample,

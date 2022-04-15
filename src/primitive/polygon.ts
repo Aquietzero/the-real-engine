@@ -1,7 +1,10 @@
 import * as _ from 'lodash'
 import { Vector2, Vector3 } from '@TRE/math'
-import { Plane, Point } from '@TRE/primitive'
-import { GeometricalTests, ORIENT } from '@TRE/primitive-tests'
+import { Plane, Point, Segment } from '@TRE/primitive'
+import {
+  Intersection,
+  GeometricalTests, ORIENT, POSITION,
+} from '@TRE/primitive-tests'
 
 export class Polygon {
   vertices: Vector3[] = []
@@ -17,13 +20,53 @@ export class Polygon {
     return sum.div(this.vertices.length)
   }
 
-  // splitByPlane(p: Plane): { front: Polygon, back: Polygon } {
-  //   const frontVertices = []
-  //   const backVertices = []
+  splitByPlane(p: Plane): { front: Polygon, back: Polygon } {
+    const frontVertices: Point[] = []
+    const backVertices: Point[] = []
+    const { classifyPointToPlane } = GeometricalTests
 
-  //   const a: Point = _.last(this.vertices)
-  //   const aSide = 
-  // }
+    let a: Point = _.last(this.vertices)
+    let aSide = classifyPointToPlane(a, p)
+
+    _.each(this.vertices, b => {
+      const bSide = classifyPointToPlane(b, p)
+      if (bSide === POSITION.FRONT) {
+        if (aSide === POSITION.BEHIND) {
+          const i = Intersection.ofSegmentAndPlane(new Segment(a, b), p)
+          // if (classifyPointToPlane(i, p) === POSITION.INSIDE)
+          //   throw Error('[Polygon.splitByPlane]: edge straddles')
+          frontVertices.push(i)
+          backVertices.push(i)
+        }
+        frontVertices.push(b)
+      } else if (bSide === POSITION.BEHIND) {
+        if (aSide === POSITION.FRONT) {
+          const i = Intersection.ofSegmentAndPlane(new Segment(a, b), p)
+          // if (classifyPointToPlane(i, p) === POSITION.INSIDE)
+          //   throw Error('[Polygon.splitByPlane]: edge straddles')
+          frontVertices.push(i)
+          backVertices.push(i)
+        } else if (aSide === POSITION.INSIDE) {
+          backVertices.push(a)
+        }
+        backVertices.push(b)
+      } else {
+        frontVertices.push(b)
+        if (aSide === POSITION.BEHIND) {
+          backVertices.push(b)
+        }
+      }
+
+      a = b
+      aSide = bSide
+    })
+
+    return {
+      front: new Polygon(frontVertices),
+      back: new Polygon(backVertices),
+    }
+  }
+
   public static random(configs: any = {}): Polygon {
     const { radius = 5, range = 5, n = 20 } = configs
     const random = (r: number) => -r + Math.random() * 2*r
