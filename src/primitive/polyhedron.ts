@@ -13,6 +13,23 @@ export class Polyhedron {
     this.faces = faces
   }
 
+  // Return a furthest point from given direction, which is called
+  // support point in the context of the GJK algorithm
+  public supportPoint(dir: Vector3): Vector3 {
+    let maxPoint: Vector3 = new Vector3()
+    let maxDistance = -Infinity
+
+    _.each(this.vertices, v => {
+      const d = Vector3.dotProduct(v, dir)
+      if (d > maxDistance) {
+        maxDistance = d
+        maxPoint = v
+      }
+    })
+
+    return maxPoint
+  }
+
   // initialize H = p1, p2, p3, p4
   // for i = 5 to n do:
   //   for each face f of H do:
@@ -126,4 +143,20 @@ export class Polyhedron {
       new Face3(p3, p1, p4),
     ])
   }
+
+  public static random(configs: any): Polyhedron {
+    const random = (range: number) => -range + Math.random() * 2*range
+    const {
+      radius = 5,
+      range = 5,
+      n = 20,
+    } = configs
+
+    const pos = new Point(random(range), random(range), random(range))
+    const points = _.times(n, () => {
+      return new Point(random(radius), random(radius), random(radius)).add(pos)
+    })
+    return Polyhedron.convexHull(points)
+  }
+
 }

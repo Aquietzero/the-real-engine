@@ -122,6 +122,10 @@ export class Vector3 {
   public static angleBetween(v1: Vector3, v2: Vector3): number {
     return Math.acos(Vector3.dotProduct(v1, v2) / (v1.len() * v2.len()))
   }
+
+  public static isSameDirection(v1: Vector3, v2: Vector3): boolean {
+    return Vector3.dotProduct(v1, v2) > 0
+  }
 }
 
 export const ORIGIN = new Vector3(0, 0, 0)

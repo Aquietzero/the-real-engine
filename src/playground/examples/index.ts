@@ -1,10 +1,12 @@
 import VectorsExample from './math/vectors'
+import QuaternionsExample from './math/quaternions'
 import ConnectedVectorsExample from './math/connected-vectors'
 import MatrixTransformationsExample from './math/matrix-transformations'
 import ObjTransformationsExample from './math/obj-transformations'
 import ConvexHull2dExample from './math/convex-hull-2d'
 import ConvexHull3dExample from './math/convex-hull-3d'
 import SplitPolygonByPlaneExample from './math/split-polygon-by-plane'
+import TheGJKAlgorithmExample from './math/the-gjk-algorithm'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
 import AABBOfObjExample from './bounding-volumes/aabb-of-obj'
@@ -40,12 +42,14 @@ import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 export default {
   'math': {
     VectorsExample,
+    QuaternionsExample,
     ConnectedVectorsExample,
     MatrixTransformationsExample,
     ObjTransformationsExample,
     ConvexHull2dExample,
     ConvexHull3dExample,
     SplitPolygonByPlaneExample,
+    TheGJKAlgorithmExample,
   },
   'bounding-volumes': {
     AABBOfPointsExample,
