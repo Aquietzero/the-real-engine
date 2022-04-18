@@ -26,21 +26,21 @@ export default {
     app.scene.add(g)
 
     Events.on('scale', ({ x, y, z }) => {
-      const scale = Matrix4.makeFromScale(x, y, z)
+      const scale = Matrix4.fromScale(x, y, z)
       const m4 = new THREE.Matrix4()
       m4.set(...scale.e)
       box2.obj.applyMatrix4(m4)
     })
 
     Events.on('translate', ({ x, y, z }) => {
-      const translate = Matrix4.makeFromTranslate(x, y, z)
+      const translate = Matrix4.fromTranslate(x, y, z)
       const m4 = new THREE.Matrix4()
       m4.set(...translate.e)
       box2.obj.applyMatrix4(m4)
     })
 
     Events.on('rotate', ({ x, y, z }) => {
-      const rotate = Matrix4.makeFromRotate(x, y, z)
+      const rotate = Matrix4.fromRotate(x, y, z)
       const m4 = new THREE.Matrix4()
       m4.set(...rotate.e)
       box2.obj.applyMatrix4(m4)

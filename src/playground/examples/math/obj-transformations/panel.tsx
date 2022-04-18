@@ -12,6 +12,7 @@ export const Panel: React.FC<Props> = (props: Props) => {
   const [scales, setScales] = useState({ x: 1, y: 1, z: 1 })
   const [translates, setTranslates] = useState({ x: 0, y: 0, z: 0 })
   const [rotates, setRotates] = useState({ x: 0, y: 0, z: 0 })
+  const [dir, setDir] = useState({ x: 0, y: 0, z: 5 })
   const [lockScaleRatio, setLockScaleRatio] = useState(false)
 
   const setScale = (d: 'x' | 'y' | 'z') => {
@@ -42,6 +43,14 @@ export const Panel: React.FC<Props> = (props: Props) => {
       const dt = { ...{ x: 0, y: 0, z: 0 }, [d]: value - rotates[d] }
       setRotates({ ...rotates, [d]: value })
       Events.emit('rotate', dt)
+    }
+  }
+
+  const setDirVector = (d: 'x' | 'y' | 'z') => {
+    return (value: number) => {
+      const newDir = { ...dir, [d]: value }
+      setDir(newDir)
+      Events.emit('dir', newDir)
     }
   }
 
@@ -88,6 +97,11 @@ export const Panel: React.FC<Props> = (props: Props) => {
       <SliderInput label="x 轴" min={0} value={rotates.x} setValue={setRotate('x')} />
       <SliderInput label="y 轴" min={0} value={rotates.y} setValue={setRotate('y')} />
       <SliderInput label="z 轴" min={0} value={rotates.z} setValue={setRotate('z')} />
+
+      <Divider orientation="left">方向向量</Divider>
+      <SliderInput label="x 轴" min={-5} max={5} value={dir.x} setValue={setDirVector('x')} />
+      <SliderInput label="y 轴" min={-5} max={5} value={dir.y} setValue={setDirVector('y')} />
+      <SliderInput label="z 轴" min={-5} max={5} value={dir.z} setValue={setDirVector('z')} />
     </Drawer>
   )
 }

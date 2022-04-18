@@ -1,3 +1,5 @@
+import { Vector3, EPSILON } from './vector3'
+
 export type Matrix4Elements = [
   number, number, number, number,
   number, number, number, number,
@@ -20,6 +22,10 @@ export class Matrix4 {
         throw Error('[Matrix4.constructor]: 4x4 matrix accepts only 16 elements.')
       this.e = e
     }
+  }
+
+  public clone(): Matrix4 {
+    return new Matrix4([...this.e])
   }
 
   public add(m: Matrix4): Matrix4 {
@@ -86,7 +92,7 @@ export class Matrix4 {
       && this.e[15] === m.e[15]
   }
 
-  public static makeFromScale(x: number, y: number, z: number) {
+  public static fromScale(x: number, y: number, z: number): Matrix4 {
     return new Matrix4([
       x, 0, 0, 0,
       0, y, 0, 0,
@@ -95,7 +101,7 @@ export class Matrix4 {
     ])
   }
 
-  public static makeFromTranslate(x: number, y: number, z: number) {
+  public static fromTranslate(x: number, y: number, z: number): Matrix4 {
     return new Matrix4([
       1, 0, 0, x,
       0, 1, 0, y,
@@ -104,11 +110,26 @@ export class Matrix4 {
     ])
   }
 
-  public static makeFromRotate(x: number, y: number, z: number) {
+  public static fromRotate(x: number, y: number, z: number): Matrix4 {
     return new Matrix4([
       Math.cos(y)*Math.cos(z), Math.sin(z), Math.sin(y), 0,
       -Math.sin(z), Math.cos(x)*Math.cos(z), Math.sin(x), 0,
       -Math.sin(y), -Math.sin(x), Math.cos(x)*Math.cos(y), 0,
+      0, 0, 0, 1,
+    ])
+  }
+
+  // rotation matrix from v1 to v2
+  public static fromDirToDir(d1: Vector3, d2: Vector3): Matrix4 {
+    const e1 = d1.normalize()
+    const e2 = d2.normalize()
+    const v = Vector3.crossProduct(e1, e2)
+    const e = Vector3.dotProduct(e1, e2)
+    const h = 1/(1 + e)
+    return new Matrix4([
+      e + h*v.x*v.x, h*v.x*v.y - v.z, h*v.x*v.z + v.y, 0,
+      h*v.x*v.y + v.z, e + h*v.y*v.y, h*v.y*v.z - v.x, 0,
+      h*v.x*v.z - v.y, h*v.y*v.z + v.x, e + h*v.z*v.z, 0,
       0, 0, 0, 1,
     ])
   }

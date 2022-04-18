@@ -1,7 +1,7 @@
 import * as THREE from 'three'
-import { Matrix4 } from '@TRE/math'
 import { Events } from '@TRE/core/events'
-import { CoordinateHelper } from '@TRE/playground/primitive-helpers'
+import { Vector3, Matrix4, ORIGIN, EPSILON } from '@TRE/math'
+import { CoordinateHelper, RayHelper } from '@TRE/playground/primitive-helpers'
 import ModelsManager from '@TRE/playground/lib/models-manager'
 import { Panel } from './panel'
 
@@ -19,6 +19,9 @@ export default {
     g.add(light)
 
     let mario: THREE.Object3D
+    let dir: Vector3 = new Vector3(0, 0, 5)
+    let dirHelper = new RayHelper(ORIGIN, dir)
+    g.add(dirHelper.obj)
 
     ModelsManager.load('Mario', (obj: THREE.Object3D) => {
       mario = obj
@@ -41,24 +44,46 @@ export default {
     app.scene.add(g)
 
     Events.on('scale', ({ x, y, z }) => {
-      const scale = Matrix4.makeFromScale(x, y, z)
+      const scale = Matrix4.fromScale(x, y, z)
       const m4 = new THREE.Matrix4()
       m4.set(...scale.e)
       mario.applyMatrix4(m4)
     })
 
     Events.on('translate', ({ x, y, z }) => {
-      const translate = Matrix4.makeFromTranslate(x, y, z)
+      const translate = Matrix4.fromTranslate(x, y, z)
       const m4 = new THREE.Matrix4()
       m4.set(...translate.e)
       mario.applyMatrix4(m4)
     })
 
     Events.on('rotate', ({ x, y, z }) => {
-      const rotate = Matrix4.makeFromRotate(x, y, z)
+      const rotate = Matrix4.fromRotate(x, y, z)
       const m4 = new THREE.Matrix4()
       m4.set(...rotate.e)
       mario.applyMatrix4(m4)
+    })
+
+    Events.on('dir', ({ x, y, z }) => {
+      g.remove(dirHelper.obj)
+
+      // render new dir
+      const newDir = new Vector3(x, y, z)
+      dirHelper = new RayHelper(ORIGIN, newDir)
+      g.add(dirHelper.obj)
+
+      if (Vector3.angleBetween(dir, newDir) < EPSILON) return
+
+      // rotate
+      const rotate = Matrix4.fromDirToDir(dir, newDir)
+      const m4 = new THREE.Matrix4()
+      m4.set(...rotate.e)
+      mario.applyMatrix4(m4)
+
+      // update dir
+      dir.x = x
+      dir.y = y
+      dir.z = z
     })
 
     return g
