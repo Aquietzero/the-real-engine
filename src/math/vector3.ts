@@ -1,3 +1,5 @@
+import { Matrix4 } from './matrix4'
+
 // Vector in 3d Euclidean space.
 export class Vector3 {
   public x: number = 0
@@ -97,6 +99,14 @@ export class Vector3 {
 
   public equalTo(v: Vector3): boolean {
     return this.x === v.x && this.y === v.y && this.z === v.z
+  }
+
+  public applyMatrix4(m4: Matrix4): Vector3 {
+    return new Vector3(
+      m4.e[0]*this.x + m4.e[1]*this.y + m4.e[2]*this.z + m4.e[3],
+      m4.e[4]*this.x + m4.e[5]*this.y + m4.e[6]*this.z + m4.e[7],
+      m4.e[8]*this.x + m4.e[9]*this.y + m4.e[10]*this.z + m4.e[11]
+    )
   }
 
   public static dotProduct(v1: Vector3, v2: Vector3): number {
