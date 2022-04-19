@@ -16,16 +16,12 @@ export class GJK {
     let dir = a.negate()
     let simplex: Simplex = a
 
-    let counter = 0
-    while (counter < 100) {
-      counter++
-
+    while (true) {
       let b = GJK.support(p1, p2, dir)
 
       if (dot(b, dir) <= 0) return false
       const next = GJK.nextSimplex(simplex, b, dir)
       if (next.passOrigin) return true
-      console.log('mext', dir, next.dir)
       simplex = next.s
       dir = next.dir
     }
@@ -36,20 +32,19 @@ export class GJK {
   }
 
   public static nextSimplex(s: any, p: Point, dir: Vector3) {
-    console.log(s, '---')
     // s is point
     if (_.isUndefined(s.b)) {
-      return GJK.nextSimplexFromLine(new Segment(s, p), dir)
+      return GJK.nextSimplexFromLine(new Segment(p, s), dir)
     }
     // s is segment
     if (_.isUndefined(s.c)) {
       return GJK.nextSimplexFromTriangle(
-        new Triangle(s.a, s.b, p), dir
+        new Triangle(p, s.a, s.b), dir
       )
     }
     // s is triangle
     return GJK.nextSimplexFromTetrahedron(
-      new Tetrahedron(s.a, s.b, s.c, p), dir
+      new Tetrahedron(p, s.a, s.b, s.c), dir
     )
   }
 
@@ -58,7 +53,6 @@ export class GJK {
     dir: Vector3,
     passOrigin: boolean,
   } {
-    console.log(s, s.a, 'line ===')
     const ab = s.b.sub(s.a)
     const ao = s.a.negate()
     let newDir = dir
@@ -70,7 +64,6 @@ export class GJK {
       newDir = ao
       simplex = s.a
     }
-    console.log(isSameDirection(ab, ao), newDir, dir, 'ssssss')
     return { s: simplex, dir: newDir, passOrigin: false }
   }
 
@@ -79,7 +72,6 @@ export class GJK {
     dir: Vector3,
     passOrigin: boolean,
   } {
-    console.log(t, t.a, 'triangle ===')
     const { a, b, c } = t
     const ab = b.sub(a)
     const ac = c.sub(a)
@@ -116,7 +108,6 @@ export class GJK {
     dir: Vector3,
     passOrigin: boolean,
   } {
-    console.log(t, t.a, 'tetrahedron ===')
     const { a, b, c, d } = t
     const ab = b.sub(a)
     const ac = c.sub(a)
