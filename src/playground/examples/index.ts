@@ -6,6 +6,7 @@ import ObjTransformationsExample from './math/obj-transformations'
 import ConvexHull2dExample from './math/convex-hull-2d'
 import ConvexHull3dExample from './math/convex-hull-3d'
 import SplitPolygonByPlaneExample from './math/split-polygon-by-plane'
+import FurthestPointByDirectionExample from './math/furthest-point-by-direction'
 import TheGJKAlgorithmExample from './math/the-gjk-algorithm'
 
 import AABBOfPointsExample from './bounding-volumes/aabb-of-points'
@@ -49,6 +50,7 @@ export default {
     ConvexHull2dExample,
     ConvexHull3dExample,
     SplitPolygonByPlaneExample,
+    FurthestPointByDirectionExample,
     TheGJKAlgorithmExample,
   },
   'bounding-volumes': {
