@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as _ from 'lodash'
+import * as Key from 'keymaster'
 import cx from 'classnames'
 import { Vector2 } from '@TRE/math'
 import { bestFirstSearch, bestFirstSearchGenerator } from '@TRE/search'
@@ -19,26 +20,30 @@ const Map2D: React.FC = () => {
   const [ frontier, setFrontier ] = useState()
   const [ reached, setReached ] = useState()
   const [ solution, setSolution ] = useState([])
+  const [ barrier, setBarrier ] = useState({} as any)
 
   const getGridType = (row: number, col: number) => {
     if (row === initial.state.y && col === initial.state.x) return 'initial'
     if (row === goal.state.y && col === goal.state.x) return 'goal'
 
     const id = `${col}-${row}`
+    if (barrier[id]) return 'barrier'
     if (_.includes(solution, id)) return 'solution'
     if (frontier && _.find((frontier as any).nodes || [], { id })) return 'frontier'
     if (reached && reached[id]) return 'reached'
     return 'normal'
   }
 
-  useLayoutEffect(() => {
+  const run = () => {
+    problem.setBarrier(barrier)
     const gen = bestFirstSearchGenerator(problem, distFunc)
-    setInterval(() => {
+    const timerId = setInterval(() => {
       const next = gen.next()
       if (next.done) {
         const result = bestFirstSearch(problem, distFunc)
         const solution = MapSearch2D.getSolution(result)
         setSolution(solution)
+        clearInterval(timerId)
         return
       }
 
@@ -46,6 +51,25 @@ const Map2D: React.FC = () => {
       setFrontier({ ...f })
       setReached({ ...r })
     }, 10)
+  }
+
+  const replay = () => {
+    setFrontier(null)
+    setReached(null)
+    setSolution([])
+    run()
+  }
+
+  const Operations = () => {
+    return (
+      <div className="flex flex-row">
+        <div onClick={e => replay()}>replay</div>
+      </div>
+    )
+  }
+
+  useLayoutEffect(() => {
+    run()
   }, [])
 
   return <>
@@ -63,6 +87,7 @@ const Map2D: React.FC = () => {
                   type === 'solution' && 'bg-blue-500',
                   type === 'reached' && 'bg-slate-200',
                   type === 'frontier' && 'bg-slate-300',
+                  type === 'barrier' && 'bg-black',
                 )}
                 style={{
                   width: 20,
@@ -70,12 +95,21 @@ const Map2D: React.FC = () => {
                   margin: '-1px 0 0 -1px',
                   border: 'solid 1px black',
                 }}
+                onMouseEnter={e => {
+                  if (!Key.isPressed('b')) return
+
+                  const id = `${col}-${row}`
+                  if (barrier[id]) delete barrier[id]
+                  else barrier[id] = true
+                  setBarrier({ ...barrier })
+                }}
               />
             )
           })}
         </div>
       )
     })}
+    <Operations />
   </>
 }
 
