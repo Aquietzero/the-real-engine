@@ -10,7 +10,7 @@ export function bestFirstSearch<State extends StateNode>(
   const frontier = new PriorityQueue<State>(f)
   frontier.push(node)
   const reached: any = {}
-  reached[node.id] = node
+  reached[node.id] = true
 
   while (!frontier.isEmpty) {
     node = frontier.shift()
@@ -22,9 +22,35 @@ export function bestFirstSearch<State extends StateNode>(
       if (problem.isGoal(child)) return child
       if (!reached[child.id]) {
         frontier.add(child)
-        frontier.log()
-        reached[child.id] = child
+        reached[child.id] = true
       }
+    }
+  }
+}
+
+export function* bestFirstSearchGenerator<State extends StateNode>(
+  problem: Problem<State>, f: any
+) {
+  let node = problem.initial
+  const frontier = new PriorityQueue<State>(f)
+  frontier.push(node)
+  const reached: any = {}
+  reached[node.id] = true
+
+  while (!frontier.isEmpty) {
+    node = frontier.shift()
+    if (problem.isGoal(node)) return node
+
+    const children = problem.expand(node)
+    for (let i = 0; i < children.length; ++i) {
+      const child = children[i]
+      if (problem.isGoal(child)) return child
+      if (!reached[child.id]) {
+        frontier.add(child)
+        reached[child.id] = true
+      }
+
+      yield { frontier, reached }
     }
   }
 }

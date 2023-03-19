@@ -19,4 +19,10 @@ export class Vector2 {
   public manhattanDistance2(v: Vector2): number {
     return Math.abs(this.x - v.x) + Math.abs(this.y - v.y)
   }
+
+  public euclideanDistance2(v: Vector2): number {
+    return Math.sqrt(
+      (this.x - v.x) * (this.x - v.x) +
+      (this.y - v.y) * (this.y - v.y))
+  }
 }
