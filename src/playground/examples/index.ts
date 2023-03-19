@@ -40,6 +40,8 @@ import ClassifyPolygonAndPlaneExample from './primitive-tests/classify-polygon-a
 import BVTreeExample from './bounding-volume-hierarchy/bvtree'
 import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 
+import Map2DExample from './search/map-2d'
+
 export default {
   'math': {
     VectorsExample,
@@ -86,5 +88,8 @@ export default {
   'bounding-volume-hierarchy': {
     BVTreeExample,
     KDTreeExample,
+  },
+  'search': {
+    Map2DExample,
   }
 }

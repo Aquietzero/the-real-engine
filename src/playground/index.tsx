@@ -21,6 +21,9 @@ export const Playground: React.FC<Props> = (props: Props) => {
   }
 
   useEffect(() => {
+    // not an threejs example 
+    if (example.notCanvas) return
+
     if (!app) {
       app = new App()
     }
@@ -29,7 +32,7 @@ export const Playground: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <canvas id="main-canvas" />
+      {example.notCanvas ? example.run() : <canvas id="main-canvas" />}
       <Nav />
       <Panel />
     </>

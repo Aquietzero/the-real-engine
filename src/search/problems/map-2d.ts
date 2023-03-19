@@ -1,15 +1,14 @@
 import * as _ from 'lodash'
-import { expect } from 'chai'
-import { Problem, StateNode, Action, bestFirstSearch } from '@TRE/search'
+import { Problem, StateNode, Action } from '@TRE/search'
 import { Vector2 } from '@TRE/math/vector2'
 
-class MapSearch2DState extends StateNode {
+export class MapSearch2DState extends StateNode {
   getId(): string {
     return `${this.state.x}-${this.state.y}`
   }
 }
 
-class MapSearch2D extends Problem<MapSearch2DState> {
+export class MapSearch2D extends Problem<MapSearch2DState> {
   initial: MapSearch2DState
   goal: MapSearch2DState
   actions: Action[]
@@ -77,17 +76,3 @@ class MapSearch2D extends Problem<MapSearch2DState> {
     return newNode
   }
 }
-
-describe('Search', () => {
-  describe('#bestFirst', () => {
-    const initial = new MapSearch2DState({ state: new Vector2(2, 2) })
-    const goal = new MapSearch2DState({ state: new Vector2(4, 2) })
-    const problem = new MapSearch2D(5, 5, initial, goal)
-    const f = (node: StateNode): number => {
-      return node.state.manhattanDistance2(goal.state)
-    }
-    const result = bestFirstSearch(problem, f)
-    const solution = MapSearch2D.getSolution(result)
-    expect(solution).to.deep.equal(['2-2', '3-2', '4-2'])
-  })
-})
