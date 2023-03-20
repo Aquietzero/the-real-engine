@@ -3,10 +3,17 @@ import * as _ from 'lodash'
 import * as Key from 'keymaster'
 import cx from 'classnames'
 import { Vector2 } from '@TRE/math'
-import { bestFirstSearch, bestFirstSearchGenerator } from '@TRE/search'
+import { SearchAlgorithms } from '@TRE/search'
 import { MapSearch2DState, MapSearch2D } from '@TRE/search/problems/map-2d'
+import { Events } from '@TRE/core/events'
+import { Panel } from './panel'
 
-const { useState, useLayoutEffect } = React
+const { useState, useEffect, useLayoutEffect, useCallback } = React
+
+const distanceFunctions = {
+  manhattan: 'manhattanDistance2',
+  euclidean: 'euclideanDistance2',
+}
 
 const Map2D: React.FC = () => {
   const width = 30
@@ -14,13 +21,14 @@ const Map2D: React.FC = () => {
   const initial = new MapSearch2DState({ state: new Vector2(2, 2) })
   const goal = new MapSearch2DState({ state: new Vector2(20, 17) })
   const problem = new MapSearch2D(width, height, initial, goal)
-  const distFunc = (node: MapSearch2DState): number => {
-    return node.state.euclideanDistance2(goal.state)
-  }
   const [ frontier, setFrontier ] = useState()
   const [ reached, setReached ] = useState()
   const [ solution, setSolution ] = useState([])
   const [ barrier, setBarrier ] = useState({} as any)
+  const [ algoConfigs, setAlgoConfigs ] = useState({
+    distance: 'manhattan',
+    strategy: 'aStar',
+  })
 
   const getGridType = (row: number, col: number) => {
     if (row === initial.state.y && col === initial.state.x) return 'initial'
@@ -34,13 +42,39 @@ const Map2D: React.FC = () => {
     return 'normal'
   }
 
-  const run = () => {
+  const genAlgo = useCallback(() => {
+    let algo
+    const distFunc = (distanceFunctions as any)[algoConfigs.distance]
+    switch (algoConfigs.strategy) {
+      case 'aStar':
+        algo = (node: MapSearch2DState): number => {
+          return node.state[distFunc](initial.state) +
+            node.state[distFunc](goal.state)
+        }
+      break
+      case 'dijkstras':
+        algo = (node: MapSearch2DState): number => {
+          return node.state[distFunc](initial.state)
+        }
+      break
+      case 'bestFirst':
+        algo = (node: MapSearch2DState): number => {
+          return node.state[distFunc](goal.state)
+        }
+      break
+    }
+    return algo
+  }, [algoConfigs])
+
+  const run = useCallback(() => {
+    const algo = genAlgo()
+
     problem.setBarrier(barrier)
-    const gen = bestFirstSearchGenerator(problem, distFunc)
+    const gen = SearchAlgorithms.bestFirstSearchGenerator(problem, algo)
     const timerId = setInterval(() => {
       const next = gen.next()
       if (next.done) {
-        const result = bestFirstSearch(problem, distFunc)
+        const result = SearchAlgorithms.bestFirstSearch(problem, algo)
         const solution = MapSearch2D.getSolution(result)
         setSolution(solution)
         clearInterval(timerId)
@@ -50,27 +84,24 @@ const Map2D: React.FC = () => {
       const { frontier: f, reached: r } = next.value as any
       setFrontier({ ...f })
       setReached({ ...r })
-    }, 10)
-  }
+    })
+  }, [barrier, genAlgo])
 
-  const replay = () => {
+  const replay = useCallback(() => {
     setFrontier(null)
     setReached(null)
     setSolution([])
     run()
-  }
+  }, [run])
 
-  const Operations = () => {
-    return (
-      <div className="flex flex-row">
-        <div onClick={e => replay()}>replay</div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    Events.removeAllListeners()
 
-  useLayoutEffect(() => {
-    run()
-  }, [])
+    Events.on('AI:Search:Configs', configs => {
+      setAlgoConfigs({ ...algoConfigs, ...configs })
+    })
+    Events.on('AI:Search:Run', replay)
+  }, [replay])
 
   return <>
     {_.times(height, row => {
@@ -109,13 +140,13 @@ const Map2D: React.FC = () => {
         </div>
       )
     })}
-    <Operations />
   </>
 }
 
 export default {
   description: '2d map search algorithms.',
   notCanvas: true,
+  panel: Panel,
   run(app: any) {
     return (
       <div className="w-full h-full flex items-center justify-center">

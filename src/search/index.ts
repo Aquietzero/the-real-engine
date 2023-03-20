@@ -3,4 +3,9 @@ export * from './problem'
 export * from './state-node'
 export * from './priority-queue'
 
-export * from './best-first'
+import { bestFirstSearch, bestFirstSearchGenerator } from './algorithms/best-first'
+
+export const SearchAlgorithms = {
+  bestFirstSearch,
+  bestFirstSearchGenerator,
+}

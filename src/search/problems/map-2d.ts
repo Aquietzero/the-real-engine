@@ -80,7 +80,6 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
 
   down(node: MapSearch2DState): MapSearch2DState | null {
     const newNode = new MapSearch2DState({ state: new Vector2(node.state.x, node.state.y + 1) })
-    console.log(this.barrier, newNode.getId())
     if (this.isOutside(newNode)) return
     if (this.barrier[newNode.getId()]) return
     return newNode
