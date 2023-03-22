@@ -19,11 +19,6 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
   barrier: any = {}
   allowDiagonal: boolean = true
 
-  up: any
-  left: any
-  right: any
-  down: any
-
   constructor(
     width: number, height: number,
     initial: MapSearch2DState, goal: MapSearch2DState,

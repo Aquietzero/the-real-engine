@@ -41,6 +41,7 @@ import BVTreeExample from './bounding-volume-hierarchy/bvtree'
 import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 
 import Map2DExample from './search/map-2d'
+import EightPuzzleExample from './search/eight-puzzle'
 
 export default {
   'math': {
@@ -91,5 +92,6 @@ export default {
   },
   'search': {
     Map2DExample,
+    EightPuzzleExample,
   }
 }

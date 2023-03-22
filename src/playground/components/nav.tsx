@@ -11,7 +11,8 @@ export const Nav: React.FC<Props> = (props: Props) => {
   const { example: currExample } = useParams()
 
   const formatName = (name: string) => {
-    return _.snakeCase(name.replace('Example', '')).replace(/_/g, ' ')
+    const snakeCase = _.snakeCase(name.replace('Example', '')).replace(/_/g, ' ')
+    return snakeCase.replace('2 d', '2D').replace('3 d', '3D')
   }
 
   return (
