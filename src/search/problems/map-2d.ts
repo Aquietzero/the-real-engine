@@ -17,6 +17,12 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
   width: number
   height: number
   barrier: any = {}
+  allowDiagonal: boolean = true
+
+  up: any
+  left: any
+  right: any
+  down: any
 
   constructor(
     width: number, height: number,
@@ -27,12 +33,8 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
     this.height = height
     this.initial = initial
     this.goal = goal
-    this.actions = [
-      this.up.bind(this),
-      this.left.bind(this),
-      this.right.bind(this),
-      this.down.bind(this),
-    ]
+
+    this.setAllowDiagonal(this.allowDiagonal)
   }
 
   isGoal(node: MapSearch2DState): boolean {
@@ -41,6 +43,21 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
 
   setBarrier(barrier: any) {
     this.barrier = barrier
+  }
+
+  setAllowDiagonal(allowDiagonal: boolean) {
+    this.allowDiagonal = allowDiagonal
+    this.actions = _.union([
+      this.move(new Vector2(0, -1)), // up
+      this.move(new Vector2(-1, 0)), // left
+      this.move(new Vector2(1, 0)),  // right
+      this.move(new Vector2(0, 1)),  // down
+    ], this.allowDiagonal ? [
+      this.move(new Vector2(-1, -1)), // up left
+      this.move(new Vector2(-1, 1)), // down left
+      this.move(new Vector2(1, -1)), // up right
+      this.move(new Vector2(1, 1)), // down right
+    ] : [])
   }
 
   result(node: MapSearch2DState, action: Action): MapSearch2DState {
@@ -57,31 +74,11 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
     return false
   }
 
-  up(node: MapSearch2DState): MapSearch2DState | null {
-    const newNode = new MapSearch2DState({ state: new Vector2(node.state.x, node.state.y - 1) })
-    if (this.isOutside(newNode)) return
-    if (this.barrier[newNode.getId()]) return
-    return newNode
-  }
-
-  left(node: MapSearch2DState): MapSearch2DState | null {
-    const newNode = new MapSearch2DState({ state: new Vector2(node.state.x - 1, node.state.y) })
-    if (this.isOutside(newNode)) return
-    if (this.barrier[newNode.getId()]) return
-    return newNode
-  }
-
-  right(node: MapSearch2DState): MapSearch2DState | null {
-    const newNode = new MapSearch2DState({ state: new Vector2(node.state.x + 1, node.state.y) })
-    if (this.isOutside(newNode)) return
-    if (this.barrier[newNode.getId()]) return
-    return newNode
-  }
-
-  down(node: MapSearch2DState): MapSearch2DState | null {
-    const newNode = new MapSearch2DState({ state: new Vector2(node.state.x, node.state.y + 1) })
-    if (this.isOutside(newNode)) return
-    if (this.barrier[newNode.getId()]) return
-    return newNode
+  move(dir: Vector2) {
+    return (node: MapSearch2DState) => {
+      const newNode = new MapSearch2DState({ state: new Vector2(node.state.x, node.state.y).add(dir) })
+      if (this.isOutside(newNode) || this.barrier[newNode.getId()]) return
+      return newNode
+    }
   }
 }

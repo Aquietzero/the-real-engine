@@ -16,6 +16,13 @@ export class Vector2 {
     return new Vector2(this.x, this.y)
   }
 
+  public add(v: Vector2): Vector2 {
+    return new Vector2(
+      this.x + v.x,
+      this.y + v.y
+    )
+  }
+
   public manhattanDistance2(v: Vector2): number {
     return Math.abs(this.x - v.x) + Math.abs(this.y - v.y)
   }

@@ -1,14 +1,13 @@
 import * as React from 'react'
 import * as _ from 'lodash'
-import * as Key from 'keymaster'
-import cx from 'classnames'
 import { Vector2 } from '@TRE/math'
 import { SearchAlgorithms } from '@TRE/search'
 import { MapSearch2DState, MapSearch2D } from '@TRE/search/problems/map-2d'
 import { Events } from '@TRE/core/events'
 import { Panel } from './panel'
+import { Grid } from './grid'
 
-const { useState, useEffect, useLayoutEffect, useCallback } = React
+const { useState, useEffect, useCallback, memo} = React
 
 const distanceFunctions = {
   manhattan: 'manhattanDistance2',
@@ -16,10 +15,10 @@ const distanceFunctions = {
 }
 
 const Map2D: React.FC = () => {
-  const width = 30
-  const height = 30
+  const width = 40
+  const height = 40
   const initial = new MapSearch2DState({ state: new Vector2(2, 2) })
-  const goal = new MapSearch2DState({ state: new Vector2(20, 17) })
+  const goal = new MapSearch2DState({ state: new Vector2(30, 20) })
   const problem = new MapSearch2D(width, height, initial, goal)
   const [ frontier, setFrontier ] = useState()
   const [ reached, setReached ] = useState()
@@ -28,6 +27,8 @@ const Map2D: React.FC = () => {
   const [ algoConfigs, setAlgoConfigs ] = useState({
     distance: 'manhattan',
     strategy: 'aStar',
+    allowDiagonal: true,
+    weight: 1,
   })
 
   const getGridType = (row: number, col: number) => {
@@ -49,7 +50,7 @@ const Map2D: React.FC = () => {
       case 'aStar':
         algo = (node: MapSearch2DState): number => {
           return node.state[distFunc](initial.state) +
-            node.state[distFunc](goal.state)
+            algoConfigs.weight * node.state[distFunc](goal.state)
         }
       break
       case 'dijkstras':
@@ -62,6 +63,11 @@ const Map2D: React.FC = () => {
           return node.state[distFunc](goal.state)
         }
       break
+      case 'breadthFirst':
+        algo = (node: MapSearch2DState): number => {
+          return 0
+        }
+      break
     }
     return algo
   }, [algoConfigs])
@@ -70,6 +76,7 @@ const Map2D: React.FC = () => {
     const algo = genAlgo()
 
     problem.setBarrier(barrier)
+    problem.setAllowDiagonal(algoConfigs.allowDiagonal)
     const gen = SearchAlgorithms.bestFirstSearchGenerator(problem, algo)
     const timerId = setInterval(() => {
       const next = gen.next()
@@ -103,39 +110,15 @@ const Map2D: React.FC = () => {
     Events.on('AI:Search:Run', replay)
   }, [replay])
 
+
   return <>
     {_.times(height, row => {
       return (
         <div className="flex flex-col">
           {_.times(width, col => {
             const type = getGridType(row, col)
-            return (
-              <div
-                className={cx(
-                  'flex flex-row',
-                  type === 'initial' && 'bg-red-500',
-                  type === 'goal' && 'bg-green-500',
-                  type === 'solution' && 'bg-blue-500',
-                  type === 'reached' && 'bg-slate-200',
-                  type === 'frontier' && 'bg-slate-300',
-                  type === 'barrier' && 'bg-black',
-                )}
-                style={{
-                  width: 20,
-                  height: 20,
-                  margin: '-1px 0 0 -1px',
-                  border: 'solid 1px black',
-                }}
-                onMouseEnter={e => {
-                  if (!Key.isPressed('b')) return
-
-                  const id = `${col}-${row}`
-                  if (barrier[id]) delete barrier[id]
-                  else barrier[id] = true
-                  setBarrier({ ...barrier })
-                }}
-              />
-            )
+            const id = `${col}-${row}`
+            return <Grid id={id} type={type} barrier={barrier} setBarrier={setBarrier} />
           })}
         </div>
       )
