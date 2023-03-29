@@ -14,6 +14,6 @@ describe('Search', () => {
     }
     const result = SearchAlgorithms.bestFirstSearch(problem, f)
     const solution = MapSearch2D.getSolution(result)
-    expect(solution).to.deep.equal(['2-2', '3-2', '4-2'])
+    expect(solution).to.deep.equal(['3-2', '4-2'])
   })
 })

@@ -21,26 +21,29 @@ export class Problem<State extends StateNode> {
   }
 
   expand(node: State): State[] {
-    return _.compact(_.map(this.actions, action => {
+    return _.compact(_.map(this.actions, (action, actionId) => {
       const resultNode = this.result(node, action)
 
       if (!resultNode) return
 
       const cost = this.actionCost(node, action, resultNode)
       resultNode.parent = node
-      resultNode.action = action
+      resultNode.action = actionId
       resultNode.cost = cost
       return resultNode
     }))
   }
 
-  static getSolution(resultNode: StateNode): string[] {
-    const idPath = [resultNode.getId()]
+  static getSolution(
+    resultNode: StateNode,
+    tracer = (node: StateNode) => node.getId()
+  ): string[] {
+    const trace = []
     let walker: StateNode = resultNode
     while (walker.parent) {
+      trace.push(tracer(walker))
       walker = walker.parent
-      idPath.push(walker.getId())
     }
-    return _.reverse(idPath)
+    return _.reverse(trace)
   }
 }

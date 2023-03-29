@@ -40,8 +40,8 @@ import ClassifyPolygonAndPlaneExample from './primitive-tests/classify-polygon-a
 import BVTreeExample from './bounding-volume-hierarchy/bvtree'
 import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 
-import Map2DExample from './search/map-2d'
-import EightPuzzleExample from './search/eight-puzzle'
+import Map2DExample from './search/map-2d/map-2d'
+import EightPuzzleExample from './search/eight-puzzle/eight-puzzle'
 
 export default {
   'math': {

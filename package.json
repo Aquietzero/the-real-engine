@@ -6,7 +6,8 @@
     "start:open": "webpack serve --open",
     "build": "rm -rf ./dist && webpack --mode=production && cp -r assets ./dist/assets",
     "lint": "eslint \"**/*.ts\"",
-    "test": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/**/*.spec.ts"
+    "test": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/**/*.spec.ts",
+    "test:ml": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/test/machine-learning/**/*.spec.ts"
   },
   "dependencies": {
     "@types/react": "^17.0.39",

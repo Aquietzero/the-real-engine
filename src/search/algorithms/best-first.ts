@@ -19,6 +19,7 @@ export function* bestFirstSearchGenerator<State extends StateNode>(
     const children = problem.expand(node)
     for (let i = 0; i < children.length; ++i) {
       const child = children[i]
+      console.log(child.getId())
       if (problem.isGoal(child)) return child
       if (!reached[child.id]) {
         frontier.add(child)

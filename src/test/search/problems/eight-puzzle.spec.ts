@@ -96,7 +96,7 @@ describe('Search', () => {
     problem.shuffle(10)
     console.log(problem.initial.state.board)
     const result = SearchAlgorithms.bestFirstSearch(problem, h1)
-    const solution = EightPuzzle.getSolution(result)
+    const solution = EightPuzzle.getSolution(result, (node) => node.action)
     console.log(solution)
     // expect(solution).to.deep.equal(['1*2345678', '*12345678'])
   })

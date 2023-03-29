@@ -60,7 +60,7 @@ export class MapSearch2D extends Problem<MapSearch2DState> {
   }
 
   actionCost(before: MapSearch2DState, action: Action, after: MapSearch2DState): number {
-    return before.state.manhattanDistance2(after.state)
+    return before.state.euclideanDistance2(after.state)
   }
 
   isOutside(node: MapSearch2DState): boolean {
