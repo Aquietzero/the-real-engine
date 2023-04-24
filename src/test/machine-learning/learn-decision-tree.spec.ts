@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import { expect } from 'chai'
 import { Examples } from '@TRE/machine-learning/core/examples'
-import { learnDecisionTree } from '@TRE/machine-learning/learn-decision-tree'
+import { DecisionTreeLearner } from '@TRE/machine-learning/decision-tree-learner'
 
 const columns = [
   { name: 'Alternative', values: [true, false] },
@@ -36,8 +36,9 @@ describe('MachineLearning', () => {
       ]
 
       const examples = new Examples(data, columns)
-      const tree = learnDecisionTree(examples, columns)
-      console.log(tree)
+      const learner = new DecisionTreeLearner(examples, columns)
+      learner.learn()
+      console.log(learner.tree)
     })
   })
 })

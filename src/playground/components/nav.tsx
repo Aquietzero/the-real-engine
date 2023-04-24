@@ -9,6 +9,10 @@ interface Props {
 
 export const Nav: React.FC<Props> = (props: Props) => {
   const { example: currExample } = useParams()
+  const [ shouldShow, setShouldShow ] = React.useState({
+    'search': true,
+    'machine-learning': true,
+  } as any)
 
   const formatName = (name: string) => {
     const snakeCase = _.snakeCase(name.replace('Example', '')).replace(/_/g, ' ')
@@ -22,8 +26,13 @@ export const Nav: React.FC<Props> = (props: Props) => {
       {_.map(examples, (group, title)  => {
         return (
           <div key={title}>
-            <div className="font-bold">{ title }</div>
-            <div className="pl-5">
+            <div
+              className="font-bold"
+              onClick={e => setShouldShow({ ...shouldShow, [title]: !shouldShow[title] })}
+            >
+              { title }
+            </div>
+            {shouldShow[title] && <div className="pl-5">
               {_.map(group, (example, name) => {
                 return (
                   <div key={name}>
@@ -36,7 +45,7 @@ export const Nav: React.FC<Props> = (props: Props) => {
                   </div>
                 )
               })}
-            </div>
+            </div>}
           </div>
         )
       })}

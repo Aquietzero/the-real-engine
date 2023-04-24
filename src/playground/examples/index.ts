@@ -43,6 +43,9 @@ import KDTreeExample from './bounding-volume-hierarchy/kdtree'
 import Map2DExample from './search/map-2d/map-2d'
 import EightPuzzleExample from './search/eight-puzzle/eight-puzzle'
 
+import DecisionTreeLearning from './machine-learning/decision-tree-learning'
+import LinearRegression from './machine-learning/linear-regression'
+
 export default {
   'math': {
     VectorsExample,
@@ -93,5 +96,9 @@ export default {
   'search': {
     Map2DExample,
     EightPuzzleExample,
+  },
+  'machine-learning': {
+    DecisionTreeLearning,
+    LinearRegression,
   }
 }
