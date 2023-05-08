@@ -7,7 +7,8 @@
     "build": "rm -rf ./dist && webpack --mode=production && cp -r assets ./dist/assets",
     "lint": "eslint \"**/*.ts\"",
     "test": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/**/*.spec.ts",
-    "test:ml": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/test/machine-learning/**/*.spec.ts"
+    "test:ml": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/test/machine-learning/**/*.spec.ts",
+    "test:logic": "ts-mocha -p tsconfig.json -r tsconfig-paths/register src/test/logic/**/*.spec.ts"
   },
   "dependencies": {
     "@ant-design/charts": "^1.4.2",
