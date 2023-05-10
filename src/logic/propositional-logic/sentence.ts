@@ -2,6 +2,8 @@ import * as _ from 'lodash'
 import { Model } from './knowledge-base'
 import Semantics from './semantics'
 
+export type Symbol = string
+
 export enum Connector {
   TRUE = 'TRUE',
   NEGATE = 'NEGATE',
@@ -21,33 +23,42 @@ export class Sentence {
     }
   }
 
-  // evaluate a sentence by a given model,
-  // where the model is dynamic environment information.
-  eval(model: Model): boolean {
+  getSymbols(): Symbol[] {
     // symbol note, which has only one basic sentence.
     if (this.connector === Connector.TRUE) {
       const symbol: any = this.sentences[0]
-      return symbol.eval(model)
+      return [symbol]
     }
 
-    const booleanValues = _.map(this.sentences, s => s.eval(model))
-    return Semantics[this.connector](booleanValues)
+    return _.union(..._.map(this.sentences, s => s.getSymbols()))
   }
+  // // evaluate a sentence by a given model,
+  // // where the model is dynamic environment information.
+  // eval(model: Model): boolean {
+  //   // symbol note, which has only one basic sentence.
+  //   if (this.connector === Connector.TRUE) {
+  //     const symbol: any = this.sentences[0]
+  //     return symbol.eval(model)
+  //   }
+
+  //   const booleanValues = _.map(this.sentences, s => s.eval(model))
+  //   return Semantics[this.connector](booleanValues)
+  // }
 
   // evaluate a sentence by truth value assignment to each of
   // the propositional symbols of the sentence.
   // The `truthValueAssignment` is given as
   // { [name of the symbol]: boolean }
-  evalByTruthValueAssignment(truthValueAssignment: any): boolean {
+  eval(model: Model): boolean {
     // symbol note, which has only one basic sentence.
     if (this.connector === Connector.TRUE) {
       const symbol: any = this.sentences[0]
-      return truthValueAssignment[symbol.name]
+      return model[symbol]
     }
 
     const booleanValues = _.map(
       this.sentences,
-      s => s.evalByTruthValueAssignment(truthValueAssignment)
+      s => s.eval(model)
     )
     return Semantics[this.connector](booleanValues)
   }
@@ -55,9 +66,10 @@ export class Sentence {
   print(): string {
     if (this.connector === Connector.TRUE) {
       const symbol: any = this.sentences[0]
-      return symbol.name
+      return symbol
     }
 
+    // console.log(this.sentences)
     const strings = _.map(this.sentences, s => s.print())
     const connectorSymbols = {
       NEGATE: (strings: string[]) => `¬ (${strings.join('')})`,
@@ -118,5 +130,29 @@ export class Sentence {
 
   static IFF(s1: Sentence, s2: Sentence): Sentence {
     return Sentence.connect(Connector.IFF, [s1, s2])
+  }
+
+  static EVERY(sentences: Sentence[]): Sentence {
+    if (sentences.length === 0) return new Sentence()
+    if (sentences.length === 1) return sentences[0]
+
+    let s = Sentence.AND(sentences[0], sentences[1])
+    for (let i = 2; i < sentences.length; i++) {
+      s = Sentence.AND(s, sentences[i])
+    }
+
+    return s
+  }
+
+  static SOME(sentences: Sentence[]): Sentence {
+    if (sentences.length === 0) return new Sentence()
+    if (sentences.length === 1) return sentences[0]
+
+    let s = Sentence.OR(sentences[0], sentences[1])
+    for (let i = 2; i < sentences.length; i++) {
+      s = Sentence.OR(s, sentences[i])
+    }
+
+    return s
   }
 }

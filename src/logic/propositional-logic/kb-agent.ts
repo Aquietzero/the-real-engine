@@ -1,10 +1,12 @@
-import { KnowledgeBase, Sentence } from "./knowledge-base"
+import { KnowledgeBase } from "./knowledge-base"
+import { Sentence } from "./sentence"
 
-type Percept = any
-type Action = any
+export type Percept = any
+export type Action = any
 
 export class KBAgent {
   knowledgeBase: KnowledgeBase = new KnowledgeBase()
+  // time step
   t: number = 0
 
   run(percept: Percept): Action {
@@ -16,19 +18,22 @@ export class KBAgent {
   }
 
   tell(sentence: Sentence) {
-
+    this.knowledgeBase.tell(sentence)
   }
 
-  ask(sentence: Sentence) {
-
+  ask(sentence: Sentence): boolean {
+    return this.knowledgeBase.ask(sentence)
   }
 
   makeActionQuery(): Sentence {
+    return new Sentence()
   }
   
   makePerceptSentence(percept: Percept): Sentence {
+    return new Sentence()
   }
 
   makeActionSentence(action: Action): Sentence {
+    return new Sentence()
   }
 }

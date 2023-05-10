@@ -4,13 +4,16 @@ import { expect } from 'chai'
 import { Sentence } from '@TRE/logic/propositional-logic/sentence'
 import { KnowledgeBase } from '@TRE/logic/propositional-logic/knowledge-base'
 
-import { Pit, Wumpus, Breeze, Stench, Location, map } from '@TRE/logic/wumpus-world'
+import { Symbols, map } from '@TRE/logic/wumpus-world'
 
-//   0             1           2           3
-// 0 [GRID.EMPTY,  GRID.EMPTY, GRID.PIT,   GRID.EMPTY],
-// 1 [GRID.EMPTY,  GRID.EMPTY, GRID.EMPTY, GRID.EMPTY],
-// 2 [GRID.WUMPUS, GRID.GOLD,  GRID.PIT,   GRID.EMPTY],
-// 3 [GRID.EMPTY,  GRID.EMPTY, GRID.EMPTY, GRID.PIT],
+const { Pit, Breeze } = Symbols
+
+// the map
+//   0        1      2      3
+// 0 [EMPTY,  EMPTY, PIT,   EMPTY],
+// 1 [EMPTY,  EMPTY, EMPTY, EMPTY],
+// 2 [WUMPUS, GOLD,  PIT,   EMPTY],
+// 3 [EMPTY,  EMPTY, EMPTY, PIT],
 
 describe('PropositionalLogic#KnowledgeBase', () => {
   describe('KnowledgeBase#ttEntails', () => {

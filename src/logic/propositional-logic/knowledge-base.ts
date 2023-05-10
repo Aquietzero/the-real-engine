@@ -1,12 +1,22 @@
 import * as _ from 'lodash'
+import { Sentence, Symbol } from './sentence'
 
-export type Sentence = any
-export type Symbol = any
 export type Model = any
 
 export class KnowledgeBase {
-  sentence: Sentence
+  sentence: Sentence = new Sentence()
   symbols: Symbol[]
+
+  tell(sentence: Sentence) {
+    this.sentence = Sentence.AND(this.sentence, sentence)
+
+    const newSymbols = sentence.getSymbols()
+    this.symbols = _.uniq(_.union(this.symbols, newSymbols))
+  }
+
+  ask(sentence: Sentence): boolean {
+    return this.ttEntails(sentence)
+  }
 
   // truth-table enumeration algorithm
   ttEntails(query: Sentence): boolean {
@@ -22,13 +32,13 @@ export class KnowledgeBase {
 
     const [p, ...rest] = symbols
 
-    const pTrueModel = { ...model, [p.name]: true }
-    const pFalseModel = { ...model, [p.name]: false }
+    const pTrueModel = { ...model, [p]: true }
+    const pFalseModel = { ...model, [p]: false }
     return this.ttCheckAll(query, rest, pTrueModel) && this.ttCheckAll(query, rest, pFalseModel) 
   }
 
   // returns true if a sentence holds within a model.
   plTrue(sentence: Sentence, model: Model): boolean {
-    return sentence.evalByTruthValueAssignment(model)
+    return sentence.eval(model)
   }
 }
