@@ -73,17 +73,4 @@ describe('PropositionalLogic#Sentence', () => {
       console.log(R3.print())
     })
   })
-
-  describe('Sentence#toCNF', () => {
-    it('should be able to convert the sentence to CNF', () => {
-      const R: Sentence = Sentence.IFF(
-        new Sentence(Breeze(1, 1)),
-        Sentence.OR(
-          new Sentence(Pit(1, 2)),
-          new Sentence(Pit(2, 1))
-        )
-      )
-      console.log(R.toCNF().print())
-    })
-  })
 })

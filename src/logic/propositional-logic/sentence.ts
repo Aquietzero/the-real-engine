@@ -1,6 +1,7 @@
 import * as _ from 'lodash'
 import { Model } from './knowledge-base'
 import Semantics from './semantics'
+import { toCNF } from './cnf'
 
 export type Symbol = string
 
@@ -81,28 +82,8 @@ export class Sentence {
     return connectorSymbols[this.connector](strings)
   }
 
-  toCNF(): Sentence {
-    if (this.connector === Connector.TRUE) return this
-
-    if (this.connector === Connector.IFF) {
-      const [p, q] = this.sentences
-      return Sentence.AND(
-        Sentence.IMPLIES(p, q),
-        Sentence.IMPLIES(q, p)
-      ).toCNF()
-    }
-
-    if (this.connector === Connector.IMPLIES) {
-      const [p, q] = this.sentences
-      return Sentence.OR(
-        Sentence.NEGATE(p),
-        q
-      ).toCNF()
-    }
-
-    const cnfs = _.map(this.sentences, s => s.toCNF())
-    this.sentences = cnfs
-    return this
+  static toCNF(sentence: Sentence): Sentence {
+    return toCNF(sentence)
   }
 
   static connect(connector: Connector, sentences: Sentence[]): Sentence {

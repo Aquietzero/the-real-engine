@@ -11,8 +11,6 @@ describe('HybridWumpusAgent', () => {
     it('should set all axioms correctly', () => {
       const agent = new HybridWumpusAgent()
 
-      console.log(agent.knowledgeBase.symbols)
-
       // const is00OK = agent.ask(new Sentence(Symbols.OK(0, 0, 0)))
       // console.log('is ok', is00OK)
     })
