@@ -12,6 +12,7 @@ export const Nav: React.FC<Props> = (props: Props) => {
   const [ shouldShow, setShouldShow ] = React.useState({
     'search': true,
     'machine-learning': true,
+    'ray-tracer': true,
   } as any)
 
   const formatName = (name: string) => {
