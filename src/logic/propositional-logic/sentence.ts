@@ -1,7 +1,7 @@
 import * as _ from 'lodash'
 import { Model } from './knowledge-base'
 import Semantics from './semantics'
-import { toCNF } from './cnf'
+import { toCNF, getClauses } from './cnf'
 
 export type Symbol = string
 
@@ -33,6 +33,11 @@ export class Sentence {
 
     return _.union(..._.map(this.sentences, s => s.getSymbols()))
   }
+
+  getClauses(): Sentence[] {
+    return getClauses(this)
+  }
+
   // // evaluate a sentence by a given model,
   // // where the model is dynamic environment information.
   // eval(model: Model): boolean {

@@ -101,3 +101,21 @@ export const toCNF = (sentence: Sentence): Sentence => {
   s = distributeOR(s)
   return s
 }
+
+// get clauses for a given cnf
+export const getClauses = (cnf: Sentence): Sentence[] => {
+  const clauses: Sentence[] = []
+
+  const findAND = (s: Sentence) => {
+    if (s.connector === Connector.AND) {
+      findAND(s.sentences[0])
+      findAND(s.sentences[1])
+      return
+    }
+
+    clauses.push(s)
+  }
+
+  findAND(cnf)
+  return clauses
+}
