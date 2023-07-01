@@ -1,3 +1,4 @@
+import { random } from 'lodash'
 import { Matrix4 } from './matrix4'
 
 // Vector in 3d Euclidean space.
@@ -23,9 +24,11 @@ export class Vector3 {
   }
 
   public isZero(): boolean {
-    return Math.abs(this.x) < EPSILON
-      && Math.abs(this.y) < EPSILON
-      && Math.abs(this.z) < EPSILON
+    return (
+      Math.abs(this.x) < EPSILON &&
+      Math.abs(this.y) < EPSILON &&
+      Math.abs(this.z) < EPSILON
+    )
   }
 
   public equals(v: Vector3): boolean {
@@ -33,36 +36,20 @@ export class Vector3 {
   }
 
   public add(v: Vector3): Vector3 {
-    return new Vector3(
-      this.x + v.x,
-      this.y + v.y,
-      this.z + v.z
-    )
+    return new Vector3(this.x + v.x, this.y + v.y, this.z + v.z)
   }
 
   public sub(v: Vector3): Vector3 {
-    return new Vector3(
-      this.x - v.x,
-      this.y - v.y,
-      this.z - v.z
-    )
+    return new Vector3(this.x - v.x, this.y - v.y, this.z - v.z)
   }
 
   public mul(s: number): Vector3 {
-    return new Vector3(
-      this.x * s,
-      this.y * s,
-      this.z * s
-    )
+    return new Vector3(this.x * s, this.y * s, this.z * s)
   }
 
   public div(s: number): Vector3 {
     if (s === 0) throw Error('[Vector3.div]: cannot divide 0')
-    return new Vector3(
-      this.x / s,
-      this.y / s,
-      this.z / s
-    )
+    return new Vector3(this.x / s, this.y / s, this.z / s)
   }
 
   public negate(): Vector3 {
@@ -82,11 +69,7 @@ export class Vector3 {
     const len = this.len()
     if (len === 0) return
 
-    return new Vector3(
-      this.x / len,
-      this.y / len,
-      this.z / len
-    )
+    return new Vector3(this.x / len, this.y / len, this.z / len)
   }
 
   public strictLessThan(v: Vector3): boolean {
@@ -103,9 +86,9 @@ export class Vector3 {
 
   public applyMatrix4(m4: Matrix4): Vector3 {
     return new Vector3(
-      m4.e[0]*this.x + m4.e[1]*this.y + m4.e[2]*this.z + m4.e[3],
-      m4.e[4]*this.x + m4.e[5]*this.y + m4.e[6]*this.z + m4.e[7],
-      m4.e[8]*this.x + m4.e[9]*this.y + m4.e[10]*this.z + m4.e[11]
+      m4.e[0] * this.x + m4.e[1] * this.y + m4.e[2] * this.z + m4.e[3],
+      m4.e[4] * this.x + m4.e[5] * this.y + m4.e[6] * this.z + m4.e[7],
+      m4.e[8] * this.x + m4.e[9] * this.y + m4.e[10] * this.z + m4.e[11]
     )
   }
 
@@ -117,14 +100,18 @@ export class Vector3 {
     const cp = new Vector3(
       v1.y * v2.z - v1.z * v2.y,
       v1.z * v2.x - v1.x * v2.z,
-      v1.x * v2.y - v1.y * v2.x,
+      v1.x * v2.y - v1.y * v2.x
     )
 
     if (cp.isZero()) return Y_AXIS
     return cp
   }
 
-  public static tripleScalarProduct(v1: Vector3, v2: Vector3, v3: Vector3): number {
+  public static tripleScalarProduct(
+    v1: Vector3,
+    v2: Vector3,
+    v3: Vector3
+  ): number {
     return Vector3.dotProduct(v1, Vector3.crossProduct(v2, v3))
   }
 
@@ -135,6 +122,18 @@ export class Vector3 {
 
   public static isSameDirection(v1: Vector3, v2: Vector3): boolean {
     return Vector3.dotProduct(v1, v2) > 0
+  }
+
+  public static randomInUnitSphere(): Vector3 {
+    while (true) {
+      const randomUnitVector = new Vector3(
+        Math.random(),
+        Math.random(),
+        Math.random()
+      )
+      if (randomUnitVector.len2() >= 1) continue
+      return randomUnitVector
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import { Vector3 } from '@TRE/math'
+import { Ray } from '@TRE/ray-tracer/ray'
 
 const aspectRatio = 16 / 9
 
@@ -24,5 +25,13 @@ export class Camera {
       .sub(this.horizontal.mul(0.5))
       .sub(this.vertical.mul(0.5))
       .sub(new Vector3(0, 0, this.focalLength))
+  }
+
+  getRay(u: number, v: number): Ray {
+    const dir = this.lowerLeftCorner
+      .add(this.horizontal.mul(u))
+      .add(this.vertical.mul(v))
+      .sub(this.origin)
+    return new Ray(this.origin, dir)
   }
 }
