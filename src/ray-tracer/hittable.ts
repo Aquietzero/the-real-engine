@@ -1,11 +1,13 @@
 import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/ray-tracer/ray'
+import { Material } from '@TRE/ray-tracer/material'
 
 export interface HitRecord {
   point: Vector3
   normal: Vector3
   t: number
   frontFace: boolean
+  material?: Material
 }
 
 export interface HitResult {

@@ -135,6 +135,34 @@ export class Vector3 {
       return randomUnitVector
     }
   }
+
+  public static randomUnitVector(): Vector3 {
+    return Vector3.randomInUnitSphere().normalize()
+  }
+
+  public static randomInHemisphere(normal: Vector3): Vector3 {
+    const inUnitSphere = Vector3.randomInUnitSphere()
+    if (Vector3.dotProduct(inUnitSphere, normal) > 0) return inUnitSphere
+    return inUnitSphere.negate()
+  }
+
+  // n: normal vector
+  // v: inflect vector
+  // return: reflect vector by n
+  public static reflect(v: Vector3, n: Vector3): Vector3 {
+    return v.sub(n.mul(Vector3.dotProduct(v, n) * 2))
+  }
+
+  public static refract(
+    uv: Vector3,
+    n: Vector3,
+    refractiveIndex: number
+  ): Vector3 {
+    const cosTheta = Math.min(Vector3.dotProduct(uv.negate(), n), 1)
+    const outPerpendicular = uv.add(n.mul(cosTheta)).mul(refractiveIndex)
+    const outParallel = n.mul(-Math.sqrt(Math.abs(1 - outPerpendicular.len2())))
+    return outPerpendicular.add(outParallel)
+  }
 }
 
 export const ORIGIN = new Vector3(0, 0, 0)

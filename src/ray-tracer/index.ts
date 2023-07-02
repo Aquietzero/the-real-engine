@@ -5,6 +5,11 @@ import { Color } from '@TRE/ray-tracer/color'
 import { Sphere } from '@TRE/ray-tracer/sphere'
 import { Hittables } from '@TRE/ray-tracer/hittables'
 import { clamp } from '@TRE/ray-tracer/utils'
+import {
+  DielectricMaterial,
+  LambertianMaterial,
+  MetalMaterial,
+} from '@TRE/ray-tracer/material'
 
 const SAMPLES_PER_PIXEL = 10
 const MAX_REFLECT_DEPTH = 20
@@ -15,17 +20,29 @@ const rayColor = (r: Ray, world: Hittables, depth: number): Color => {
   // use tMin = 0.0001 to solve the shadow acne problem
   const hitResult = world.hit(r, 0.000001)
   if (hitResult.doesHit) {
-    // const n = hitResult.hitRecord.normal
-    // const c = new Vector3(n.x + 1, n.y + 1, n.z + 1).mul(0.5)
-    // return new Color(c.x, c.y, c.z)
-    const target = hitResult.hitRecord.point
-      .add(hitResult.hitRecord.normal)
-      .add(Vector3.randomInUnitSphere())
-    const reflectedRay = new Ray(
-      hitResult.hitRecord.point,
-      target.sub(hitResult.hitRecord.point)
-    )
-    return rayColor(reflectedRay, world, depth - 1).mul(0.5) as Color
+    const hitRecord = hitResult.hitRecord
+    // without material
+    if (!hitRecord.material) {
+      const target = hitRecord.point
+        .add(hitRecord.normal)
+        .add(Vector3.randomInUnitSphere())
+      const reflectedRay = new Ray(hitRecord.point, target.sub(hitRecord.point))
+      return rayColor(reflectedRay, world, depth - 1).mul(0.5) as Color
+    }
+
+    // with material
+    const materialScatter: any = hitRecord.material.scatter(r, hitRecord)
+    if (materialScatter.isValid) {
+      const { attenuation, scattered } = materialScatter
+      const scatteredColor = rayColor(scattered, world, depth - 1)
+      return new Color(
+        attenuation.x * scatteredColor.x,
+        attenuation.y * scatteredColor.y,
+        attenuation.z * scatteredColor.z
+      )
+    }
+
+    return new Color(0, 0, 0)
   }
 
   const unitDirection = r.dir.normalize()
@@ -56,12 +73,41 @@ export const renderImage = (width: number = 500) => {
 
   const camera = new Camera()
   const aspectRatio = 16 / 9
-  const sphere = new Sphere(new Vector3(0, 0, -1), 0.5)
-  const sphere2 = new Sphere(new Vector3(0, -100.5, -1), 100)
+
+  const groundMaterial = new LambertianMaterial({
+    albedo: new Color(0.8, 0.8, 0),
+  })
+  const centerBallMaterial = new LambertianMaterial({
+    albedo: new Color(0.1, 0.2, 0.5),
+  })
+  const metalMaterial1 = new MetalMaterial({
+    albedo: new Color(0.8, 0.6, 0.2),
+    fuzz: 0,
+  })
+  const metalMaterial2 = new MetalMaterial({
+    albedo: new Color(0.8, 0.6, 0.2),
+    fuzz: 1,
+  })
+  const dielectricMaterial = new DielectricMaterial({
+    refractiveIndex: 1.5,
+  })
+
+  const ground = new Sphere(new Vector3(0, -100.5, -1), 100)
+  const centerBall = new Sphere(new Vector3(0, 0, -1), 0.5)
+  const leftBall = new Sphere(new Vector3(-1, 0, -1), -0.4)
+  const rightBall = new Sphere(new Vector3(1, 0, -1), 0.5)
+
+  ground.setMaterial(groundMaterial)
+  centerBall.setMaterial(centerBallMaterial)
+  leftBall.setMaterial(dielectricMaterial)
+  rightBall.setMaterial(metalMaterial1)
+
   const world = new Hittables()
 
-  world.add(sphere)
-  world.add(sphere2)
+  world.add(ground)
+  world.add(centerBall)
+  world.add(leftBall)
+  world.add(rightBall)
 
   const height = width / aspectRatio
   canvas.width = width

@@ -1,16 +1,22 @@
 import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/ray-tracer/ray'
 import { HitResult, Hittable, getFaceNormal } from '@TRE/ray-tracer/hittable'
+import { Material } from '@TRE/ray-tracer/material'
 
 export class Sphere extends Hittable {
   center: Vector3
   radius: number
+  material: Material
 
   constructor(center: Vector3, radius: number) {
     super()
 
     this.center = center
     this.radius = radius
+  }
+
+  setMaterial(material: Material) {
+    this.material = material
   }
 
   hit(r: Ray, tMin: number = 0, tMax: number = Infinity): HitResult {
@@ -41,6 +47,7 @@ export class Sphere extends Hittable {
         point: hitPoint,
         normal,
         frontFace,
+        material: this.material,
       },
     }
   }
