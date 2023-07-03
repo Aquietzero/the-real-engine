@@ -8,6 +8,9 @@ export interface HitRecord {
   t: number
   frontFace: boolean
   material?: Material
+  // texture coordinates
+  u?: number
+  v?: number
 }
 
 export interface HitResult {

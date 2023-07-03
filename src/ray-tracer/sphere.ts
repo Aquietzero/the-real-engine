@@ -48,6 +48,7 @@ export class Sphere extends Hittable {
     const hitPoint = r.parametric(root)
     const outwardNormal = hitPoint.sub(this.center).mul(1 / this.radius)
     const { frontFace, normal } = getFaceNormal(r, outwardNormal)
+    const { u, v } = Sphere.getSphereUV(outwardNormal)
     return {
       doesHit: true,
       hitRecord: {
@@ -56,7 +57,19 @@ export class Sphere extends Hittable {
         normal,
         frontFace,
         material: this.material,
+        u,
+        v,
       },
     }
+  }
+
+  static getSphereUV(point: Vector3) {
+    const theta = Math.acos(-point.y)
+    const phi = Math.atan2(-point.z, point.x) + Math.PI
+
+    const u = phi / (2 * Math.PI)
+    const v = theta / Math.PI
+
+    return { u, v }
   }
 }

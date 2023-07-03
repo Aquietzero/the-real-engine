@@ -7,7 +7,7 @@ export const BasicRayTracerExample: React.FC = () => {
 
   React.useLayoutEffect(() => {
     if (!renderInfo.renderTime) {
-      const info = renderImage(800)
+      const info = renderImage()
       setRenderInfo(info)
     }
   })

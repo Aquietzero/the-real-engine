@@ -3,7 +3,7 @@ import { Vector3 } from '@TRE/math'
 import { AABB } from '@TRE/bounding-volumes'
 import { BVObject } from '@TRE/structures/types'
 
-enum NODE_TYPE {
+export enum NODE_TYPE {
   NODE,
   LEAF,
 }
@@ -15,7 +15,7 @@ class BVNode {
   objects: any[]
 }
 
-class BinaryBVNode extends BVNode {
+export class BinaryBVNode extends BVNode {
   left: BinaryBVNode
   right: BinaryBVNode
 }
@@ -75,7 +75,7 @@ export class BinaryBVTree {
     let maxY = -Infinity
     let maxZ = -Infinity
 
-    _.each(objs, obj => {
+    _.each(objs, (obj) => {
       const minV = obj.bv.center.sub(obj.bv.radius)
       const maxV = obj.bv.center.add(obj.bv.radius)
 
@@ -93,7 +93,7 @@ export class BinaryBVTree {
     return new AABB(min.add(max).mul(0.5), max.sub(min).mul(0.5))
   }
 
-  partitionObjects(objs: BVObject[]): { left: BVObject[], right: BVObject[] } {
+  partitionObjects(objs: BVObject[]): { left: BVObject[]; right: BVObject[] } {
     const centers = _.map(objs, 'bv.center')
     const { min, max } = AABB.mostSeparatedPoints(centers)
 
@@ -109,8 +109,9 @@ export class BinaryBVTree {
     const left: BVObject[] = []
     const right: BVObject[] = []
 
-    _.each(objs, obj => {
-      const proj = Vector3.dotProduct(obj.bv.center.sub(min), separatingAxis) / len
+    _.each(objs, (obj) => {
+      const proj =
+        Vector3.dotProduct(obj.bv.center.sub(min), separatingAxis) / len
       proj < mid ? left.push(obj) : right.push(obj)
     })
 
@@ -123,8 +124,8 @@ export class BinaryBVTree {
       if (!node) return
 
       visitor(node, context)
-      iter(node.left, { ...context, level: context.level + 1})
-      iter(node.right, { ...context, level: context.level + 1})
+      iter(node.left, { ...context, level: context.level + 1 })
+      iter(node.right, { ...context, level: context.level + 1 })
     }
     iter(this.root, context)
   }

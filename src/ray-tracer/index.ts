@@ -10,8 +10,10 @@ import {
   LambertianMaterial,
   MetalMaterial,
 } from '@TRE/ray-tracer/material'
+import { SolidColor, CheckerTexture } from '@TRE/ray-tracer/texture'
 
 const SAMPLES_PER_PIXEL = 10
+const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
 const MAX_REFLECT_DEPTH = 20
 
 const rayColor = (r: Ray, world: Hittables, depth: number): Color => {
@@ -53,18 +55,22 @@ const rayColor = (r: Ray, world: Hittables, depth: number): Color => {
   return new Color(c.x, c.y, c.z)
 }
 
-const writeColor = (color: Color, samplesPerPixel: number) => {
-  const scale = 1 / samplesPerPixel
+const writeColor = (color: Color) => {
   // sqrt: gamma correction
-  let r = Math.sqrt(color.x * scale)
-  let g = Math.sqrt(color.y * scale)
-  let b = Math.sqrt(color.z * scale)
+  let r = Math.sqrt(color.x * COLOR_SCALE)
+  let g = Math.sqrt(color.y * COLOR_SCALE)
+  let b = Math.sqrt(color.z * COLOR_SCALE)
 
   r = 256 * clamp(r, 0, 1)
   g = 256 * clamp(g, 0, 1)
   b = 256 * clamp(b, 0, 1)
 
-  return `rgb(${r}, ${g}, ${b})`
+  return {
+    r,
+    g,
+    b,
+    str: `rgb(${r}, ${g}, ${b})`,
+  }
 }
 
 const threeBallsScene = (aspectRatio: number) => {
@@ -78,12 +84,24 @@ const threeBallsScene = (aspectRatio: number) => {
     new Vector3(0, 1, 0)
   )
 
+  const checkerTexture1 = new CheckerTexture(
+    new SolidColor(new Color(0.2, 0.3, 0.1)),
+    new SolidColor(new Color(0.9, 0.9, 0.9))
+  )
+  const checkerTexture2 = new CheckerTexture(
+    new SolidColor(new Color(0.1, 0.2, 0.5)),
+    new SolidColor(new Color(0.9, 0.9, 0.9)),
+    50
+  )
+
   const groundMaterial = new LambertianMaterial({
     albedo: new Color(0.8, 0.8, 0.8),
   })
+  groundMaterial.setTexture(checkerTexture1)
   const centerBallMaterial = new LambertianMaterial({
     albedo: new Color(0.1, 0.2, 0.5),
   })
+  centerBallMaterial.setTexture(checkerTexture2)
   const metalMaterial1 = new MetalMaterial({
     albedo: new Color(0.8, 0.6, 0.2),
     fuzz: 0,
@@ -188,7 +206,7 @@ const manyBallsScene = (aspectRatio: number) => {
   return { camera, world }
 }
 
-export const renderImage = (width: number = 500) => {
+export const renderImage = (width: number = 800) => {
   const start = Date.now()
 
   const canvas: any = document.getElementById('ray-tracer-canvas')
@@ -205,6 +223,8 @@ export const renderImage = (width: number = 500) => {
   canvas.width = width
   canvas.height = height
 
+  const imageData = ctx.createImageData(width, height)
+
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
       let c = new Color(0, 0, 0)
@@ -217,10 +237,16 @@ export const renderImage = (width: number = 500) => {
         c = c.add(color) as Color
       }
 
-      ctx.fillStyle = writeColor(c, SAMPLES_PER_PIXEL)
-      ctx.fillRect(x, height - y, 1, 1)
+      const { r, g, b } = writeColor(c)
+      const index = ((height - y) * width + x) * 4
+      imageData.data[index] = r
+      imageData.data[index + 1] = g
+      imageData.data[index + 2] = b
+      imageData.data[index + 3] = 255
     }
   }
+
+  ctx.putImageData(imageData, 0, 0)
 
   const end = Date.now()
   const renderTime = ((end - start) / 1000).toFixed(3)
