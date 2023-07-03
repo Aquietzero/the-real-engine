@@ -11,7 +11,7 @@ import {
   MetalMaterial,
 } from '@TRE/ray-tracer/material'
 
-const SAMPLES_PER_PIXEL = 10
+const SAMPLES_PER_PIXEL = 50
 const MAX_REFLECT_DEPTH = 20
 
 const rayColor = (r: Ray, world: Hittables, depth: number): Color => {
@@ -67,15 +67,19 @@ const writeColor = (color: Color, samplesPerPixel: number) => {
   return `rgb(${r}, ${g}, ${b})`
 }
 
-export const renderImage = (width: number = 500) => {
-  const canvas: any = document.getElementById('ray-tracer-canvas')
-  const ctx = canvas.getContext('2d')
-
-  const camera = new Camera()
-  const aspectRatio = 16 / 9
+const threeBallsScene = (aspectRatio: number) => {
+  const camera = new Camera({
+    fov: 40,
+    aspectRatio,
+  })
+  camera.look(
+    new Vector3(-1, 1, 1),
+    new Vector3(0, 0, -1),
+    new Vector3(0, 1, 0)
+  )
 
   const groundMaterial = new LambertianMaterial({
-    albedo: new Color(0.8, 0.8, 0),
+    albedo: new Color(0.8, 0.8, 0.8),
   })
   const centerBallMaterial = new LambertianMaterial({
     albedo: new Color(0.1, 0.2, 0.5),
@@ -94,20 +98,104 @@ export const renderImage = (width: number = 500) => {
 
   const ground = new Sphere(new Vector3(0, -100.5, -1), 100)
   const centerBall = new Sphere(new Vector3(0, 0, -1), 0.5)
-  const leftBall = new Sphere(new Vector3(-1, 0, -1), -0.4)
+  const leftBallInner = new Sphere(new Vector3(-1, 0, -1), -0.4)
+  const leftBallOuter = new Sphere(new Vector3(-1, 0, -1), 0.5)
   const rightBall = new Sphere(new Vector3(1, 0, -1), 0.5)
 
   ground.setMaterial(groundMaterial)
   centerBall.setMaterial(centerBallMaterial)
-  leftBall.setMaterial(dielectricMaterial)
+  leftBallInner.setMaterial(dielectricMaterial)
+  leftBallOuter.setMaterial(dielectricMaterial)
   rightBall.setMaterial(metalMaterial1)
 
   const world = new Hittables()
 
   world.add(ground)
   world.add(centerBall)
-  world.add(leftBall)
+  world.add(leftBallInner)
+  world.add(leftBallOuter)
   world.add(rightBall)
+
+  return { camera, world }
+}
+
+const manyBallsScene = (aspectRatio: number) => {
+  const world = new Hittables()
+
+  const groundMaterial = new LambertianMaterial({
+    albedo: new Color(0.5, 0.5, 0.5),
+  })
+  const ground = new Sphere(new Vector3(0, -1000, 0), 1000)
+  ground.setMaterial(groundMaterial)
+  world.add(ground)
+
+  const gridSize = 10
+  const step = 3
+  for (let a = -gridSize; a < gridSize; a += step) {
+    for (let b = -gridSize; b < gridSize; b += step) {
+      const random = Math.random()
+      const center = new Vector3(
+        a + 0.9 * Math.random() * step,
+        0.2,
+        b + 0.9 * Math.random() * step
+      )
+
+      const ball = new Sphere(center, 0.2)
+      let material
+      if (center.sub(new Vector3(4, 0.2, 0)).len() > 0.9) {
+        if (random < 0.8) {
+          // diffuse
+          material = new LambertianMaterial({
+            albedo: Color.random(),
+          })
+        } else if (random < 0.95) {
+          // metal
+          material = new MetalMaterial({
+            albedo: Color.random(),
+            fuzz: Math.random() * 0.5,
+          })
+        } else {
+          // glass
+          material = new DielectricMaterial({ refractiveIndex: 1.5 })
+        }
+
+        ball.setMaterial(material)
+        world.add(ball)
+      }
+    }
+  }
+
+  // three big balls
+  const m1 = new DielectricMaterial({ refractiveIndex: 1.5 })
+  const b1 = new Sphere(new Vector3(0, 1, 0), 1.0)
+  b1.setMaterial(m1)
+
+  const m2 = new LambertianMaterial({ albedo: new Color(0.4, 0.2, 0.1) })
+  const b2 = new Sphere(new Vector3(-4, 1, 0), 1.0)
+  b2.setMaterial(m2)
+
+  const m3 = new MetalMaterial({ albedo: new Color(0.7, 0.6, 0.5), fuzz: 0 })
+  const b3 = new Sphere(new Vector3(4, 1, 0), 1.0)
+  b3.setMaterial(m3)
+
+  world.add(b1)
+  world.add(b2)
+  world.add(b3)
+
+  const camera = new Camera({ aspectRatio: 3 / 2, fov: 20 })
+  camera.look(new Vector3(13, 2, 3), new Vector3(0, 0, 0), new Vector3(0, 1, 0))
+
+  return { camera, world }
+}
+
+export const renderImage = (width: number = 500) => {
+  const canvas: any = document.getElementById('ray-tracer-canvas')
+  const ctx = canvas.getContext('2d')
+
+  const aspectRatio = 16 / 9
+
+  const { camera, world } = threeBallsScene(aspectRatio)
+  // const { camera, world } = manyBallsScene(aspectRatio)
 
   const height = width / aspectRatio
   canvas.width = width

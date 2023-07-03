@@ -146,6 +146,14 @@ export class Vector3 {
     return inUnitSphere.negate()
   }
 
+  public static randomInUnitDisk(): Vector3 {
+    while (true) {
+      const p = new Vector3(-1 + Math.random() * 2, -1 + Math.random() * 2, 0)
+      if (p.len2() >= 1) continue
+      return p
+    }
+  }
+
   // n: normal vector
   // v: inflect vector
   // return: reflect vector by n
