@@ -3,13 +3,19 @@ import * as React from 'react'
 import { renderImage } from '@TRE/ray-tracer'
 
 export const BasicRayTracerExample: React.FC = () => {
-  React.useEffect(() => {
-    renderImage(800)
+  const [renderInfo, setRenderInfo] = React.useState({} as any)
+
+  React.useLayoutEffect(() => {
+    if (!renderInfo.renderTime) {
+      const info = renderImage(800)
+      setRenderInfo(info)
+    }
   })
 
   return (
-    <div className="flex w-full h-full justify-center items-center">
+    <div className="flex w-full h-full flex-col justify-center items-center">
       <canvas id="ray-tracer-canvas" />
+      <div>render time: { renderInfo.renderTime }(s)</div>
     </div>
   )
 }

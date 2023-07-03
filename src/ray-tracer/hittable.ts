@@ -1,5 +1,5 @@
 import { Vector3 } from '@TRE/math'
-import { Ray } from '@TRE/ray-tracer/ray'
+import { Ray } from '@TRE/primitive/ray'
 import { Material } from '@TRE/ray-tracer/material'
 
 export interface HitRecord {
@@ -23,6 +23,9 @@ export const getFaceNormal = (r: Ray, outwardNormal: Vector3) => {
 }
 
 export class Hittable {
+  // each object should define its own bounding volume
+  bv: any
+
   hit(r: Ray, tMin: number, tMax: number): HitResult {
     return { doesHit: false }
   }

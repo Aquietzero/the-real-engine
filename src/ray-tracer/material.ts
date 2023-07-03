@@ -1,5 +1,5 @@
 import { Vector3 } from '@TRE/math'
-import { Ray } from '@TRE/ray-tracer/ray'
+import { Ray } from '@TRE/primitive/ray'
 import { HitRecord } from '@TRE/ray-tracer/hittable'
 import { Color } from '@TRE/ray-tracer/color'
 

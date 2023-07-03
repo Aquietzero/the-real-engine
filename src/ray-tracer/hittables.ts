@@ -1,12 +1,15 @@
 import * as _ from 'lodash'
-import { Ray } from '@TRE/ray-tracer/ray'
+import { Ray } from '@TRE/primitive/ray'
 import { Hittable, HitResult } from '@TRE/ray-tracer/hittable'
+import { BinaryBVTree } from '@TRE/structures/bvtree'
 
 export class Hittables {
   objects: Hittable[] = []
+  bvh: BinaryBVTree
 
   add(object: Hittable) {
     this.objects.push(object)
+    this.bvh = new BinaryBVTree(this.objects)
   }
 
   clear() {

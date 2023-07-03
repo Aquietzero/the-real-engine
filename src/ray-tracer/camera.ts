@@ -1,5 +1,5 @@
 import { Vector3 } from '@TRE/math'
-import { Ray } from '@TRE/ray-tracer/ray'
+import { Ray } from '@TRE/primitive/ray'
 
 interface CameraOptions {
   fov?: number

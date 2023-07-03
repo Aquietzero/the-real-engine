@@ -1,6 +1,6 @@
 import { Vector3 } from '@TRE/math'
 import { Camera } from '@TRE/ray-tracer/camera'
-import { Ray } from '@TRE/ray-tracer/ray'
+import { Ray } from '@TRE/primitive/ray'
 import { Color } from '@TRE/ray-tracer/color'
 import { Sphere } from '@TRE/ray-tracer/sphere'
 import { Hittables } from '@TRE/ray-tracer/hittables'
@@ -11,7 +11,7 @@ import {
   MetalMaterial,
 } from '@TRE/ray-tracer/material'
 
-const SAMPLES_PER_PIXEL = 50
+const SAMPLES_PER_PIXEL = 10
 const MAX_REFLECT_DEPTH = 20
 
 const rayColor = (r: Ray, world: Hittables, depth: number): Color => {
@@ -189,6 +189,8 @@ const manyBallsScene = (aspectRatio: number) => {
 }
 
 export const renderImage = (width: number = 500) => {
+  const start = Date.now()
+
   const canvas: any = document.getElementById('ray-tracer-canvas')
   const ctx = canvas.getContext('2d')
 
@@ -196,6 +198,8 @@ export const renderImage = (width: number = 500) => {
 
   const { camera, world } = threeBallsScene(aspectRatio)
   // const { camera, world } = manyBallsScene(aspectRatio)
+
+  console.log(world)
 
   const height = width / aspectRatio
   canvas.width = width
@@ -216,5 +220,12 @@ export const renderImage = (width: number = 500) => {
       ctx.fillStyle = writeColor(c, SAMPLES_PER_PIXEL)
       ctx.fillRect(x, height - y, 1, 1)
     }
+  }
+
+  const end = Date.now()
+  const renderTime = ((end - start) / 1000).toFixed(3)
+
+  return {
+    renderTime,
   }
 }
