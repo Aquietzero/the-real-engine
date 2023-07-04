@@ -1,73 +1,25 @@
 import { Vector3 } from '@TRE/math'
 import { Camera } from '@TRE/ray-tracer/camera'
-import { Ray } from '@TRE/primitive/ray'
-import { Color } from '@TRE/ray-tracer/color'
-import { Sphere } from '@TRE/ray-tracer/sphere'
+import { Color, writeColor } from '@TRE/ray-tracer/color'
+import { Sphere, XYRect } from '@TRE/ray-tracer/primitives'
 import { Hittables } from '@TRE/ray-tracer/hittables'
-import { clamp } from '@TRE/ray-tracer/utils'
 import {
   DielectricMaterial,
   LambertianMaterial,
   MetalMaterial,
 } from '@TRE/ray-tracer/materials'
-import { SolidColor, CheckerTexture, Texture } from '@TRE/ray-tracer/texture'
+import { SolidColor, CheckerTexture } from '@TRE/ray-tracer/texture'
 import { DiffuseLight } from './materials/diffuse-light'
-import { XYRect } from './xy-rect'
+import { RayTracer } from '@TRE/ray-tracer/ray-tracer'
 
 const SAMPLES_PER_PIXEL = 10
 const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
 const MAX_REFLECT_DEPTH = 20
 
-const rayColor = (
-  r: Ray,
-  bg: Color,
-  world: Hittables,
-  depth: number
-): Color => {
-  if (depth <= 0) return new Color(0, 0, 0)
-
-  // use tMin = 0.0001 to solve the shadow acne problem
-  const hitResult = world.hit(r, 0.000001)
-
-  // hits nothing
-  if (!hitResult.doesHit) return bg
-
-  const hitRecord = hitResult.hitRecord
-
-  const materialScatter: any = hitRecord.material.scatter(r, hitRecord)
-  const emitted = hitRecord.material.emitted(
-    hitRecord.u,
-    hitRecord.v,
-    hitRecord.point
-  )
-  if (!materialScatter.isValid) return emitted
-
-  const { attenuation, scattered } = materialScatter
-  const scatteredColor = rayColor(scattered, bg, world, depth - 1)
-  return new Color(
-    emitted.x + attenuation.x * scatteredColor.x,
-    emitted.y + attenuation.y * scatteredColor.y,
-    emitted.z + attenuation.z * scatteredColor.z
-  )
-}
-
-const writeColor = (color: Color) => {
-  // sqrt: gamma correction
-  let r = Math.sqrt(color.x * COLOR_SCALE)
-  let g = Math.sqrt(color.y * COLOR_SCALE)
-  let b = Math.sqrt(color.z * COLOR_SCALE)
-
-  r = 256 * clamp(r, 0, 1)
-  g = 256 * clamp(g, 0, 1)
-  b = 256 * clamp(b, 0, 1)
-
-  return {
-    r,
-    g,
-    b,
-    str: `rgb(${r}, ${g}, ${b})`,
-  }
-}
+const rayTracer = new RayTracer({
+  samplesPerPixel: SAMPLES_PER_PIXEL,
+  maxReflectDepth: MAX_REFLECT_DEPTH,
+})
 
 const threeBallsScene = (aspectRatio: number) => {
   const camera = new Camera({
@@ -219,8 +171,6 @@ export const renderImage = (width: number = 800) => {
   const { camera, world } = threeBallsScene(aspectRatio)
   // const { camera, world } = manyBallsScene(aspectRatio)
 
-  console.log(world)
-
   const height = width / aspectRatio
   canvas.width = width
   canvas.height = height
@@ -229,17 +179,13 @@ export const renderImage = (width: number = 800) => {
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      let c = new Color(0, 0, 0)
-      for (let s = 0; s < SAMPLES_PER_PIXEL; s++) {
-        const u = (x + Math.random()) / width
-        const v = (y + Math.random()) / height
+      const c = rayTracer.sample(
+        (x + Math.random()) / width,
+        (y + Math.random()) / height,
+        { camera, background: bg, world }
+      )
 
-        const r = camera.getRay(u, v)
-        const color = rayColor(r, bg, world, MAX_REFLECT_DEPTH)
-        c = c.add(color) as Color
-      }
-
-      const { r, g, b } = writeColor(c)
+      const { r, g, b } = writeColor(c, COLOR_SCALE)
       const index = ((height - y) * width + x) * 4
       imageData.data[index] = r
       imageData.data[index + 1] = g
