@@ -47,6 +47,10 @@ export class Vector3 {
     return new Vector3(this.x * s, this.y * s, this.z * s)
   }
 
+  public mulVector(v: Vector3): Vector3 {
+    return new Vector3(this.x * v.x, this.y * v.y, this.z * v.z)
+  }
+
   public div(s: number): Vector3 {
     if (s === 0) throw Error('[Vector3.div]: cannot divide 0')
     return new Vector3(this.x / s, this.y / s, this.z / s)

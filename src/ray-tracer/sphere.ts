@@ -1,13 +1,13 @@
 import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
 import { HitResult, Hittable, getFaceNormal } from '@TRE/ray-tracer/hittable'
-import { Material } from '@TRE/ray-tracer/material'
+import { Material, LambertianMaterial } from '@TRE/ray-tracer/materials'
+import { Color } from '@TRE/ray-tracer/color'
 import { AABB } from '@TRE/bounding-volumes'
 
 export class Sphere extends Hittable {
   center: Vector3
   radius: number
-  material: Material
 
   bv: AABB
 
@@ -21,10 +21,10 @@ export class Sphere extends Hittable {
       this.center.clone(),
       new Vector3(this.radius, this.radius, this.radius)
     )
-  }
-
-  setMaterial(material: Material) {
-    this.material = material
+    // default to be a gray lambertian material
+    this.material = new LambertianMaterial({
+      albedo: new Color(0.8, 0.8, 0.8),
+    })
   }
 
   hit(r: Ray, tMin: number = 0, tMax: number = Infinity): HitResult {

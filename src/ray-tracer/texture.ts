@@ -2,7 +2,9 @@ import { Vector3 } from '@TRE/math'
 import { Color } from '@TRE/ray-tracer/color'
 
 export class Texture {
-  value(u: number, v: number, point: Vector3) {}
+  value(u: number, v: number, point: Vector3): Color {
+    return new Color(0, 0, 0)
+  }
 }
 
 export class SolidColor extends Texture {
@@ -13,7 +15,7 @@ export class SolidColor extends Texture {
     this.color = c
   }
 
-  value(u: number, v: number, point: Vector3) {
+  value(u: number, v: number, point: Vector3): Color {
     return this.color
   }
 }
@@ -30,7 +32,7 @@ export class CheckerTexture extends Texture {
     this.step = step
   }
 
-  value(u: number, v: number, point: Vector3) {
+  value(u: number, v: number, point: Vector3): Color {
     const sines =
       Math.sin(this.step * point.x) *
       Math.sin(this.step * point.y) *

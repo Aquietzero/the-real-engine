@@ -9,50 +9,46 @@ import {
   DielectricMaterial,
   LambertianMaterial,
   MetalMaterial,
-} from '@TRE/ray-tracer/material'
-import { SolidColor, CheckerTexture } from '@TRE/ray-tracer/texture'
+} from '@TRE/ray-tracer/materials'
+import { SolidColor, CheckerTexture, Texture } from '@TRE/ray-tracer/texture'
+import { DiffuseLight } from './materials/diffuse-light'
+import { XYRect } from './xy-rect'
 
 const SAMPLES_PER_PIXEL = 10
 const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
 const MAX_REFLECT_DEPTH = 20
 
-const rayColor = (r: Ray, world: Hittables, depth: number): Color => {
+const rayColor = (
+  r: Ray,
+  bg: Color,
+  world: Hittables,
+  depth: number
+): Color => {
   if (depth <= 0) return new Color(0, 0, 0)
 
   // use tMin = 0.0001 to solve the shadow acne problem
   const hitResult = world.hit(r, 0.000001)
-  if (hitResult.doesHit) {
-    const hitRecord = hitResult.hitRecord
-    // without material
-    if (!hitRecord.material) {
-      const target = hitRecord.point
-        .add(hitRecord.normal)
-        .add(Vector3.randomInUnitSphere())
-      const reflectedRay = new Ray(hitRecord.point, target.sub(hitRecord.point))
-      return rayColor(reflectedRay, world, depth - 1).mul(0.5) as Color
-    }
 
-    // with material
-    const materialScatter: any = hitRecord.material.scatter(r, hitRecord)
-    if (materialScatter.isValid) {
-      const { attenuation, scattered } = materialScatter
-      const scatteredColor = rayColor(scattered, world, depth - 1)
-      return new Color(
-        attenuation.x * scatteredColor.x,
-        attenuation.y * scatteredColor.y,
-        attenuation.z * scatteredColor.z
-      )
-    }
+  // hits nothing
+  if (!hitResult.doesHit) return bg
 
-    return new Color(0, 0, 0)
-  }
+  const hitRecord = hitResult.hitRecord
 
-  const unitDirection = r.dir.normalize()
-  const t = 0.5 * (unitDirection.y + 1)
-  const c1 = new Vector3(1, 1, 1)
-  const c2 = new Vector3(0.5, 0.7, 1)
-  const c = c1.mul(1 - t).add(c2.mul(t))
-  return new Color(c.x, c.y, c.z)
+  const materialScatter: any = hitRecord.material.scatter(r, hitRecord)
+  const emitted = hitRecord.material.emitted(
+    hitRecord.u,
+    hitRecord.v,
+    hitRecord.point
+  )
+  if (!materialScatter.isValid) return emitted
+
+  const { attenuation, scattered } = materialScatter
+  const scatteredColor = rayColor(scattered, bg, world, depth - 1)
+  return new Color(
+    emitted.x + attenuation.x * scatteredColor.x,
+    emitted.y + attenuation.y * scatteredColor.y,
+    emitted.z + attenuation.z * scatteredColor.z
+  )
 }
 
 const writeColor = (color: Color) => {
@@ -79,7 +75,7 @@ const threeBallsScene = (aspectRatio: number) => {
     aspectRatio,
   })
   camera.look(
-    new Vector3(-1, 1, 1),
+    new Vector3(-3, 2, 0),
     new Vector3(0, 0, -1),
     new Vector3(0, 1, 0)
   )
@@ -113,18 +109,22 @@ const threeBallsScene = (aspectRatio: number) => {
   const dielectricMaterial = new DielectricMaterial({
     refractiveIndex: 1.5,
   })
+  const diffuseLight = new DiffuseLight()
+  diffuseLight.setTexture(new SolidColor(new Color(4, 4, 4)))
 
   const ground = new Sphere(new Vector3(0, -100.5, -1), 100)
   const centerBall = new Sphere(new Vector3(0, 0, -1), 0.5)
   const leftBallInner = new Sphere(new Vector3(-1, 0, -1), -0.4)
   const leftBallOuter = new Sphere(new Vector3(-1, 0, -1), 0.5)
   const rightBall = new Sphere(new Vector3(1, 0, -1), 0.5)
+  const rectLight = new XYRect(-1, 1, 0, 1, -2)
 
   ground.setMaterial(groundMaterial)
   centerBall.setMaterial(centerBallMaterial)
   leftBallInner.setMaterial(dielectricMaterial)
   leftBallOuter.setMaterial(dielectricMaterial)
   rightBall.setMaterial(metalMaterial1)
+  rectLight.setMaterial(diffuseLight)
 
   const world = new Hittables()
 
@@ -133,6 +133,7 @@ const threeBallsScene = (aspectRatio: number) => {
   world.add(leftBallInner)
   world.add(leftBallOuter)
   world.add(rightBall)
+  world.add(rectLight)
 
   return { camera, world }
 }
@@ -213,6 +214,7 @@ export const renderImage = (width: number = 800) => {
   const ctx = canvas.getContext('2d')
 
   const aspectRatio = 16 / 9
+  const bg = new Color(0.7, 0.8, 1)
 
   const { camera, world } = threeBallsScene(aspectRatio)
   // const { camera, world } = manyBallsScene(aspectRatio)
@@ -233,7 +235,7 @@ export const renderImage = (width: number = 800) => {
         const v = (y + Math.random()) / height
 
         const r = camera.getRay(u, v)
-        const color = rayColor(r, world, MAX_REFLECT_DEPTH)
+        const color = rayColor(r, bg, world, MAX_REFLECT_DEPTH)
         c = c.add(color) as Color
       }
 

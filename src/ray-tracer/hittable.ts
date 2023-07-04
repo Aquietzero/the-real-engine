@@ -1,6 +1,7 @@
 import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
-import { Material } from '@TRE/ray-tracer/material'
+import { Material, LambertianMaterial } from '@TRE/ray-tracer/materials'
+import { Color } from '@TRE/ray-tracer/color'
 
 export interface HitRecord {
   point: Vector3
@@ -28,8 +29,16 @@ export const getFaceNormal = (r: Ray, outwardNormal: Vector3) => {
 export class Hittable {
   // each object should define its own bounding volume
   bv: any
+  // default to be a gray lambertian material
+  material: Material = new LambertianMaterial({
+    albedo: new Color(0.8, 0.8, 0.8),
+  })
 
   hit(r: Ray, tMin: number, tMax: number): HitResult {
     return { doesHit: false }
+  }
+
+  setMaterial(material: Material) {
+    this.material = material
   }
 }

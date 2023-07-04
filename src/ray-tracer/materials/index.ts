@@ -1,0 +1,5 @@
+export { Material } from './material'
+export { LambertianMaterial } from './lambertian'
+export { MetalMaterial } from './metal'
+export { DielectricMaterial } from './dielectric'
+export { DiffuseLight } from './diffuse-light'
