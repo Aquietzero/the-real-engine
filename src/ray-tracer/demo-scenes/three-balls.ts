@@ -67,12 +67,14 @@ export const threeBallsScene = (aspectRatio: number) => {
 
   const world = new Hittables()
 
-  world.add(ground)
-  world.add(centerBall)
-  world.add(leftBallInner)
-  world.add(leftBallOuter)
-  world.add(rightBall)
-  world.add(rectLight)
+  world.add([
+    ground,
+    centerBall,
+    leftBallInner,
+    leftBallOuter,
+    rightBall,
+    rectLight,
+  ])
 
   return { camera, world }
 }

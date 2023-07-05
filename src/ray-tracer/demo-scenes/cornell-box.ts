@@ -1,7 +1,7 @@
 import { Vector3 } from '@TRE/math'
 import { Camera } from '@TRE/ray-tracer/camera'
 import { Color } from '@TRE/ray-tracer/color'
-import { Sphere, XYRect, YZRect, XZRect } from '@TRE/ray-tracer/primitives'
+import { Box, XYRect, YZRect, XZRect } from '@TRE/ray-tracer/primitives'
 import { Hittables } from '@TRE/ray-tracer/hittables'
 import { LambertianMaterial } from '@TRE/ray-tracer/materials'
 import { SolidColor, CheckerTexture } from '@TRE/ray-tracer/texture'
@@ -34,6 +34,8 @@ export const cornellBoxScene = (aspectRatio: number) => {
   const topWall = new XZRect(0, 555, 0, 555, 555)
   const backWall = new XYRect(0, 555, 0, 555, 555)
   const light = new XZRect(213, 343, 227, 332, 554)
+  const box1 = new Box(new Vector3(130, 0, 65), new Vector3(295, 165, 230))
+  const box2 = new Box(new Vector3(265, 0, 295), new Vector3(430, 330, 460))
 
   leftWall.setMaterial(redMaterial)
   rightWall.setMaterial(greenMaterial)
@@ -41,15 +43,21 @@ export const cornellBoxScene = (aspectRatio: number) => {
   topWall.setMaterial(whiteMaterial)
   backWall.setMaterial(whiteMaterial)
   light.setMaterial(diffuseLight)
+  box1.setMaterial(whiteMaterial)
+  box2.setMaterial(whiteMaterial)
 
   const world = new Hittables()
 
-  world.add(leftWall)
-  world.add(rightWall)
-  world.add(bottomWall)
-  world.add(topWall)
-  world.add(backWall)
-  world.add(light)
+  world.add([
+    leftWall,
+    rightWall,
+    bottomWall,
+    topWall,
+    backWall,
+    light,
+    box1,
+    box2,
+  ])
 
   return { camera, world }
 }

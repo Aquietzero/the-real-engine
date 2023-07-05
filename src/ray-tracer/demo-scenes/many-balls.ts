@@ -18,7 +18,7 @@ export const manyBallsScene = (aspectRatio: number) => {
   })
   const ground = new Sphere(new Vector3(0, -1000, 0), 1000)
   ground.setMaterial(groundMaterial)
-  world.add(ground)
+  world.add([ground])
 
   const gridSize = 10
   const step = 3
@@ -51,7 +51,7 @@ export const manyBallsScene = (aspectRatio: number) => {
         }
 
         ball.setMaterial(material)
-        world.add(ball)
+        world.add([ball])
       }
     }
   }
@@ -71,9 +71,7 @@ export const manyBallsScene = (aspectRatio: number) => {
   const b3 = new Sphere(new Vector3(4, 1, 0), 1.0)
   b3.setMaterial(m3)
 
-  world.add(b1)
-  world.add(b2)
-  world.add(b3)
+  world.add([b1, b2, b3])
 
   const camera = new Camera({ aspectRatio: 3 / 2, fov: 20 })
   camera.look(new Vector3(13, 2, 3), new Vector3(0, 0, 0), new Vector3(0, 1, 0))

@@ -4,7 +4,7 @@ import { threeBallsScene } from './demo-scenes/three-balls'
 import { manyBallsScene } from './demo-scenes/many-balls'
 import { cornellBoxScene } from './demo-scenes/cornell-box'
 
-const SAMPLES_PER_PIXEL = 20
+const SAMPLES_PER_PIXEL = 3
 const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
 const MAX_REFLECT_DEPTH = 10
 

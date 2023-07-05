@@ -8,8 +8,8 @@ export class Hittables {
   objects: Hittable[] = []
   bvh: BinaryBVTree
 
-  add(object: Hittable) {
-    this.objects.push(object)
+  add(objects: Hittable[]) {
+    this.objects = this.objects.concat(objects)
     // this.bvh = new BinaryBVTree(this.objects)
   }
 

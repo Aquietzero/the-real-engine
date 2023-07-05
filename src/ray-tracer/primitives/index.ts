@@ -1,4 +1,5 @@
 export { Sphere } from './sphere'
+export { Box } from './box'
 export { XYRect } from './xy-rect'
 export { XZRect } from './xz-rect'
 export { YZRect } from './yz-rect'
