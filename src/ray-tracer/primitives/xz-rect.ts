@@ -1,6 +1,7 @@
 import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
 import { HitResult, Hittable, getFaceNormal } from '@TRE/ray-tracer/hittable'
+import { LambertianMaterial } from '@TRE/ray-tracer/materials'
 import { AABB } from '@TRE/bounding-volumes'
 
 export class XZRect extends Hittable {
@@ -21,8 +22,8 @@ export class XZRect extends Hittable {
     this.k = k
 
     this.bv = new AABB(
-      new Vector3((x0 + x1) / 2, (z0 + z1) / 2, k),
-      new Vector3(Math.abs(x0 - x1) / 2, Math.abs(z0 - z1) / 2, 0.000001)
+      new Vector3((x0 + x1) / 2, k, (z0 + z1) / 2),
+      new Vector3(Math.abs(x0 - x1) / 2, 0.000001, Math.abs(z0 - z1) / 2)
     )
   }
 

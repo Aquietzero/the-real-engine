@@ -32,12 +32,9 @@ export const threeBallsScene = (aspectRatio: number) => {
     50
   )
 
-  const groundMaterial = new LambertianMaterial({
-    albedo: new Color(0.8, 0.8, 0.8),
-  })
-  groundMaterial.setTexture(checkerTexture1)
+  const groundMaterial = new LambertianMaterial({ texture: checkerTexture1 })
   const centerBallMaterial = new LambertianMaterial({
-    albedo: new Color(0.1, 0.2, 0.5),
+    texture: checkerTexture2,
   })
   centerBallMaterial.setTexture(checkerTexture2)
   const metalMaterial1 = new MetalMaterial({

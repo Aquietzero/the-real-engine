@@ -25,9 +25,9 @@ export const writeColor = (color: Color, scale: number) => {
   let g = Math.sqrt(color.y * scale)
   let b = Math.sqrt(color.z * scale)
 
-  r = 256 * clamp(r, 0, 1)
-  g = 256 * clamp(g, 0, 1)
-  b = 256 * clamp(b, 0, 1)
+  r = 256 * clamp(r, 0, 0.999)
+  g = 256 * clamp(g, 0, 0.999)
+  b = 256 * clamp(b, 0, 0.999)
 
   return {
     r,

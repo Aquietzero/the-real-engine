@@ -2,19 +2,17 @@ import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
 import { HitRecord } from '@TRE/ray-tracer/hittable'
 import { Color } from '@TRE/ray-tracer/color'
-import { Texture } from '@TRE/ray-tracer/texture'
+import { Texture, SolidColor } from '@TRE/ray-tracer/texture'
 import { Material } from './material'
 
 interface LambertianMaterialOptions {
-  albedo?: Color
+  texture?: Texture
 }
 
 export class LambertianMaterial extends Material {
-  albedo: Color
-
-  constructor(options: LambertianMaterialOptions) {
+  constructor(options: LambertianMaterialOptions = {}) {
     super()
-    this.albedo = options.albedo || new Color(0.8, 0.8, 0.8)
+    this.texture = options.texture || new SolidColor(new Color(0.8, 0.8, 0.8))
   }
 
   scatter(rayIn: Ray, hitRecord: HitRecord) {
@@ -24,14 +22,14 @@ export class LambertianMaterial extends Material {
       scatterDirection = hitRecord.normal
     }
 
-    const scattered = new Ray(hitRecord.point, scatterDirection)
-
     return {
       isValid: true,
-      scattered,
-      attenuation: this.texture
-        ? this.texture.value(hitRecord.u, hitRecord.v, hitRecord.point)
-        : this.albedo,
+      scattered: new Ray(hitRecord.point, scatterDirection),
+      attenuation: this.texture.value(
+        hitRecord.u,
+        hitRecord.v,
+        hitRecord.point
+      ),
     }
   }
 }

@@ -131,9 +131,9 @@ export class Vector3 {
   public static randomInUnitSphere(): Vector3 {
     while (true) {
       const randomUnitVector = new Vector3(
-        Math.random(),
-        Math.random(),
-        Math.random()
+        -1 + Math.random() * 2,
+        -1 + Math.random() * 2,
+        -1 + Math.random() * 2
       )
       if (randomUnitVector.len2() >= 1) continue
       return randomUnitVector

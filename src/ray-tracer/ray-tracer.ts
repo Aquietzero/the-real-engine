@@ -24,10 +24,10 @@ export class RayTracer {
   }
 
   rayColor(r: Ray, bg: Color, world: Hittables, depth: number): Color {
-    if (depth <= 0) return new Color(0, 0, 0)
+    if (depth <= 0) return bg
 
     // use tMin = 0.0001 to solve the shadow acne problem
-    const hitResult = world.hit(r, 0.000001)
+    const hitResult = world.hit(r, 0.001)
 
     // hits nothing
     if (!hitResult.doesHit) return bg

@@ -8,12 +8,13 @@ import {
   LambertianMaterial,
   MetalMaterial,
 } from '@TRE/ray-tracer/materials'
+import { SolidColor } from '@TRE/ray-tracer/texture'
 
 export const manyBallsScene = (aspectRatio: number) => {
   const world = new Hittables()
 
   const groundMaterial = new LambertianMaterial({
-    albedo: new Color(0.5, 0.5, 0.5),
+    texture: new SolidColor(new Color(0.5, 0.5, 0.5)),
   })
   const ground = new Sphere(new Vector3(0, -1000, 0), 1000)
   ground.setMaterial(groundMaterial)
@@ -36,7 +37,7 @@ export const manyBallsScene = (aspectRatio: number) => {
         if (random < 0.8) {
           // diffuse
           material = new LambertianMaterial({
-            albedo: Color.random(),
+            texture: new SolidColor(Color.random()),
           })
         } else if (random < 0.95) {
           // metal
@@ -60,7 +61,9 @@ export const manyBallsScene = (aspectRatio: number) => {
   const b1 = new Sphere(new Vector3(0, 1, 0), 1.0)
   b1.setMaterial(m1)
 
-  const m2 = new LambertianMaterial({ albedo: new Color(0.4, 0.2, 0.1) })
+  const m2 = new LambertianMaterial({
+    texture: new SolidColor(new Color(0.4, 0.2, 0.1)),
+  })
   const b2 = new Sphere(new Vector3(-4, 1, 0), 1.0)
   b2.setMaterial(m2)
 

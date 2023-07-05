@@ -10,7 +10,7 @@ export class Hittables {
 
   add(object: Hittable) {
     this.objects.push(object)
-    this.bvh = new BinaryBVTree(this.objects)
+    // this.bvh = new BinaryBVTree(this.objects)
   }
 
   clear() {

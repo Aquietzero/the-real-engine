@@ -2,33 +2,39 @@ import { Color, writeColor } from '@TRE/ray-tracer/color'
 import { RayTracer } from '@TRE/ray-tracer/ray-tracer'
 import { threeBallsScene } from './demo-scenes/three-balls'
 import { manyBallsScene } from './demo-scenes/many-balls'
+import { cornellBoxScene } from './demo-scenes/cornell-box'
 
-const SAMPLES_PER_PIXEL = 10
+const SAMPLES_PER_PIXEL = 20
 const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
-const MAX_REFLECT_DEPTH = 20
+const MAX_REFLECT_DEPTH = 10
 
 const rayTracer = new RayTracer({
   samplesPerPixel: SAMPLES_PER_PIXEL,
   maxReflectDepth: MAX_REFLECT_DEPTH,
 })
 
-export const renderImage = (width: number = 800) => {
+export const renderImage = (width: number = 500) => {
   const start = Date.now()
 
   const canvas: any = document.getElementById('ray-tracer-canvas')
   const ctx = canvas.getContext('2d')
 
-  const aspectRatio = 16 / 9
-  const bg = new Color(0.7, 0.8, 1)
+  // const aspectRatio = 16 / 9
+  const aspectRatio = 1
+  // const bg = new Color(0.7, 0.8, 1)
+  const bg = new Color(0, 0, 0)
 
-  const { camera, world } = threeBallsScene(aspectRatio)
+  // const { camera, world } = threeBallsScene(aspectRatio)
   // const { camera, world } = manyBallsScene(aspectRatio)
+  const { camera, world } = cornellBoxScene(aspectRatio)
 
   const height = width / aspectRatio
   canvas.width = width
   canvas.height = height
 
   const imageData = ctx.createImageData(width, height)
+
+  console.log(world)
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {

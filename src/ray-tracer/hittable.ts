@@ -30,9 +30,7 @@ export class Hittable {
   // each object should define its own bounding volume
   bv: any
   // default to be a gray lambertian material
-  material: Material = new LambertianMaterial({
-    albedo: new Color(0.8, 0.8, 0.8),
-  })
+  material: Material = new LambertianMaterial()
 
   hit(r: Ray, tMin: number, tMax: number): HitResult {
     return { doesHit: false }
