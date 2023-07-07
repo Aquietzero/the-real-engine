@@ -3,6 +3,15 @@ import { Ray } from '@TRE/primitive/ray'
 import { HitRecord } from '@TRE/ray-tracer/hittable'
 import { Color } from '@TRE/ray-tracer/color'
 import { Texture } from '@TRE/ray-tracer/texture'
+import { PDF } from '@TRE/ray-tracer/pdf'
+
+export interface ScatterRecord {
+  isValid: boolean
+  specularRay?: Ray
+  isSpecular?: boolean
+  attenuation?: Color
+  pdf?: PDF
+}
 
 export class Material {
   texture: Texture
@@ -11,7 +20,7 @@ export class Material {
     this.texture = texture
   }
 
-  scatter(rayIn: Ray, hitRecord: HitRecord) {
+  scatter(rayIn: Ray, hitRecord: HitRecord): ScatterRecord {
     return { isValid: false }
   }
 

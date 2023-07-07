@@ -3,7 +3,8 @@ import { Ray } from '@TRE/primitive/ray'
 import { HitRecord } from '@TRE/ray-tracer/hittable'
 import { Color } from '@TRE/ray-tracer/color'
 import { Texture, SolidColor } from '@TRE/ray-tracer/texture'
-import { Material } from './material'
+import { Material, ScatterRecord } from './material'
+import { CosinePDF } from '../pdf'
 
 interface LambertianMaterialOptions {
   texture?: Texture
@@ -15,18 +16,11 @@ export class LambertianMaterial extends Material {
     this.texture = options.texture || new SolidColor(new Color(0.8, 0.8, 0.8))
   }
 
-  scatter(rayIn: Ray, hitRecord: HitRecord) {
-    let scatterDirection = hitRecord.normal.add(Vector3.randomUnitVector())
-
-    if (scatterDirection.isZero()) {
-      scatterDirection = hitRecord.normal
-    }
-
-    const scattered = new Ray(hitRecord.point, scatterDirection.normalize())
+  scatter(rayIn: Ray, hitRecord: HitRecord): ScatterRecord {
     return {
       isValid: true,
-      scattered,
-      pdf: Vector3.dotProduct(hitRecord.normal, scattered.dir) / Math.PI,
+      isSpecular: false,
+      pdf: new CosinePDF(hitRecord.normal),
       attenuation: this.texture.value(
         hitRecord.u,
         hitRecord.v,

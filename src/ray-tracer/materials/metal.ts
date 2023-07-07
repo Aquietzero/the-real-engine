@@ -21,14 +21,15 @@ export class MetalMaterial extends Material {
 
   scatter(rayIn: Ray, hitRecord: HitRecord) {
     const reflected = Vector3.reflect(rayIn.dir.normalize(), hitRecord.normal)
-    const scattered = new Ray(
+    const specularRay = new Ray(
       hitRecord.point,
       reflected.add(Vector3.randomInUnitSphere().mul(this.fuzz))
     )
 
     return {
-      isValid: Vector3.dotProduct(scattered.dir, hitRecord.normal) > 0,
-      scattered,
+      isValid: true,
+      isSpecular: true,
+      specularRay,
       attenuation: this.albedo,
     }
   }

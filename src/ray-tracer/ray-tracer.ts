@@ -3,7 +3,7 @@ import { Color } from '@TRE/ray-tracer/color'
 import { Hittable } from '@TRE/ray-tracer/hittable'
 import { Hittables } from '@TRE/ray-tracer/hittables'
 import { Camera } from '@TRE/ray-tracer/camera'
-import { HittablePDF } from '@TRE/ray-tracer/pdf'
+import { CosinePDF, HittablePDF, MixturePDF } from '@TRE/ray-tracer/pdf'
 
 interface RayTracerOptions {
   samplesPerPixel: number
@@ -43,19 +43,34 @@ export class RayTracer {
 
     const hitRecord = hitResult.hitRecord
 
-    const materialScatter: any = hitRecord.material.scatter(r, hitRecord)
+    const scatterRecord: any = hitRecord.material.scatter(r, hitRecord)
     const emitted = hitRecord.material.emitted(
       hitRecord.u,
       hitRecord.v,
       hitRecord.point
     )
-    if (!materialScatter.isValid) return emitted
+    if (!scatterRecord.isValid) return emitted
 
-    const lightsPDF = new HittablePDF(hitRecord.point, lights)
-    const scattered = new Ray(hitRecord.point, lightsPDF.generate())
-    const pdf = lightsPDF.value(scattered.dir)
+    if (scatterRecord.isSpecular) {
+      const specularColor = this.rayColor(
+        scatterRecord.specularRay,
+        bg,
+        world,
+        lights,
+        depth - 1
+      )
+      return new Color(
+        scatterRecord.attenuation.x * specularColor.x,
+        scatterRecord.attenuation.y * specularColor.y,
+        scatterRecord.attenuation.z * specularColor.z
+      )
+    }
 
-    const { attenuation } = materialScatter
+    const lightPDF = new HittablePDF(hitRecord.point, lights)
+    const mixturePDF = new MixturePDF(lightPDF, scatterRecord.pdf)
+    const scattered = new Ray(hitRecord.point, mixturePDF.generate())
+    const pdf = mixturePDF.value(scattered.dir)
+
     const scatteredColor = this.rayColor(
       scattered,
       bg,
@@ -65,9 +80,9 @@ export class RayTracer {
     )
     const resultColor = emitted.add(
       new Color(
-        attenuation.x * scatteredColor.x,
-        attenuation.y * scatteredColor.y,
-        attenuation.z * scatteredColor.z
+        scatterRecord.attenuation.x * scatteredColor.x,
+        scatterRecord.attenuation.y * scatteredColor.y,
+        scatterRecord.attenuation.z * scatteredColor.z
       ).mul(hitRecord.material.scatteringPDF(r, hitRecord, scattered) / pdf)
     )
     return new Color(resultColor.x, resultColor.y, resultColor.z)

@@ -48,3 +48,26 @@ export class HittablePDF extends PDF {
     return this.hittable.random(this.origin)
   }
 }
+
+export class MixturePDF extends PDF {
+  pdfs: PDF[] = []
+
+  constructor(p0: PDF, p1: PDF) {
+    super()
+
+    this.pdfs.push(p0)
+    this.pdfs.push(p1)
+  }
+
+  value(dir: Vector3): number {
+    const [p0, p1] = this.pdfs
+    return 0.5 * p0.value(dir) + 0.5 * p1.value(dir)
+  }
+
+  generate(): Vector3 {
+    const [p0, p1] = this.pdfs
+
+    if (Math.random() < 0.5) return p0.generate()
+    return p1.generate()
+  }
+}
