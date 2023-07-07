@@ -1,7 +1,9 @@
 import { Ray } from '@TRE/primitive/ray'
 import { Color } from '@TRE/ray-tracer/color'
+import { Hittable } from '@TRE/ray-tracer/hittable'
 import { Hittables } from '@TRE/ray-tracer/hittables'
 import { Camera } from '@TRE/ray-tracer/camera'
+import { HittablePDF } from '@TRE/ray-tracer/pdf'
 
 interface RayTracerOptions {
   samplesPerPixel: number
@@ -11,6 +13,7 @@ interface RayTracerOptions {
 interface RayTracerContext {
   background: Color
   world: Hittables
+  lights: Hittable
   camera: Camera
 }
 
@@ -23,7 +26,13 @@ export class RayTracer {
     this.maxReflectDepth = opts.maxReflectDepth
   }
 
-  rayColor(r: Ray, bg: Color, world: Hittables, depth: number): Color {
+  rayColor(
+    r: Ray,
+    bg: Color,
+    world: Hittables,
+    lights: Hittable,
+    depth: number
+  ): Color {
     if (depth <= 0) return bg
 
     // use tMin = 0.0001 to solve the shadow acne problem
@@ -42,13 +51,26 @@ export class RayTracer {
     )
     if (!materialScatter.isValid) return emitted
 
-    const { attenuation, scattered } = materialScatter
-    const scatteredColor = this.rayColor(scattered, bg, world, depth - 1)
-    return new Color(
-      emitted.x + attenuation.x * scatteredColor.x,
-      emitted.y + attenuation.y * scatteredColor.y,
-      emitted.z + attenuation.z * scatteredColor.z
+    const lightsPDF = new HittablePDF(hitRecord.point, lights)
+    const scattered = new Ray(hitRecord.point, lightsPDF.generate())
+    const pdf = lightsPDF.value(scattered.dir)
+
+    const { attenuation } = materialScatter
+    const scatteredColor = this.rayColor(
+      scattered,
+      bg,
+      world,
+      lights,
+      depth - 1
     )
+    const resultColor = emitted.add(
+      new Color(
+        attenuation.x * scatteredColor.x,
+        attenuation.y * scatteredColor.y,
+        attenuation.z * scatteredColor.z
+      ).mul(hitRecord.material.scatteringPDF(r, hitRecord, scattered) / pdf)
+    )
+    return new Color(resultColor.x, resultColor.y, resultColor.z)
   }
 
   sample(u: number, v: number, ctx: RayTracerContext): Color {
@@ -59,6 +81,7 @@ export class RayTracer {
         r,
         ctx.background,
         ctx.world,
+        ctx.lights,
         this.maxReflectDepth
       )
       c = c.add(color) as Color

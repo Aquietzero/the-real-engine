@@ -9,6 +9,7 @@ export interface HitRecord {
   t: number
   frontFace: boolean
   material?: Material
+  pdf?: number
   // texture coordinates
   u?: number
   v?: number
@@ -38,5 +39,13 @@ export class Hittable {
 
   setMaterial(material: Material) {
     this.material = material
+  }
+
+  pdfValue(point: Vector3, dir: Vector3): number {
+    return 0
+  }
+
+  random(point: Vector3): Vector3 {
+    return new Vector3(1, 0, 0)
   }
 }

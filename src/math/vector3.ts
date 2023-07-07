@@ -158,6 +158,18 @@ export class Vector3 {
     }
   }
 
+  public static randomCosineDirection(): Vector3 {
+    const r1 = Math.random()
+    const r2 = Math.random()
+    const z = Math.sqrt(1 - r2)
+
+    const phi = 2 * Math.PI * r1
+    const x = Math.cos(phi) * Math.sqrt(r2)
+    const y = Math.sin(phi) * Math.sqrt(r2)
+
+    return new Vector3(x, y, z)
+  }
+
   // n: normal vector
   // v: inflect vector
   // return: reflect vector by n

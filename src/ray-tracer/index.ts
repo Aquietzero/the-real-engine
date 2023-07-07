@@ -3,10 +3,12 @@ import { RayTracer } from '@TRE/ray-tracer/ray-tracer'
 import { threeBallsScene } from './demo-scenes/three-balls'
 import { manyBallsScene } from './demo-scenes/many-balls'
 import { cornellBoxScene } from './demo-scenes/cornell-box'
+import { boxesAndBallsScene } from './demo-scenes/boxes-and-balls'
+import { XZRect } from '@TRE/ray-tracer/primitives'
 
-const SAMPLES_PER_PIXEL = 3
+const SAMPLES_PER_PIXEL = 10
 const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
-const MAX_REFLECT_DEPTH = 10
+const MAX_REFLECT_DEPTH = 5
 
 const rayTracer = new RayTracer({
   samplesPerPixel: SAMPLES_PER_PIXEL,
@@ -24,13 +26,16 @@ export const renderImage = (width: number = 500) => {
   // const bg = new Color(0.7, 0.8, 1)
   const bg = new Color(0, 0, 0)
 
-  // const { camera, world } = threeBallsScene(aspectRatio)
-  // const { camera, world } = manyBallsScene(aspectRatio)
-  const { camera, world } = cornellBoxScene(aspectRatio)
-
   const height = width / aspectRatio
   canvas.width = width
   canvas.height = height
+
+  // const { camera, world } = threeBallsScene(aspectRatio)
+  // const { camera, world } = manyBallsScene(aspectRatio)
+  const { camera, world } = cornellBoxScene(aspectRatio)
+  // const { camera, world } = boxesAndBallsScene(aspectRatio)
+
+  const lights = new XZRect(213, 343, 227, 332, 554)
 
   const imageData = ctx.createImageData(width, height)
 
@@ -41,7 +46,7 @@ export const renderImage = (width: number = 500) => {
       const c = rayTracer.sample(
         (x + Math.random()) / width,
         (y + Math.random()) / height,
-        { camera, background: bg, world }
+        { camera, background: bg, lights, world }
       )
 
       const { r, g, b } = writeColor(c, COLOR_SCALE)

@@ -15,6 +15,10 @@ export class Material {
     return { isValid: false }
   }
 
+  scatteringPDF(rayIn: Ray, hitRecord: HitRecord, scattered: Ray) {
+    return 0
+  }
+
   emitted(u: number, v: number, point: Vector3): Color {
     return new Color(0, 0, 0)
   }

@@ -3,6 +3,7 @@ import { Ray } from '@TRE/primitive/ray'
 import { Hittable, HitResult } from '@TRE/ray-tracer/hittable'
 import { Hittables } from '@TRE/ray-tracer/hittables'
 import { XYRect, XZRect, YZRect } from '@TRE/ray-tracer/primitives'
+import { Material } from '../materials'
 
 export class Box extends Hittable {
   sides: Hittables = new Hittables()
@@ -27,5 +28,9 @@ export class Box extends Hittable {
 
   hit(r: Ray, tMin: number = 0, tMax: number = Infinity): HitResult {
     return this.sides.hit(r, tMin, tMax)
+  }
+
+  setMaterial(material: Material) {
+    this.sides.objects.forEach((side) => side.setMaterial(material))
   }
 }

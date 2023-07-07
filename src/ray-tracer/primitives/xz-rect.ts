@@ -1,8 +1,8 @@
 import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
 import { HitResult, Hittable, getFaceNormal } from '@TRE/ray-tracer/hittable'
-import { LambertianMaterial } from '@TRE/ray-tracer/materials'
 import { AABB } from '@TRE/bounding-volumes'
+import { random } from '@TRE/ray-tracer/utils'
 
 export class XZRect extends Hittable {
   x0: number
@@ -51,5 +51,27 @@ export class XZRect extends Hittable {
         v: (z - this.z0) / (this.z1 - this.z0),
       },
     }
+  }
+
+  pdfValue(point: Vector3, dir: Vector3): number {
+    const hitTest = this.hit(new Ray(point, dir))
+    if (!hitTest.doesHit) return 0
+
+    const area = (this.x1 - this.x0) * (this.z1 - this.z0)
+    const hitRecord = hitTest.hitRecord
+    const distanceSquared = hitRecord.t * hitRecord.t * dir.len2()
+    const cosine =
+      Math.abs(Vector3.dotProduct(dir, hitRecord.normal)) / dir.len()
+
+    return distanceSquared / (cosine * area)
+  }
+
+  random(point: Vector3): Vector3 {
+    const randomPoint = new Vector3(
+      random(this.x0, this.x1),
+      this.k,
+      random(this.z0, this.z1)
+    )
+    return randomPoint.sub(point)
   }
 }

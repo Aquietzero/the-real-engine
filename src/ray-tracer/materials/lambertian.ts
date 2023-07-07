@@ -22,14 +22,39 @@ export class LambertianMaterial extends Material {
       scatterDirection = hitRecord.normal
     }
 
+    const scattered = new Ray(hitRecord.point, scatterDirection.normalize())
     return {
       isValid: true,
-      scattered: new Ray(hitRecord.point, scatterDirection),
+      scattered,
+      pdf: Vector3.dotProduct(hitRecord.normal, scattered.dir) / Math.PI,
       attenuation: this.texture.value(
         hitRecord.u,
         hitRecord.v,
         hitRecord.point
       ),
     }
+
+    // random hemisphere sampling
+    // let scatterDirection = Vector3.randomInHemisphere(hitRecord.normal)
+
+    // const scattered = new Ray(hitRecord.point, scatterDirection.normalize())
+    // return {
+    //   isValid: true,
+    //   scattered,
+    //   pdf: 0.5 / Math.PI,
+    //   attenuation: this.texture.value(
+    //     hitRecord.u,
+    //     hitRecord.v,
+    //     hitRecord.point
+    //   ),
+    // }
+  }
+
+  scatteringPDF(rayIn: Ray, hitRecord: HitRecord, scattered: Ray) {
+    const cosine = Vector3.dotProduct(
+      hitRecord.normal,
+      scattered.dir.normalize()
+    )
+    return cosine < 0 ? 0 : cosine / Math.PI
   }
 }
