@@ -1,10 +1,11 @@
 import * as _ from 'lodash'
+import { Vector3 } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
 import { Hittable, HitResult } from '@TRE/ray-tracer/hittable'
 import { BinaryBVTree, BinaryBVNode, NODE_TYPE } from '@TRE/structures/bvtree'
 import { Intersection } from '@TRE/primitive-tests'
 
-export class Hittables {
+export class Hittables extends Hittable {
   objects: Hittable[] = []
   bvh: BinaryBVTree
 
@@ -36,6 +37,22 @@ export class Hittables {
       doesHit: hitAnything,
       hitRecord,
     }
+  }
+
+  pdfValue(point: Vector3, dir: Vector3): number {
+    const weight = 1 / this.objects.length
+    let sum = 0
+
+    _.each(this.objects, (object) => {
+      sum += object.pdfValue(point, dir)
+    })
+
+    return sum * weight
+  }
+
+  random(point: Vector3): Vector3 {
+    const object = _.sample(this.objects)
+    return object.random(point)
   }
 
   bvNodeHit(

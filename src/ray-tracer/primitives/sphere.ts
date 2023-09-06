@@ -1,4 +1,4 @@
-import { Vector3 } from '@TRE/math'
+import { Vector3, ONB } from '@TRE/math'
 import { Ray } from '@TRE/primitive/ray'
 import { HitResult, Hittable, getFaceNormal } from '@TRE/ray-tracer/hittable'
 import { LambertianMaterial } from '@TRE/ray-tracer/materials'
@@ -56,6 +56,25 @@ export class Sphere extends Hittable {
         v,
       },
     }
+  }
+
+  pdfValue(point: Vector3, dir: Vector3): number {
+    const hitTest = this.hit(new Ray(point, dir))
+    if (!hitTest.doesHit) return 0
+
+    const cosThetaMax = Math.sqrt(
+      1 - (this.radius * this.radius) / this.center.sub(point).len2()
+    )
+    const solidAngle = 2 * Math.PI * (1 - cosThetaMax)
+    return 1 / solidAngle
+  }
+
+  random(point: Vector3): Vector3 {
+    const dir = this.center.sub(point)
+    const distanceSquared = dir.len2()
+    const uvw = new ONB()
+    uvw.buildFromW(dir)
+    return uvw.local(Vector3.randomToSphere(this.radius, distanceSquared))
   }
 
   static getSphereUV(point: Vector3) {

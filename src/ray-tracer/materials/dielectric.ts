@@ -46,6 +46,8 @@ export class DielectricMaterial extends Material {
 
     return {
       isValid: true,
+      isSpecular: true,
+      specularRay: new Ray(hitRecord.point, dir),
       scattered,
       attenuation,
     }

@@ -4,11 +4,14 @@ import { threeBallsScene } from './demo-scenes/three-balls'
 import { manyBallsScene } from './demo-scenes/many-balls'
 import { cornellBoxScene } from './demo-scenes/cornell-box'
 import { boxesAndBallsScene } from './demo-scenes/boxes-and-balls'
-import { XZRect } from '@TRE/ray-tracer/primitives'
+import { XZRect, Sphere, Box } from '@TRE/ray-tracer/primitives'
+import { Vector3 } from '@TRE/math'
+import { Hittables } from '@TRE/ray-tracer/hittables'
+import { RotateY, Translate } from '@TRE/ray-tracer/hittable'
 
-const SAMPLES_PER_PIXEL = 10
+const SAMPLES_PER_PIXEL = 50
 const COLOR_SCALE = 1 / SAMPLES_PER_PIXEL
-const MAX_REFLECT_DEPTH = 5
+const MAX_REFLECT_DEPTH = 10
 
 const rayTracer = new RayTracer({
   samplesPerPixel: SAMPLES_PER_PIXEL,
@@ -35,7 +38,11 @@ export const renderImage = (width: number = 500) => {
   const { camera, world } = cornellBoxScene(aspectRatio)
   // const { camera, world } = boxesAndBallsScene(aspectRatio)
 
-  const lights = new XZRect(213, 343, 227, 332, 554)
+  const lights = new Hittables()
+  const rectLight = new XZRect(213, 343, 227, 332, 554)
+  const ballLight = new Sphere(new Vector3(190, 90, 190), 90)
+
+  lights.add([rectLight, ballLight])
 
   const imageData = ctx.createImageData(width, height)
 

@@ -170,6 +170,20 @@ export class Vector3 {
     return new Vector3(x, y, z)
   }
 
+  public static randomToSphere(
+    radius: number,
+    distanceSquared: number
+  ): Vector3 {
+    const r1 = Math.random()
+    const r2 = Math.random()
+    const z = 1 + r2 * (Math.sqrt(1 - (radius * radius) / distanceSquared) - 1)
+
+    const phi = 2 * Math.PI * r1
+    const x = Math.cos(phi) * Math.sqrt(1 - z * z)
+    const y = Math.sin(phi) * Math.sqrt(1 - z * z)
+    return new Vector3(x, y, z)
+  }
+
   // n: normal vector
   // v: inflect vector
   // return: reflect vector by n

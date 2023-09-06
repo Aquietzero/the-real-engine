@@ -1,10 +1,14 @@
 import { Vector3 } from '@TRE/math'
 import { Camera } from '@TRE/ray-tracer/camera'
 import { Color } from '@TRE/ray-tracer/color'
-import { Box, XYRect, YZRect, XZRect } from '@TRE/ray-tracer/primitives'
+import { Box, Sphere, XYRect, YZRect, XZRect } from '@TRE/ray-tracer/primitives'
 import { RotateY, Translate } from '@TRE/ray-tracer/hittable'
 import { Hittables } from '@TRE/ray-tracer/hittables'
-import { LambertianMaterial, MetalMaterial } from '@TRE/ray-tracer/materials'
+import {
+  DielectricMaterial,
+  LambertianMaterial,
+  MetalMaterial,
+} from '@TRE/ray-tracer/materials'
 import { SolidColor } from '@TRE/ray-tracer/texture'
 import { DiffuseLight } from '@TRE/ray-tracer/materials'
 
@@ -25,11 +29,11 @@ export const cornellBoxScene = (aspectRatio: number) => {
   const redMaterial = new LambertianMaterial({ texture: red })
   const greenMaterial = new LambertianMaterial({ texture: green })
   const whiteMaterial = new LambertianMaterial({ texture: white })
-
   const aluminumMaterial = new MetalMaterial({
     albedo: new Color(0.8, 0.85, 0.88),
     fuzz: 0,
   })
+  const glass = new DielectricMaterial({ refractiveIndex: 1.5 })
 
   const diffuseLight = new DiffuseLight()
   diffuseLight.setTexture(new SolidColor(new Color(15, 15, 15)))
@@ -42,6 +46,7 @@ export const cornellBoxScene = (aspectRatio: number) => {
   const light = new XZRect(213, 343, 227, 332, 554)
   const box1 = new Box(new Vector3(0, 0, 0), new Vector3(165, 330, 165))
   const box2 = new Box(new Vector3(0, 0, 0), new Vector3(165, 165, 165))
+  const ball = new Sphere(new Vector3(190, 90, 190), 90)
 
   leftWall.setMaterial(redMaterial)
   rightWall.setMaterial(greenMaterial)
@@ -49,10 +54,12 @@ export const cornellBoxScene = (aspectRatio: number) => {
   topWall.setMaterial(whiteMaterial)
   backWall.setMaterial(whiteMaterial)
   light.setMaterial(diffuseLight)
-  box1.setMaterial(aluminumMaterial)
+  // box1.setMaterial(aluminumMaterial)
+  box1.setMaterial(whiteMaterial)
   box2.setMaterial(whiteMaterial)
+  ball.setMaterial(glass)
 
-  const rotatedBox1 = new RotateY(box1, 15)
+  const rotatedBox1 = new RotateY(box1, 30)
   const rotatedBox2 = new RotateY(box2, -18)
   const translatedBox1 = new Translate(rotatedBox1, new Vector3(265, 0, 265))
   const translatedBox2 = new Translate(rotatedBox2, new Vector3(130, 0, 65))
@@ -67,7 +74,8 @@ export const cornellBoxScene = (aspectRatio: number) => {
     backWall,
     light,
     translatedBox1,
-    translatedBox2,
+    // translatedBox2,
+    ball,
   ])
 
   return { camera, world }
