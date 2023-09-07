@@ -10,6 +10,45 @@ import { MDP, Policy, policyEvaluation } from '@TRE/reinforcement-learning/polic
 
 const { useState, useEffect, useCallback} = React
 
+
+const goGetItPolicy = {
+  0: 1,
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 2,
+  5: 0,
+  6: 2,
+  7: 0,
+  8: 1,
+  9: 1,
+  10: 2,
+  11: 0,
+  12: 0,
+  13: 1,
+  14: 1,
+  15: 0,
+}
+
+const carefulPolicy = {
+  0: 3,
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 3,
+  5: 0,
+  6: 0,
+  7: 0,
+  8: 0,
+  9: 2,
+  10: 3,
+  11: 0,
+  12: 0,
+  13: 1,
+  14: 1,
+  15: 0,
+}
+
 const FrozenLake: React.FC = () => {
   const gridLength = 100
   const margin = 0
@@ -22,8 +61,10 @@ const FrozenLake: React.FC = () => {
   ]
 
   const mdp = new MDP()
-  const policy = new Policy(mdp.states)
-  const V = policyEvaluation(policy, mdp, 0.99)
+  const policy1 = new Policy(mdp.states, goGetItPolicy)
+  const policy2 = new Policy(mdp.states, carefulPolicy)
+  const V1 = policyEvaluation(policy1, mdp, 0.99)
+  const V2 = policyEvaluation(policy2, mdp, 0.99)
 
   const isHole = (id: number) => {
     return _.indexOf([5, 7, 11, 12], id) > -1
@@ -32,7 +73,7 @@ const FrozenLake: React.FC = () => {
     return id === 15
   }
 
-  return (
+  const renderBoard =(policy: any, V: any) => (
     <>
       <div
         className="relative border border-black"
@@ -74,6 +115,17 @@ const FrozenLake: React.FC = () => {
         
       </div>
     </>
+  )
+
+  return (
+    <div className="flex flex-col">
+      <div>
+        {renderBoard(policy1, V1)}
+      </div>
+      <div className="mt-10">
+        {renderBoard(policy2, V2)}
+      </div>
+    </div>
   )
 }
 

@@ -29,6 +29,8 @@ class Action {
 
 class State {
   id: ID
+  isDone: boolean
+  isGoal: boolean
   actions: Action[]
 
   getId(): string {
@@ -40,8 +42,13 @@ class State {
   }
 }
 
+const isGoal = (id: number): boolean => id === 15
+const isHole = (id: number): boolean => _.indexOf([5, 7, 11, 12], id) > -1
+
 export class MDP {
-  states: State[] = []
+  states: { [id: ID]: State } = {}
+  startState: ID
+  endState: ID
 
   constructor() {
     // 4x4 grid
@@ -75,16 +82,14 @@ export class MDP {
       const transitions = _.map(possibleTransitions[actionName], (dir) => {
         const [nextRow, nextCol] = actionFunctions[dir](row, col)
         const nextStateId = stateId(nextRow, nextCol)
-        const isGoal = nextStateId === 15
-        const isHole = _.indexOf([5, 7, 11, 12], nextStateId) > -1
-        const reward = isGoal ? 1 : 0
+        const reward = isGoal(nextStateId) ? 1 : 0
         const probability = 1 / 3
 
         return new Transition(
           probability,
           nextStateId,
           reward,
-          isGoal || isHole
+          isGoal(nextStateId) || isHole(nextStateId)
         )
       })
 
@@ -98,20 +103,25 @@ export class MDP {
       for (let col = 0; col < N; col++) {
         const id = stateId(row, col)
         const state = new State(id)
+        state.isDone = isGoal(id) || isHole(id)
+        state.isGoal = isGoal(id)
         const actionFunctions = { up, left, right, down }
         const actions = _.map(['up', 'right', 'down', 'left'], (actionName) => {
           return move(row, col, actionName, actionFunctions)
         })
         state.actions = actions
 
-        this.states.push(state)
+        this.states[id] = state
       }
     }
+
+    this.startState = 0
+    this.endState = 15
   }
 
   info() {
-    _.each(this.states, (state) => {
-      console.log(`state: ${state.id}`)
+    _.each(this.states, (state, id) => {
+      console.log(`state: ${id}`)
       _.each(state.actions, (action) => {
         console.log(`  action: ${action.name}`)
         _.each(action.transitions, (transition, index) => {
@@ -128,39 +138,53 @@ export class MDP {
 }
 
 export class Policy {
-  states: State[] = []
+  states: { [id: ID]: State } = {}
   actionMap: { [stateId: ID]: number } = {}
 
-  constructor(states: State[]) {
+  constructor(states: { [id: ID]: State }, policy?: any) {
     this.states = states
-    // _.each(this.states, (state) => {
-    //   this.actionMap[state.id] = _.random(0, state.actions.length - 1, false)
-    // })
-    this.actionMap = {
-      0: 1,
-      1: 1,
-      2: 2,
-      3: 3,
-      4: 2,
-      5: 0,
-      6: 2,
-      7: 0,
-      8: 1,
-      9: 1,
-      10: 2,
-      11: 0,
-      12: 0,
-      13: 1,
-      14: 1,
-      15: 0,
+    if (policy) {
+      this.actionMap = policy
+    } else {
+      _.each(this.states, (state) => {
+        this.actionMap[state.id] = _.random(0, state.actions.length - 1, false)
+      })
     }
   }
 
   takeAction(state: State): Action {
-    if (_.indexOf([5, 7, 11, 12, 15], state.id) > -1) return
-
+    if (state.isDone) return
     const actionIndex = this.actionMap[state.id]
     return state.actions[actionIndex]
+  }
+
+  run(mdp: MDP) {
+    let currentState = mdp.startState
+    let reachGoal = false
+
+    while (true) {
+      const state = mdp.states[currentState]
+      if (state.isDone) {
+        if (state.isGoal) reachGoal = true
+        break
+      }
+
+      const action = this.takeAction(state)
+      const probability = Math.random()
+      let cumulatedProbability = 0
+      let targetTransition = _.last(action.transitions)
+      for (let i = 0; i < action.transitions.length; ++i) {
+        const transition = action.transitions[i]
+        cumulatedProbability += transition.probability
+        if (probability < cumulatedProbability) {
+          targetTransition = transition
+          break
+        }
+      }
+      currentState = targetTransition.nextState
+    }
+
+    return reachGoal
   }
 }
 
@@ -191,7 +215,7 @@ export const policyEvaluation = (
   while (true) {
     V = initV()
     count += 1
-    _.each(P.states, (state) => {
+    _.each(P.states, (state, id) => {
       const action = pi.takeAction(state)
       if (!action) return
       _.each(action.transitions, (transition) => {
@@ -213,8 +237,15 @@ export const policyEvaluation = (
   return V
 }
 
-// const mdp = new MDP()
-// mdp.info()
-// const policy = new Policy(mdp.states)
-// console.log(policy.actionMap)
-// console.log(policyEvaluation(policy, mdp, 0.99))
+const mdp = new MDP()
+mdp.info()
+const policy = new Policy(mdp.states)
+console.log(policyEvaluation(policy, mdp, 0.99))
+
+let counter = 0
+_.times(100, () => {
+  const reachGoal = policy.run(mdp)
+  if (reachGoal) counter += 1
+})
+
+console.log('reach goal #:', counter)
