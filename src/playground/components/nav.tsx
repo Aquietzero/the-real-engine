@@ -13,6 +13,7 @@ export const Nav: React.FC<Props> = (props: Props) => {
     'search': true,
     'machine-learning': true,
     'ray-tracer': true,
+    'reinforcement-learning': true
   } as any)
 
   const formatName = (name: string) => {

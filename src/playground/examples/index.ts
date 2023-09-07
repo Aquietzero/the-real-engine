@@ -49,6 +49,7 @@ import LinearRegression from './machine-learning/linear-regression'
 import BasicRayTracer from './ray-tracer/basic-ray-tracer'
 
 import FrozenLake from './reinforcement-learning/frozen-lake/frozen-lake'
+import FrozenLakePolicyIteration from './reinforcement-learning/frozen-lake/policy-iteration'
 
 export default {
   math: {
@@ -110,5 +111,6 @@ export default {
   },
   'reinforcement-learning': {
     FrozenLake,
+    FrozenLakePolicyIteration,
   },
 }

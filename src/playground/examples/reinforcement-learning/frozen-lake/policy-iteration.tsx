@@ -8,16 +8,15 @@ import {
 } from '@ant-design/icons'
 import {
   MDP,
-  Policy,
   policyEvaluation,
-  carefulPolicy,
-  goGetItPolicy,
-  policyIteration,
+  policyIterationGenerator,
 } from '@TRE/reinforcement-learning/policy'
 
-const { useState, useEffect, useCallback } = React
-
-const FrozenLake: React.FC = () => {
+const FrozenLakePolicyIteration: React.FC = () => {
+  const mdp = new MDP()
+  const [gen, setGen] = React.useState<any>()
+  const [ctx, setCtx] = React.useState<any>()
+  const [isDone, setIsDone] = React.useState(false)
   const gridLength = 100
   const margin = 0
   const size = 4
@@ -28,12 +27,27 @@ const FrozenLake: React.FC = () => {
     [12, 13, 14, 15],
   ]
 
-  const mdp = new MDP()
-  const policy1 = new Policy(mdp.states, goGetItPolicy)
-  const policy2 = new Policy(mdp.states, carefulPolicy)
-  const V1 = policyEvaluation(policy1, mdp, 0.99)
-  const V2 = policyEvaluation(policy2, mdp, 0.99)
-  const { V: V3, policy: policy3 } = policyIteration(mdp, 0.99)
+  React.useLayoutEffect(() => {
+    const gen = policyIterationGenerator(mdp, 0.99)
+    const next = gen.next()
+    setGen(gen)
+    setCtx(next.value)
+  }, [])
+
+  const optimize = () => {
+    if (isDone) return
+
+    const next = gen.next()
+    console.log(next)
+    if (next.done) setIsDone(true)
+    setCtx(next.value)
+  }
+
+  const evaluate = () => {
+    const V = policyEvaluation(ctx.policy, mdp)
+    console.log(V, ctx.policy)
+    setCtx({ policy: ctx.policy, V })
+  }
 
   const isHole = (id: number) => {
     return _.indexOf([5, 7, 11, 12], id) > -1
@@ -99,23 +113,22 @@ const FrozenLake: React.FC = () => {
 
   return (
     <div className="flex flex-col">
-      <h2>Go Get It Policy</h2>
-      <div>{renderBoard(policy1, V1)}</div>
-      <h2 className="mt-10">Careful Policy</h2>
-      <div>{renderBoard(policy2, V2)}</div>
       <h2 className="mt-10">Optimal Policy</h2>
-      <div>{renderBoard(policy3, V3)}</div>
+      <div>{ctx && renderBoard(ctx.policy, ctx.V)}</div>
+      <div onClick={e => optimize()}>optimize</div>
+      <div onClick={e => evaluate()}>evaluate</div>
+      <div>{ isDone ? 'done' : '...' }</div>
     </div>
   )
 }
 
 export default {
-  description: 'frozen lake.',
+  description: 'frozen lake policy iteration.',
   notCanvas: true,
   run(app: any) {
     return (
       <div className="w-full h-full flex justify-center overflow-scroll">
-        <FrozenLake />
+        <FrozenLakePolicyIteration />
       </div>
     )
   },

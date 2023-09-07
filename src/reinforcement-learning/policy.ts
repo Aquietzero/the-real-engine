@@ -43,7 +43,7 @@ class State {
 }
 
 const isGoal = (id: number): boolean => id === 15
-const isHole = (id: number): boolean => _.indexOf([5, 7, 11, 12], id) > -1
+const isHole = (id: number): boolean => _.includes([5, 7, 11, 12], id)
 
 export class MDP {
   states: { [id: ID]: State } = {}
@@ -152,6 +152,21 @@ export class Policy {
     }
   }
 
+  clone() {
+    return new Policy(this.states, _.cloneDeep(this.actionMap))
+  }
+
+  equalTo(p: Policy): boolean {
+    let isEqual = true
+    _.each(this.actionMap, (actionIndex, stateId) => {
+      if (p.actionMap[stateId] !== actionIndex) {
+        isEqual = false
+      }
+    })
+
+    return isEqual
+  }
+
   takeAction(state: State): Action {
     if (state.isDone) return
     const actionIndex = this.actionMap[state.id]
@@ -188,32 +203,32 @@ export class Policy {
   }
 }
 
+const initV = (P: MDP) => {
+  const V: { [id: string]: number } = {}
+  _.each(P.states, (state) => (V[state.id] = 0))
+  return V
+}
+
+const diffV = (v1: any, v2: any): number => {
+  return _.max(
+    _.map(v1, (val, stateId) => {
+      return Math.abs(v2[stateId] - val)
+    })
+  )
+}
+
 export const policyEvaluation = (
   pi: Policy,
   P: MDP,
   gamma = 1.0,
   theta = 1e-10
 ) => {
-  const initV = () => {
-    const V: { [id: string]: number } = {}
-    _.each(P.states, (state) => (V[state.id] = 0))
-    return V
-  }
-
-  const diffV = (v1: any, v2: any): number => {
-    return _.max(
-      _.map(v1, (val, stateId) => {
-        return Math.abs(v2[stateId] - val)
-      })
-    )
-  }
-
-  let prevV = initV()
-  let V = initV()
+  let prevV = initV(P)
+  let V = initV(P)
 
   let count = 0
   while (true) {
-    V = initV()
+    V = initV(P)
     count += 1
     _.each(P.states, (state, id) => {
       const action = pi.takeAction(state)
@@ -226,26 +241,132 @@ export const policyEvaluation = (
       })
     })
 
-    if (diffV(V, prevV) < theta) {
-      break
-    }
+    if (diffV(V, prevV) < theta) break
 
-    prevV = { ...V }
+    prevV = _.cloneDeep(V)
   }
 
   console.log('iters: ', count)
   return V
 }
 
+export const policyImprovement = (V: any, P: MDP, gamma = 1.0): Policy => {
+  const Q: any = {}
+
+  _.each(P.states, (state) => {
+    _.each(state.actions, (action, actionIndex) => {
+      _.each(action.transitions, (transition) => {
+        const { probability, nextState, reward, done } = transition
+        const doneFlag = !done ? 1 : 0
+
+        if (!Q[state.id]) Q[state.id] = new Array(state.actions.length).fill(0)
+
+        Q[state.id][actionIndex] +=
+          probability * (reward + gamma * V[nextState] * doneFlag)
+      })
+    })
+  })
+
+  const policy = new Policy(P.states)
+  policy.actionMap = {}
+  _.each(Q, (actions, stateId) => {
+    let max = -Infinity
+    let actionIndex = 0
+    for (let i = 0; i < actions.length; ++i) {
+      if (actions[i] > max) {
+        max = actions[i]
+        actionIndex = i
+      }
+    }
+
+    policy.actionMap[stateId] = actionIndex
+  })
+
+  return policy
+}
+
+export function* policyIterationGenerator(P: MDP, gamma = 1.0, theta = 1e-10) {
+  let V
+  let policy = new Policy(P.states)
+
+  while (true) {
+    const oldPolicy = policy.clone()
+    V = policyEvaluation(policy, P, gamma, theta)
+    policy = policyImprovement(V, P, gamma)
+
+    yield { V, policy }
+
+    if (oldPolicy.equalTo(policy)) break
+  }
+
+  return { V, policy }
+}
+
+export const policyIteration = (P: MDP, gamma = 1.0, theta = 1e-10) => {
+  const gen = policyIterationGenerator(P, gamma, theta)
+  let result = gen.next()
+  let counter = 0
+  while (!result.done) {
+    counter += 1
+    result = gen.next()
+  }
+  console.log(counter)
+  return result.value as any
+}
+
+export const goGetItPolicy = {
+  0: 1,
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 2,
+  5: 0,
+  6: 2,
+  7: 0,
+  8: 1,
+  9: 1,
+  10: 2,
+  11: 0,
+  12: 0,
+  13: 1,
+  14: 1,
+  15: 0,
+}
+
+export const carefulPolicy = {
+  0: 3,
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 3,
+  5: 0,
+  6: 0,
+  7: 0,
+  8: 0,
+  9: 2,
+  10: 3,
+  11: 0,
+  12: 0,
+  13: 1,
+  14: 1,
+  15: 0,
+}
+
 const mdp = new MDP()
-mdp.info()
-const policy = new Policy(mdp.states)
-console.log(policyEvaluation(policy, mdp, 0.99))
+// mdp.info()
+// const policy = new Policy(mdp.states, carefulPolicy)
+// let V1 = policyEvaluation(policy, mdp, 0.99)
+// const newPolicy = policyImprovement(V1, mdp)
+// const V2 = policyEvaluation(newPolicy, mdp, 0.99)
+// console.log(V2)
 
-let counter = 0
-_.times(100, () => {
-  const reachGoal = policy.run(mdp)
-  if (reachGoal) counter += 1
-})
+// let counter = 0
+// _.times(100, () => {
+//   const reachGoal = newPolicy.run(mdp)
+//   if (reachGoal) counter += 1
+// })
+//
+// console.log('reach goal #:', counter)
 
-console.log('reach goal #:', counter)
+const { V: V3, policy: policy3 } = policyIteration(mdp, 0.99)
+console.log('optimal policy evaluation: ', V3)
