@@ -1,141 +1,7 @@
 import * as _ from 'lodash'
-import * as uuid from 'short-uuid'
-
-type ID = string | number
-
-class Transition {
-  probability: number = 0
-  nextState: ID
-  reward: number = 0
-  done: boolean = false
-
-  constructor(
-    probability: number,
-    nextState: ID,
-    reward: number,
-    done: boolean
-  ) {
-    this.probability = probability
-    this.nextState = nextState
-    this.reward = reward
-    this.done = done
-  }
-}
-
-class Action {
-  name: string
-  transitions: Transition[]
-}
-
-class State {
-  id: ID
-  isDone: boolean
-  isGoal: boolean
-  actions: Action[]
-
-  getId(): string {
-    return uuid.generate()
-  }
-
-  constructor(id: ID) {
-    this.id = _.isNumber(id) ? id : this.getId()
-  }
-}
-
-const isGoal = (id: number): boolean => id === 15
-const isHole = (id: number): boolean => _.includes([5, 7, 11, 12], id)
-
-export class MDP {
-  states: { [id: ID]: State } = {}
-  startState: ID
-  endState: ID
-
-  constructor() {
-    // 4x4 grid
-    const N = 4
-    const up = (row: number, col: number) => [row - 1 < 0 ? row : row - 1, col]
-    const left = (row: number, col: number) => [
-      row,
-      col - 1 < 0 ? col : col - 1,
-    ]
-    const right = (row: number, col: number) => [
-      row,
-      col + 1 >= N ? col : col + 1,
-    ]
-    const down = (row: number, col: number) => [
-      row + 1 >= N ? row : row + 1,
-      col,
-    ]
-    const stateId = (row: number, col: number) => row * N + col
-    const possibleTransitions: { [dir: string]: string[] } = {
-      up: ['up', 'left', 'right'],
-      left: ['left', 'up', 'down'],
-      right: ['right', 'up', 'down'],
-      down: ['down', 'left', 'right'],
-    }
-    const move = (
-      row: number,
-      col: number,
-      actionName: any,
-      actionFunctions: any
-    ): Action => {
-      const transitions = _.map(possibleTransitions[actionName], (dir) => {
-        const [nextRow, nextCol] = actionFunctions[dir](row, col)
-        const nextStateId = stateId(nextRow, nextCol)
-        const reward = isGoal(nextStateId) ? 1 : 0
-        const probability = 1 / 3
-
-        return new Transition(
-          probability,
-          nextStateId,
-          reward,
-          isGoal(nextStateId) || isHole(nextStateId)
-        )
-      })
-
-      const action = new Action()
-      action.name = actionName
-      action.transitions = transitions
-      return action
-    }
-
-    for (let row = 0; row < N; row++) {
-      for (let col = 0; col < N; col++) {
-        const id = stateId(row, col)
-        const state = new State(id)
-        state.isDone = isGoal(id) || isHole(id)
-        state.isGoal = isGoal(id)
-        const actionFunctions = { up, left, right, down }
-        const actions = _.map(['up', 'right', 'down', 'left'], (actionName) => {
-          return move(row, col, actionName, actionFunctions)
-        })
-        state.actions = actions
-
-        this.states[id] = state
-      }
-    }
-
-    this.startState = 0
-    this.endState = 15
-  }
-
-  info() {
-    _.each(this.states, (state, id) => {
-      console.log(`state: ${id}`)
-      _.each(state.actions, (action) => {
-        console.log(`  action: ${action.name}`)
-        _.each(action.transitions, (transition, index) => {
-          const { probability, nextState, reward, done } = transition
-          console.log(
-            `    transition_${index}: \t${probability.toPrecision(
-              2
-            )}% \t${nextState} \t${reward} \t${done}`
-          )
-        })
-      })
-    })
-  }
-}
+import { MDP } from './mdp'
+import { ID, State, Action } from './types'
+import { argmax } from './utils'
 
 export class Policy {
   states: { [id: ID]: State } = {}
@@ -185,21 +51,22 @@ export class Policy {
       }
 
       const action = this.takeAction(state)
-      const probability = Math.random()
-      let cumulatedProbability = 0
-      let targetTransition = _.last(action.transitions)
-      for (let i = 0; i < action.transitions.length; ++i) {
-        const transition = action.transitions[i]
-        cumulatedProbability += transition.probability
-        if (probability < cumulatedProbability) {
-          targetTransition = transition
-          break
-        }
-      }
+      let targetTransition = action.exec()
       currentState = targetTransition.nextState
     }
 
     return reachGoal
+  }
+
+  successRate(P: MDP): number {
+    let counter = 0
+    const total = 1000
+    _.times(total, () => {
+      const reachGoal = this.run(P)
+      if (reachGoal) counter += 1
+    })
+
+    return counter / total
   }
 }
 
@@ -310,7 +177,60 @@ export const policyIteration = (P: MDP, gamma = 1.0, theta = 1e-10) => {
     counter += 1
     result = gen.next()
   }
-  console.log(counter)
+  console.log('policy iteration: ', counter)
+  return result.value as any
+}
+
+export function* valueIterationGenerator(P: MDP, gamma = 1.0, theta = 1e-10) {
+  let V = initV(P)
+  let Q: any = {}
+  let policy = new Policy(P.states)
+
+  while (true) {
+    const Q: any = {}
+
+    _.each(P.states, (state) => {
+      _.each(state.actions, (action, actionIndex) => {
+        _.each(action.transitions, (transition) => {
+          const { probability, nextState, reward, done } = transition
+          const doneFlag = !done ? 1 : 0
+
+          if (!Q[state.id])
+            Q[state.id] = new Array(state.actions.length).fill(0)
+
+          Q[state.id][actionIndex] +=
+            probability * (reward + gamma * V[nextState] * doneFlag)
+        })
+      })
+    })
+
+    const newV = initV(P)
+    _.each(P.states, (state) => {
+      newV[state.id] = _.max(Q[state.id])
+    })
+    if (diffV(V, newV) < theta) break
+
+    V = { ...newV }
+
+    yield { V }
+  }
+
+  _.each(Q, (actions, stateId) => {
+    policy.actionMap[stateId] = argmax(actions)
+  })
+
+  return { V, policy }
+}
+
+export const valueIteration = (P: MDP, gamma = 1.0, theta = 1e-10) => {
+  const gen = valueIterationGenerator(P, gamma, theta)
+  let result = gen.next()
+  let counter = 0
+  while (!result.done) {
+    counter += 1
+    result = gen.next()
+  }
+  console.log('value iteration: ', counter)
   return result.value as any
 }
 
@@ -351,22 +271,3 @@ export const carefulPolicy = {
   14: 1,
   15: 0,
 }
-
-const mdp = new MDP()
-// mdp.info()
-// const policy = new Policy(mdp.states, carefulPolicy)
-// let V1 = policyEvaluation(policy, mdp, 0.99)
-// const newPolicy = policyImprovement(V1, mdp)
-// const V2 = policyEvaluation(newPolicy, mdp, 0.99)
-// console.log(V2)
-
-// let counter = 0
-// _.times(100, () => {
-//   const reachGoal = newPolicy.run(mdp)
-//   if (reachGoal) counter += 1
-// })
-//
-// console.log('reach goal #:', counter)
-
-const { V: V3, policy: policy3 } = policyIteration(mdp, 0.99)
-console.log('optimal policy evaluation: ', V3)

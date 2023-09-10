@@ -7,15 +7,14 @@ import {
   ArrowDownOutlined,
 } from '@ant-design/icons'
 import {
-  MDP,
   Policy,
   policyEvaluation,
   carefulPolicy,
   goGetItPolicy,
   policyIteration,
+  valueIteration,
 } from '@TRE/reinforcement-learning/policy'
-
-const { useState, useEffect, useCallback } = React
+import { FL_MDP } from '@TRE/reinforcement-learning/mdps/fl'
 
 const FrozenLake: React.FC = () => {
   const gridLength = 100
@@ -28,19 +27,12 @@ const FrozenLake: React.FC = () => {
     [12, 13, 14, 15],
   ]
 
-  const mdp = new MDP()
+  const mdp = new FL_MDP(4, [5, 7, 11, 12])
   const policy1 = new Policy(mdp.states, goGetItPolicy)
   const policy2 = new Policy(mdp.states, carefulPolicy)
   const V1 = policyEvaluation(policy1, mdp, 0.99)
   const V2 = policyEvaluation(policy2, mdp, 0.99)
-  const { V: V3, policy: policy3 } = policyIteration(mdp, 0.99)
-
-  const isHole = (id: number) => {
-    return _.indexOf([5, 7, 11, 12], id) > -1
-  }
-  const isGoal = (id: number) => {
-    return id === 15
-  }
+  const { V: V3, policy: policy3 } = valueIteration(mdp, 0.99)
 
   const renderBoard = (policy: any, V: any) => (
     <>
@@ -70,13 +62,13 @@ const FrozenLake: React.FC = () => {
                       transition: 'transform 0.2s ease',
                     }}
                   >
-                    {isHole(id) && (
+                    {mdp.isHole(id) && (
                       <div className="font-bold text-lg">Hole</div>
                     )}
-                    {isGoal(id) && (
+                    {mdp.isGoal(id) && (
                       <div className="font-bold text-lg">Goal</div>
                     )}
-                    {!(isHole(id) || isGoal(id)) && (
+                    {!(mdp.isHole(id) || mdp.isGoal(id)) && (
                       <div className="flex flex-col items-center text-3xl font-bold">
                         {policy.actionMap[id] === 0 && <ArrowUpOutlined />}
                         {policy.actionMap[id] === 1 && <ArrowRightOutlined />}

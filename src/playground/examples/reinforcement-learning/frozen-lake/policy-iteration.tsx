@@ -7,25 +7,23 @@ import {
   ArrowDownOutlined,
 } from '@ant-design/icons'
 import {
-  MDP,
-  policyEvaluation,
   policyIterationGenerator,
 } from '@TRE/reinforcement-learning/policy'
+import { FL_MDP } from '@TRE/reinforcement-learning/mdps/fl'
+
+const size = 10
+const mdp = new FL_MDP(size)
+  const gridLength = 80
+  const margin = 0
 
 const FrozenLakePolicyIteration: React.FC = () => {
-  const mdp = new MDP()
   const [gen, setGen] = React.useState<any>()
   const [ctx, setCtx] = React.useState<any>()
   const [isDone, setIsDone] = React.useState(false)
-  const gridLength = 100
-  const margin = 0
-  const size = 4
-  const board = [
-    [0, 1, 2, 3],
-    [4, 5, 6, 7],
-    [8, 9, 10, 11],
-    [12, 13, 14, 15],
-  ]
+  const [successRate, setSuccessRate] = React.useState(0)
+  const board = _.map(_.range(size), (row) => {
+    return _.range(row * size, row * size + size)
+  })
 
   React.useLayoutEffect(() => {
     const gen = policyIterationGenerator(mdp, 0.99)
@@ -38,22 +36,12 @@ const FrozenLakePolicyIteration: React.FC = () => {
     if (isDone) return
 
     const next = gen.next()
-    console.log(next)
-    if (next.done) setIsDone(true)
     setCtx(next.value)
-  }
 
-  const evaluate = () => {
-    const V = policyEvaluation(ctx.policy, mdp)
-    console.log(V, ctx.policy)
-    setCtx({ policy: ctx.policy, V })
-  }
-
-  const isHole = (id: number) => {
-    return _.indexOf([5, 7, 11, 12], id) > -1
-  }
-  const isGoal = (id: number) => {
-    return id === 15
+    if (next.done) {
+        setIsDone(true)
+        setSuccessRate(ctx.policy.successRate(mdp))
+    }
   }
 
   const renderBoard = (policy: any, V: any) => (
@@ -84,20 +72,23 @@ const FrozenLakePolicyIteration: React.FC = () => {
                       transition: 'transform 0.2s ease',
                     }}
                   >
-                    {isHole(id) && (
-                      <div className="font-bold text-lg">Hole</div>
+                    {mdp.isHole(id) && (
+                      <div className="font-bold text-lg w-10 h-10 bg-black" />
                     )}
-                    {isGoal(id) && (
+                    {mdp.isGoal(id) && (
                       <div className="font-bold text-lg">Goal</div>
                     )}
-                    {!(isHole(id) || isGoal(id)) && (
-                      <div className="flex flex-col items-center text-3xl font-bold">
+                    {id === 0 && (
+                      <div className="font-bold text-lg absolute w-4 h-4 rounded-full bg-red-500 left-2 top-2" />
+                    )}
+                    {!(mdp.isHole(id) || mdp.isGoal(id)) && (
+                      <div className="flex flex-col items-center text-3xl font-bold text-blue-500">
                         {policy.actionMap[id] === 0 && <ArrowUpOutlined />}
                         {policy.actionMap[id] === 1 && <ArrowRightOutlined />}
                         {policy.actionMap[id] === 2 && <ArrowDownOutlined />}
                         {policy.actionMap[id] === 3 && <ArrowLeftOutlined />}
                         <div className="text-sm font-normal text-gray-500 mt-2">
-                          {V[id].toPrecision(4)}
+                          {V[id].toFixed(4)}
                         </div>
                       </div>
                     )}
@@ -116,8 +107,7 @@ const FrozenLakePolicyIteration: React.FC = () => {
       <h2 className="mt-10">Optimal Policy</h2>
       <div>{ctx && renderBoard(ctx.policy, ctx.V)}</div>
       <div onClick={e => optimize()}>optimize</div>
-      <div onClick={e => evaluate()}>evaluate</div>
-      <div>{ isDone ? 'done' : '...' }</div>
+      <div>{ isDone ? <div>Success Rate: { (successRate * 100).toFixed(2) }%</div> : '...' }</div>
     </div>
   )
 }
