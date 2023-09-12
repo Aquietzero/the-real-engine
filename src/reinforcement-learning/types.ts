@@ -62,3 +62,16 @@ export class State {
     this.id = _.isNumber(id) ? id : this.getId()
   }
 }
+
+export type Strategy = {
+  name: string
+  initialize?: Function
+  run: Function
+}
+
+export type TrainContext = {
+  nEpisodes: number
+  episode: number
+  Q: any
+  N: any
+}

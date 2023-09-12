@@ -3,24 +3,37 @@ import * as path from 'path'
 import * as cliProgress from 'cli-progress'
 
 import * as _ from 'lodash'
-import { Action } from './types'
+import { Action, TrainContext } from './types'
 import { zeros, empty } from './utils'
 import { Environment } from './environment'
 import { BSW_MDP } from './mdps/bsw'
 import { STRATEGY } from './strategy'
-
-type Strategy = {
-  name: string
-  run: Function
-}
+import { Strategy } from './types'
 
 const strategies: Strategy[] = [
-  { name: 'exploitation', run: STRATEGY.EXPLOITATION },
-  { name: 'exploration', run: STRATEGY.EXPLORATION },
+  { name: 'exploitation', run: STRATEGY.EXPLOITATION() },
+  { name: 'exploration', run: STRATEGY.EXPLORATION() },
   { name: 'epsilon_greedy', run: STRATEGY.EPSILON_GREEDY(0.3) },
   {
     name: 'linearly_decaying_epsilon_greedy',
     run: STRATEGY.LINEARLY_DECAYING_EPSILON_GREEDY(),
+  },
+  {
+    name: 'exp_decaying_epsilon_greedy',
+    run: STRATEGY.EXP_DECAYING_EPSILON_GREEDY(),
+  },
+  {
+    name: 'softmax',
+    run: STRATEGY.SOFTMAX(),
+  },
+  {
+    name: 'upper_confidence_bound',
+    run: STRATEGY.UPPER_CONFIDENCE_BOUND(),
+  },
+  {
+    name: 'optimistic_initialization',
+    initialize: STRATEGY.OPTIMISTIC_INITIALIZATION(),
+    run: STRATEGY.EXPLOITATION(),
   },
 ]
 
@@ -36,8 +49,13 @@ export const learn = (
   progressBar.start(1, 0)
 
   // Q-function and the count array
-  const Q = zeros(env.actionSpace.length)
-  const N = zeros(env.actionSpace.length)
+  let Q: any, N: any
+  if (strategy.initialize) {
+    ;({ Q, N } = strategy.initialize(env))
+  } else {
+    Q = zeros(env.actionSpace.length)
+    N = zeros(env.actionSpace.length)
+  }
 
   // statistics
   const Qe = empty(nEpisodes, env.actionSpace.length)
@@ -54,7 +72,14 @@ export const learn = (
     // env has to be reset to the start state
     env.reset()
 
-    const action = strategy.run(Q, nEpisodes, e)
+    const trainContext: TrainContext = {
+      nEpisodes,
+      episode: e,
+      Q,
+      N,
+    }
+
+    const action = strategy.run(trainContext)
     const { reward } = env.step(action)
     N[action] += 1
     Q[action] = Q[action] + (reward - Q[action]) / N[action]
@@ -88,5 +113,5 @@ const actionSpace = [new Action('left'), new Action('right')]
 const env = new Environment(new BSW_MDP(), actionSpace)
 _.each(strategies, (strategy) => {
   console.log(`learning with ${strategy.name}`)
-  learn(env, 4000, strategy)
+  learn(env, 5000, strategy)
 })
