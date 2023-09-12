@@ -1,12 +1,9 @@
 import * as _ from 'lodash'
-import { Action } from './types'
-import { zeros, empty, clip, argmax } from './utils'
-import { Environment } from './environment'
-import { BSW_MDP } from './mdps/bsw'
+import { clip, argmax } from './utils'
 
 type Q_VALUE = [actionId: number, value: number]
 
-const STRATEGY: any = {
+export const STRATEGY: any = {
   EXPLOITATION(Q: Q_VALUE, nEpisodes?: number): number {
     return argmax(Q)
   },
@@ -40,43 +37,3 @@ const STRATEGY: any = {
     }
   },
 }
-
-export const learn = (
-  env: Environment,
-  nEpisodes: number = 5000,
-  strategy: Function = STRATEGY.EXPLOITATION
-) => {
-  // Q-function and the count array
-  const Q = zeros(env.actionSpace.length)
-  const N = zeros(env.actionSpace.length)
-
-  // statistics
-  const Qe = empty(nEpisodes, env.actionSpace.length)
-  const returns = empty(nEpisodes)
-  const actions = empty(nEpisodes)
-
-  const name = 'Pure exploitation'
-
-  _.times(nEpisodes, (e) => {
-    // each episode has only one action, so before each episode,
-    // env has to be reset to the start state
-    env.reset()
-
-    const action = strategy(Q, nEpisodes, e)
-    const { reward } = env.step(action)
-    N[action] += 1
-    Q[action] = Q[action] + (reward - Q[action]) / N[action]
-    Qe[e] = Q
-    returns[e] = reward
-    actions[e] = action
-
-    // console.log(Q, action)
-  })
-
-  console.log(Q)
-  return { name, returns, Qe, actions }
-}
-
-const actionSpace = [new Action('left'), new Action('right')]
-const env = new Environment(new BSW_MDP(), actionSpace)
-learn(env, 5000, STRATEGY.LINEARLY_DECAYING_EPSILON_GREEDY())

@@ -50,6 +50,7 @@ import BasicRayTracer from './ray-tracer/basic-ray-tracer'
 
 import FrozenLake from './reinforcement-learning/frozen-lake/frozen-lake'
 import FrozenLakePolicyIteration from './reinforcement-learning/frozen-lake/policy-iteration'
+import TowArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/two-armed-bandit'
 
 export default {
   math: {
@@ -112,5 +113,6 @@ export default {
   'reinforcement-learning': {
     FrozenLake,
     FrozenLakePolicyIteration,
+    TowArmedBernoulliBandit,
   },
 }
