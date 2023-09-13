@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import * as cliProgress from 'cli-progress'
 
@@ -7,6 +7,8 @@ import { Action, TrainContext } from './types'
 import { zeros, empty } from './utils'
 import { Environment } from './environment'
 import { BSW_MDP } from './mdps/bsw'
+import { TwoArmedBandit_MDP } from './mdps/two-armed-bandit'
+import { NArmedBandit_MDP } from './mdps/n-armed-bandit'
 import { STRATEGY } from './strategy'
 import { Strategy } from './types'
 
@@ -31,6 +33,10 @@ const strategies: Strategy[] = [
     run: STRATEGY.UPPER_CONFIDENCE_BOUND(),
   },
   {
+    name: 'thompson_sampling',
+    run: STRATEGY.THOMPSON_SAMPLING(),
+  },
+  {
     name: 'optimistic_initialization',
     initialize: STRATEGY.OPTIMISTIC_INITIALIZATION(),
     run: STRATEGY.EXPLOITATION(),
@@ -40,7 +46,8 @@ const strategies: Strategy[] = [
 export const learn = (
   env: Environment,
   nEpisodes: number = 5000,
-  strategy: Strategy = strategies[0]
+  strategy: Strategy = strategies[0],
+  resultDir: string = ''
 ) => {
   const progressBar = new cliProgress.SingleBar(
     {},
@@ -88,7 +95,7 @@ export const learn = (
     actions[e] = action
 
     if (reward) {
-      cummulatedReward += 1
+      cummulatedReward += reward
     }
     meanEpisodeReward.push(cummulatedReward / (e + 1))
 
@@ -96,11 +103,11 @@ export const learn = (
   })
 
   const template = (data: string) => `export default ${data}`
+  const dir = path.join(__dirname, 'result', resultDir)
+
+  fs.ensureDirSync(dir)
   fs.writeFileSync(
-    path.join(
-      __dirname,
-      `./result/bsw_mean_episode_reward_with_${strategy.name}.ts`
-    ),
+    path.join(dir, `mean_episode_reward_with_${strategy.name}.ts`),
     template(JSON.stringify(meanEpisodeReward))
   )
 
@@ -109,9 +116,10 @@ export const learn = (
   return { name, returns, Qe, actions }
 }
 
-const actionSpace = [new Action('left'), new Action('right')]
-const env = new Environment(new BSW_MDP(), actionSpace)
+// const env = new Environment(new BSW_MDP())
+// const env = new Environment(new TwoArmedBandit_MDP())
+const env = new Environment(new NArmedBandit_MDP())
 _.each(strategies, (strategy) => {
   console.log(`learning with ${strategy.name}`)
-  learn(env, 5000, strategy)
+  learn(env, 5000, strategy, 'n-armed-bandit')
 })

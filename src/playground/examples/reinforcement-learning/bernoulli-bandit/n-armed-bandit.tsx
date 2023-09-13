@@ -3,15 +3,15 @@ import * as React from 'react'
 import * as echarts from 'echarts'
 import * as _ from 'lodash'
 import { BSW_MDP } from '@TRE/reinforcement-learning/mdps/bsw'
-import d1 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_exploitation'
-import d2 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_exploration'
-import d3 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_epsilon_greedy'
-import d4 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_linearly_decaying_epsilon_greedy'
-import d5 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_exp_decaying_epsilon_greedy'
-import d6 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_optimistic_initialization'
-import d7 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_softmax'
-import d8 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_upper_confidence_bound'
-import d9 from '@TRE/reinforcement-learning/result/two-armed-bandit/mean_episode_reward_with_thompson_sampling'
+import d1 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_exploitation'
+import d2 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_exploration'
+import d3 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_epsilon_greedy'
+import d4 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_linearly_decaying_epsilon_greedy'
+import d5 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_exp_decaying_epsilon_greedy'
+import d6 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_optimistic_initialization'
+import d7 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_softmax'
+import d8 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_upper_confidence_bound'
+import d9 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_thompson_sampling'
 
 const mdp = new BSW_MDP()
 const gridLength = 80
@@ -104,8 +104,6 @@ const TwoArmedBernoulliBandit: React.FC = () => {
       },
       yAxis: {
         type: 'value',
-        min: 0.8,
-        max: 0.85,
       },
       tooltip: {
         trigger: 'axis',

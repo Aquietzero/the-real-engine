@@ -38,6 +38,8 @@ export class BSW_MDP extends MDP {
       1: state1,
       2: state2,
     }
+
+    this.actionSpace = [new Action('left'), new Action('right')]
   }
 
   isGoal(id: number): boolean {

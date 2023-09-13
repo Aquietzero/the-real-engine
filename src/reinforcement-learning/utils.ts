@@ -21,7 +21,8 @@ export const clip = (value: number, min?: number, max?: number) => {
 
 export const argmax = (arr: number[] = []) => {
   let max = -Infinity
-  let maxIndex = -1
+  // make sure to return at least a valid index
+  let maxIndex = 0
   for (let i = 0; i < arr.length; ++i) {
     if (arr[i] > max) {
       max = arr[i]
@@ -74,4 +75,13 @@ export const choice = (pd: number[]): number => {
     }
   }
   return 0
+}
+
+// Ref: https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
+export const randomNormal = (mean: number = 0, stdDev: number = 1): number => {
+  const u = 1 - Math.random() // Converting [0,1) to (0,1]
+  const v = Math.random()
+  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)
+  // Transform to the desired mean and standard deviation:
+  return z * stdDev + mean
 }

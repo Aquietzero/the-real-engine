@@ -6,10 +6,10 @@ export class Environment {
   currentState: ID
   actionSpace: Action[]
 
-  constructor(mdp: MDP, actionSpace: Action[]) {
+  constructor(mdp: MDP) {
     this.mdp = mdp
     this.currentState = this.mdp.startState
-    this.actionSpace = actionSpace
+    this.actionSpace = this.mdp.actionSpace
   }
 
   reset() {

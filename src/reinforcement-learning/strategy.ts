@@ -1,5 +1,13 @@
 import * as _ from 'lodash'
-import { full, clip, argmax, logspace, pad, choice } from './utils'
+import {
+  full,
+  clip,
+  argmax,
+  logspace,
+  pad,
+  choice,
+  randomNormal,
+} from './utils'
 import { Environment } from './environment'
 import { TrainContext } from './types'
 
@@ -124,6 +132,19 @@ const upperConfidenceBound = (c: number = 2) => {
   }
 }
 
+const thompsonSampling = (alpha: number = 1, beta: number = 0) => {
+  return (ctx: TrainContext) => {
+    const { Q, N } = ctx
+
+    const samples = _.map(Q, (q, index) => {
+      const n = N[index]
+      return randomNormal(q, alpha / (Math.sqrt(n) + beta))
+    })
+    const action = clip(argmax(samples), 0, Q.length)
+    return action
+  }
+}
+
 const optimisticInitialization = (
   optimisticEstimate: number = 1.0,
   initialCount: number = 100
@@ -145,4 +166,5 @@ export const STRATEGY = {
   EXP_DECAYING_EPSILON_GREEDY: expDecayingEpsilonGreedy,
   SOFTMAX: softmax,
   UPPER_CONFIDENCE_BOUND: upperConfidenceBound,
+  THOMPSON_SAMPLING: thompsonSampling,
 }
