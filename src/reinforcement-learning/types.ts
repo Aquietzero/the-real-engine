@@ -75,3 +75,25 @@ export type TrainContext = {
   Q: any
   N: any
 }
+
+export class Experience {
+  state: ID
+  action: ID
+  reward: number
+  nextState: ID
+  done: boolean
+
+  constructor(
+    state: ID,
+    action: ID,
+    reward: number,
+    nextState: ID,
+    done: boolean
+  ) {
+    this.state = state
+    this.action = action
+    this.reward = reward
+    this.nextState = nextState
+    this.done = done
+  }
+}

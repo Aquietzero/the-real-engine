@@ -33,10 +33,14 @@ export class Policy {
     return isEqual
   }
 
-  takeAction(state: State): Action {
-    if (state.isDone) return
+  takeAction(state: State): { action: Action; actionIndex: ID } {
+    if (state.isDone) return { action: null, actionIndex: -1 }
+
     const actionIndex = this.actionMap[state.id]
-    return state.actions[actionIndex]
+    return {
+      actionIndex,
+      action: state.actions[actionIndex],
+    }
   }
 
   run(mdp: MDP) {
@@ -50,7 +54,7 @@ export class Policy {
         break
       }
 
-      const action = this.takeAction(state)
+      const { action } = this.takeAction(state)
       let targetTransition = action.exec()
       currentState = targetTransition.nextState
     }
@@ -98,7 +102,7 @@ export const policyEvaluation = (
     V = initV(P)
     count += 1
     _.each(P.states, (state, id) => {
-      const action = pi.takeAction(state)
+      const { action } = pi.takeAction(state)
       if (!action) return
       _.each(action.transitions, (transition) => {
         const { probability, nextState, reward, done } = transition

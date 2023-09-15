@@ -16,8 +16,9 @@ export class Environment {
     this.currentState = this.mdp.startState
   }
 
-  step(actionId: number): Transition {
-    const action: Action = this.mdp.states[this.currentState].actions[actionId]
+  step(actionId: ID): Transition {
+    const action: Action =
+      this.mdp.states[this.currentState].actions[actionId as number]
     const transition: Transition = action.exec()
     this.currentState = transition.nextState
     return transition

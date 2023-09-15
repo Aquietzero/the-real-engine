@@ -4,8 +4,10 @@ export const zeros = (n: number) => {
   return new Array(n).fill(0)
 }
 
-export const full = (n: number, val: number = 0) => {
-  return new Array(n).fill(val)
+export const full = (n: number | number[], val: any = 0) => {
+  if (!_.isArray(n)) return new Array(n).fill(val)
+  const [row, col] = n
+  return new Array(row).fill(new Array(col).fill(val))
 }
 
 export const empty = (row: number, col?: number) => {
@@ -32,12 +34,20 @@ export const argmax = (arr: number[] = []) => {
   return maxIndex
 }
 
-export const logspace = (start: number, end: number, num: number): number[] => {
+export const logspace = (
+  start: number,
+  stop: number,
+  num: number,
+  logBase: number = 10,
+  endPoint: boolean = true
+): number[] => {
   const result: number[] = []
-  const step = (end - start) / (num - 1)
+  const step = (stop - start) / (num - 1)
 
-  for (let i = 0; i < num; i++) {
-    const value = Math.pow(10, start + i * step)
+  const end = endPoint ? num : num - 1
+  // including the end
+  for (let i = 0; i <= end; i++) {
+    const value = Math.pow(logBase, start + i * step)
     result.push(value)
   }
 
@@ -84,4 +94,25 @@ export const randomNormal = (mean: number = 0, stdDev: number = 1): number => {
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)
   // Transform to the desired mean and standard deviation:
   return z * stdDev + mean
+}
+
+export const decaySchedule = (
+  initValue: number,
+  minValue: number,
+  decayRatio: number,
+  maxSteps: number,
+  logStart: number = -2,
+  logBase: number = 10
+) => {
+  const decaySteps = Math.floor(maxSteps * decayRatio)
+  const remSteps = maxSteps - decaySteps
+
+  let values = _.reverse(logspace(logStart, 0, decaySteps, logBase))
+  const min = _.min(values)
+  const max = _.max(values)
+  values = _.map(values, (value) => (value - min) / (max - min))
+  values = _.map(values, (value) => minValue + (initValue - minValue) * value)
+  values = pad(values, [0, remSteps])
+
+  return values
 }
