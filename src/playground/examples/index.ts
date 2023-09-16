@@ -53,6 +53,7 @@ import FrozenLakePolicyIteration from './reinforcement-learning/frozen-lake/poli
 import BanditSlippyWorld from './reinforcement-learning/bernoulli-bandit/bandit-slippy-world'
 import TwoArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/two-armed-bandit'
 import NArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/n-armed-bandit'
+import StateValueEvaluation from './reinforcement-learning/random-walk/state-value-evaluation'
 
 export default {
   math: {
@@ -118,5 +119,6 @@ export default {
     BanditSlippyWorld,
     TwoArmedBernoulliBandit,
     NArmedBernoulliBandit,
+    StateValueEvaluation,
   },
 }

@@ -1,3 +1,6 @@
+import * as fs from 'fs-extra'
+import * as path from 'path'
+
 import * as _ from 'lodash'
 import { Environment } from './environment'
 import { Policy, policyEvaluation } from './policy'
@@ -79,7 +82,7 @@ export class StateValueEvaluator {
         V[state] = V[state] + alphas[episode] * (G - V[state])
       })
 
-      VTrack[episode] = V
+      VTrack[episode] = [...V]
     })
 
     return { V, VTrack }
@@ -125,7 +128,7 @@ export class StateValueEvaluator {
         state = nextState
       }
 
-      VTrack[episode] = V
+      VTrack[episode] = [...V]
     })
 
     return { V, VTrack }
@@ -142,19 +145,28 @@ const allLeftPolicy = {
 }
 const env = new Environment(rw)
 const policy = new Policy(rw.states, allLeftPolicy)
-const V = policyEvaluation(policy, rw)
+const correctV = policyEvaluation(policy, rw)
 const evaluator = new StateValueEvaluator()
 
-const Vs = zeros(_.size(V))
-_.times(10, () => {
-  // const { V: estimateV, VTrack } = evaluator.tdPrediction(policy, env)
-  const { V: estimateV, VTrack } = evaluator.mcPrediction(policy, env)
-  _.each(estimateV, (v, index) => {
-    Vs[index] += v
-  })
-})
-_.each(Vs, (v, index) => {
-  Vs[index] /= 10
-})
+const { V, VTrack } = evaluator.tdPrediction(policy, env)
+// const Vs = zeros(_.size(V))
+// _.times(10, () => {
+//   // const { V: estimateV, VTrack } = evaluator.tdPrediction(policy, env)
+//   const { V: estimateV, VTrack } = evaluator.mcPrediction(policy, env)
+//   _.each(estimateV, (v, index) => {
+//     Vs[index] += v
+//   })
+// })
+// _.each(Vs, (v, index) => {
+//   Vs[index] /= 10
+// })
+// console.log(V, Vs)
 
-console.log(V, Vs)
+const template = (data: string) => `export default ${data}`
+const dir = path.join(__dirname, 'result', 'random-walk')
+
+fs.ensureDirSync(dir)
+fs.writeFileSync(
+  path.join(dir, `state-value-evaluation-with-td.ts`),
+  template(JSON.stringify({ V, VTrack }))
+)

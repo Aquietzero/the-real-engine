@@ -29,7 +29,7 @@ const data = {
   'thompson_sampling': d9,
 }
 
-const TwoArmedBernoulliBandit: React.FC = () => {
+const NArmedBernoulliBandit: React.FC = () => {
   const board = [0, 1, 2]
 
   React.useEffect(() => {
@@ -188,7 +188,7 @@ export default {
   run(app: any) {
     return (
       <div className="w-full h-full flex justify-center overflow-scroll">
-        <TwoArmedBernoulliBandit />
+        <NArmedBernoulliBandit />
       </div>
     )
   },
