@@ -116,3 +116,15 @@ export const decaySchedule = (
 
   return values
 }
+
+export const dot = (v1: number[], v2: number[]) => {
+  if (v1.length !== v2.length) {
+    throw '[dot]: shapes of v1 and v2 are not aligned'
+  }
+
+  let sum = 0
+  for (let i = 0; i < v1.length; ++i) {
+    sum += v1[i] * v2[i]
+  }
+  return sum
+}

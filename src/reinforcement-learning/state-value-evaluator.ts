@@ -5,7 +5,7 @@ import * as _ from 'lodash'
 import { Environment } from './environment'
 import { Policy, policyEvaluation } from './policy'
 import { Experience } from './types'
-import { decaySchedule, logspace, zeros, full, empty } from './utils'
+import { decaySchedule, logspace, zeros, full, empty, dot } from './utils'
 import { RandomWalk_MDP } from './mdps/random-wark'
 
 export class StateValueEvaluator {
@@ -133,6 +133,129 @@ export class StateValueEvaluator {
 
     return { V, VTrack }
   }
+
+  // n-step temporal-difference method
+  ntdPrediction(
+    pi: Policy,
+    env: Environment,
+    gamma: number = 1.0,
+    initAlpha: number = 0.5,
+    minAlpha: number = 0.01,
+    alphaDecayRatio: number = 0.5,
+    nStep: number = 3,
+    nEpisodes: number = 500
+  ) {
+    const nS = _.size(env.mdp.states)
+    const V = zeros(nS)
+    const VTrack = empty(nEpisodes, nS)
+
+    const alphas = decaySchedule(
+      initAlpha,
+      minAlpha,
+      alphaDecayRatio,
+      nEpisodes
+    )
+    const discounts = logspace(0, nStep + 1, nStep + 1, gamma, false)
+
+    _.times(nEpisodes, (episode) => {
+      env.reset()
+      let state = env.currentState as number
+      const nPath: Experience[] = []
+
+      let reward,
+        nextState: number,
+        done = false
+
+      while (true) {
+        // pops the first experience
+        nPath.shift()
+
+        // collect small experience path with size of nStep
+        // smaller if done is meet
+        while (!done && nPath.length < nStep) {
+          const { actionIndex } = pi.takeAction(env.mdp.states[state])
+          const transition = env.step(actionIndex)
+          reward = transition.reward
+          nextState = transition.nextState as number
+          done = transition.done
+          nPath.push(
+            new Experience(state, actionIndex, reward, nextState, done)
+          )
+
+          state = nextState
+        }
+
+        const estimateState: number = nPath[0].state as number
+        const rewards = _.map(nPath, (experience) => experience.reward)
+        const partialReturn = dot(discounts.slice(0, nPath.length), rewards)
+        const notDone = !done ? 1 : 0
+        const bootstrapValue = _.last(discounts) * V[nextState] * notDone
+        const ntdTarget = partialReturn + bootstrapValue
+        const ntdError = ntdTarget - V[estimateState]
+
+        V[estimateState] = V[estimateState] + alphas[episode] * ntdError
+
+        // break the episode loop if path has only one experience and the done
+        // flag of the experience is true
+        if (nPath.length === 1 && nPath[0].done) break
+      }
+
+      VTrack[episode] = [...V]
+    })
+
+    return { V, VTrack }
+  }
+
+  tdLambdaPrediction(
+    pi: Policy,
+    env: Environment,
+    gamma: number = 1.0,
+    initAlpha: number = 0.5,
+    minAlpha: number = 0.01,
+    alphaDecayRatio: number = 0.5,
+    lambda: number = 0.3,
+    nEpisodes: number = 500
+  ) {
+    const nS = _.size(env.mdp.states)
+    const V = zeros(nS)
+    const VTrack = empty(nEpisodes, nS)
+
+    const alphas = decaySchedule(
+      initAlpha,
+      minAlpha,
+      alphaDecayRatio,
+      nEpisodes
+    )
+
+    _.times(nEpisodes, (episode) => {
+      const E = zeros(nS)
+      env.reset()
+      let state = env.currentState as number
+
+      while (true) {
+        const { actionIndex } = pi.takeAction(env.mdp.states[state])
+        const { reward, nextState, done } = <
+          { reward: number; nextState: number; done: boolean }
+        >env.step(actionIndex)
+        const notDone = !done ? 1 : 0
+
+        const tdTarget = reward + gamma * V[nextState] * notDone
+        const tdError = tdTarget - V[state]
+        E[state] = E[state] + 1
+        _.each(V, (v, index) => {
+          V[index] += alphas[episode] * tdError * E[index]
+        })
+        _.each(E, (e, index) => (E[index] = e * gamma * lambda))
+
+        if (done) break
+
+        state = nextState
+      }
+
+      VTrack[episode] = [...V]
+    })
+    return { V, VTrack }
+  }
 }
 
 const rw = new RandomWalk_MDP(5)
@@ -148,11 +271,11 @@ const policy = new Policy(rw.states, allLeftPolicy)
 const correctV = policyEvaluation(policy, rw)
 const evaluator = new StateValueEvaluator()
 
-const { V, VTrack } = evaluator.tdPrediction(policy, env)
-// const Vs = zeros(_.size(V))
+const { V, VTrack } = evaluator.tdLambdaPrediction(policy, env)
+// const Vs = zeros(7)
 // _.times(10, () => {
 //   // const { V: estimateV, VTrack } = evaluator.tdPrediction(policy, env)
-//   const { V: estimateV, VTrack } = evaluator.mcPrediction(policy, env)
+//   const { V: estimateV, VTrack } = evaluator.tdPrediction(policy, env)
 //   _.each(estimateV, (v, index) => {
 //     Vs[index] += v
 //   })
@@ -160,13 +283,13 @@ const { V, VTrack } = evaluator.tdPrediction(policy, env)
 // _.each(Vs, (v, index) => {
 //   Vs[index] /= 10
 // })
-// console.log(V, Vs)
+// console.log(Vs)
 
 const template = (data: string) => `export default ${data}`
 const dir = path.join(__dirname, 'result', 'random-walk')
 
 fs.ensureDirSync(dir)
 fs.writeFileSync(
-  path.join(dir, `state-value-evaluation-with-td.ts`),
+  path.join(dir, `state-value-evaluation-with-td-lambda.ts`),
   template(JSON.stringify({ V, VTrack }))
 )
