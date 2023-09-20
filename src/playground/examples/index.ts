@@ -54,6 +54,7 @@ import BanditSlippyWorld from './reinforcement-learning/bernoulli-bandit/bandit-
 import TwoArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/two-armed-bandit'
 import NArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/n-armed-bandit'
 import StateValueEvaluation from './reinforcement-learning/random-walk/state-value-evaluation'
+import SlippyWalkSeven from './reinforcement-learning/random-walk/slippy-walk-seven'
 
 export default {
   math: {
@@ -120,5 +121,6 @@ export default {
     TwoArmedBernoulliBandit,
     NArmedBernoulliBandit,
     StateValueEvaluation,
+    SlippyWalkSeven,
   },
 }

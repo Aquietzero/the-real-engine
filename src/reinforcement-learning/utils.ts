@@ -4,10 +4,37 @@ export const zeros = (n: number) => {
   return new Array(n).fill(0)
 }
 
-export const full = (n: number | number[], val: any = 0) => {
-  if (!_.isArray(n)) return new Array(n).fill(val)
-  const [row, col] = n
-  return new Array(row).fill(new Array(col).fill(val))
+// shape = 3 => [0, 0, 0]
+// shape = [2, 3] => [
+//   [0, 0, 0],
+//   [0, 0, 0],
+// ]
+// shape = [2, 3, 4] => [
+//   [
+//     [0, 0, 0, 0],
+//     [0, 0, 0, 0],
+//     [0, 0, 0, 0],
+//   ],
+//   [
+//     [0, 0, 0, 0],
+//     [0, 0, 0, 0],
+//     [0, 0, 0, 0],
+//   ],
+// ]
+export const full = (shape: number | number[], val: any = 0): any => {
+  if (!_.isArray(shape)) return new Array(shape).fill(val)
+  if (shape.length === 1) return new Array(shape[0]).fill(val)
+
+  const [d1, ...rest] = shape
+  return _.times(d1, () => full(rest, val))
+}
+
+export const nArrayMap = (arr1: any, arr2: any, func: Function): any => {
+  if (!_.isArray(arr1[0])) {
+    return _.map(arr1, (val, index) => func(val, arr2[index]))
+  }
+
+  return _.map(arr1, (subDim, index) => nArrayMap(subDim, arr2[index], func))
 }
 
 export const empty = (row: number, col?: number) => {
@@ -32,6 +59,10 @@ export const argmax = (arr: number[] = []) => {
     }
   }
   return maxIndex
+}
+
+export const argmax2 = (arr: number[][] = []) => {
+  return _.map(arr, (d2) => argmax(d2))
 }
 
 export const logspace = (
