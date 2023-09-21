@@ -37,6 +37,14 @@ export const nArrayMap = (arr1: any, arr2: any, func: Function): any => {
   return _.map(arr1, (subDim, index) => nArrayMap(subDim, arr2[index], func))
 }
 
+export const nArrayScale = (arr: any, factor: number = 1): any => {
+  if (!_.isArray(arr[0])) {
+    return _.map(arr, (val) => val * factor)
+  }
+
+  return _.map(arr, (subDim) => nArrayScale(subDim, factor))
+}
+
 export const empty = (row: number, col?: number) => {
   if (!col) return zeros(row)
   return new Array(row).fill(new Array(col).fill(0))

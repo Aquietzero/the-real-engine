@@ -3,12 +3,9 @@ import { Environment } from '../environment'
 import { ID, LearningOpts } from '../types'
 import { decaySchedule, full, argmax, argmax2, nArrayMap } from '../utils'
 
-interface DoubleQLearningOpts extends LearningOpts {}
+interface DoubleQOpts extends LearningOpts {}
 
-export const doubleQLearning = (
-  env: Environment,
-  opts?: DoubleQLearningOpts
-) => {
+export const doubleQ = (env: Environment, opts?: DoubleQOpts) => {
   const {
     gamma = 1.0,
     initAlpha = 0.5,

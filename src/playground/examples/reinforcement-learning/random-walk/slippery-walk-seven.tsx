@@ -4,8 +4,10 @@ import * as echarts from 'echarts'
 import * as _ from 'lodash'
 import d1 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-mc'
 import d2 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-sarsa'
-import d3 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-q-learning'
-import d4 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-double-q-learning'
+import d3 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-q'
+import d4 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-double-q'
+import d5 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-sarsa-lambda'
+import d6 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-q-lambda'
 
 const results = [{
   data: d1,
@@ -23,6 +25,14 @@ const results = [{
   data: d4,
   name: 'Double Q Learning',
   el: 'double-q-learning',
+}, {
+  data: d5,
+  name: 'SARSA(λ)',
+  el: 'sarsa-lambda',
+}, {
+  data: d6,
+  name: 'Q(λ)',
+  el: 'q-lambda',
 }]
 
 const correctStateValue: any = {
@@ -125,8 +135,10 @@ const StateValueEvaluation: React.FC = () => {
       <h2 className="mt-10">Slippery Walk Seven</h2>
       <div className="mt-20" id="mc" />
       <div className="mt-20" id="sarsa" />
+      <div className="mt-20" id="sarsa-lambda" />
       <div className="mt-20" id="q-learning" />
       <div className="mt-20" id="double-q-learning" />
+      <div className="mt-20" id="q-lambda" />
     </div>
   )
 }

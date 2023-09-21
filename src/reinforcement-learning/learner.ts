@@ -5,7 +5,7 @@ import * as _ from 'lodash'
 import { Environment } from './environment'
 import { Policy, policyEvaluation } from './policy'
 import { SWS_MDP } from './mdps/sws'
-import { mc, sarsa, qLearning, doubleQLearning } from './strategies'
+import { mc, sarsa, q, doubleQ, sarsaLambda, qLambda } from './strategies'
 
 const strategies = [
   {
@@ -17,12 +17,20 @@ const strategies = [
     exec: sarsa,
   },
   {
-    name: 'q-learning',
-    exec: qLearning,
+    name: 'q',
+    exec: q,
   },
   {
-    name: 'double-q-learning',
-    exec: doubleQLearning,
+    name: 'double-q',
+    exec: doubleQ,
+  },
+  {
+    name: 'sarsa-lambda',
+    exec: sarsaLambda,
+  },
+  {
+    name: 'q-lambda',
+    exec: qLambda,
   },
 ]
 
@@ -51,7 +59,7 @@ export class Learner {
       path.join(dir, `state-value-evaluation-with-${strategy.name}.ts`),
       template(JSON.stringify(result))
     )
-    console.log(`${strategy} learning finishes...`)
+    console.log(`${strategy.name} learning finishes...`)
   }
 }
 

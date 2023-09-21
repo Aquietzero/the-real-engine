@@ -1,6 +1,8 @@
 import { mc } from './mc'
 import { sarsa } from './sarsa'
-import { qLearning } from './q-learning'
-import { doubleQLearning } from './double-q-learning'
+import { sarsaLambda } from './sarsa-lambda'
+import { q } from './q'
+import { doubleQ } from './double-q'
+import { qLambda } from './q-lambda'
 
-export { mc, sarsa, qLearning, doubleQLearning }
+export { mc, sarsa, sarsaLambda, q, doubleQ, qLambda }

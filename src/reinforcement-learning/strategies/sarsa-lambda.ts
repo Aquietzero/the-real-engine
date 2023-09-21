@@ -1,11 +1,22 @@
 import * as _ from 'lodash'
 import { Environment } from '../environment'
 import { ID, LearningOpts } from '../types'
-import { decaySchedule, full, argmax, argmax2 } from '../utils'
+import {
+  decaySchedule,
+  full,
+  argmax,
+  argmax2,
+  clip,
+  nArrayMap,
+  nArrayScale,
+} from '../utils'
 
-interface QLearningOpts extends LearningOpts {}
+interface SARSALambdaOpts extends LearningOpts {
+  lambda: number
+  replacingTraces: boolean
+}
 
-export const qLearning = (env: Environment, opts?: QLearningOpts) => {
+export const sarsaLambda = (env: Environment, opts?: SARSALambdaOpts) => {
   const {
     gamma = 1.0,
     initAlpha = 0.5,
@@ -14,14 +25,16 @@ export const qLearning = (env: Environment, opts?: QLearningOpts) => {
     initEpsilon = 1.0,
     minEpsilon = 0.1,
     epsilonDecayRatio = 0.9,
+    lambda = 0.5,
+    replacingTraces = true,
     nEpisodes = 3000,
-  } = opts || {}
+  } = opts
 
   const nS = _.size(env.mdp.states)
   const nA = _.size(env.mdp.actionSpace)
 
   const piTrack: any = []
-  const Q: any = full([nS, nA])
+  let Q = full([nS, nA])
   const QTrack = full([nEpisodes, nS, nA])
 
   const alphas = decaySchedule(initAlpha, minAlpha, alphaDecayRatio, nEpisodes)
@@ -38,23 +51,40 @@ export const qLearning = (env: Environment, opts?: QLearningOpts) => {
   }
 
   _.times(nEpisodes, (episode) => {
+    // eligibility traces to keep track of states eligible for updates.
+    let E = full([nS, nA])
+
     env.reset()
     let state = env.currentState as number
+    let action = selectAction(state, Q, epsilons[episode])
 
     while (true) {
-      const action = selectAction(state, Q, epsilons[episode])
       const { reward, nextState, done } = <
         { reward: number; nextState: number; done: boolean }
       >env.step(action)
+      const nextAction = selectAction(nextState, Q, epsilons[episode])
       const notDone = !done ? 1 : 0
-      const tdTarget =
-        reward + gamma * _.max(Q[nextState] as number[]) * notDone
+      const tdTarget = reward + gamma * Q[nextState][nextAction] * notDone
       const tdError = tdTarget - Q[state][action]
-      Q[state][action] += alphas[episode] * tdError
+
+      // increment the state-action pair trace, clip it to 1 if it's
+      // a replacing trace
+      E[state][action] += 1
+      if (replacingTraces) {
+        E[state][action] = clip(E[state][action], 0, 1)
+      }
+
+      Q = nArrayMap(
+        Q,
+        E,
+        (q: number, e: number) => q + alphas[episode] * tdError * e
+      )
+      E = nArrayScale(E, gamma * lambda)
 
       if (done) break
 
       state = nextState
+      action = nextAction
     }
 
     QTrack[episode] = _.cloneDeep(Q)
