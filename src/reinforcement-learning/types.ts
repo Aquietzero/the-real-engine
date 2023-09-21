@@ -97,3 +97,14 @@ export class Experience {
     this.done = done
   }
 }
+
+export interface LearningOpts {
+  gamma: number
+  initAlpha: number
+  minAlpha: number
+  alphaDecayRatio: number
+  initEpsilon: number
+  minEpsilon: number
+  epsilonDecayRatio: number
+  nEpisodes: number
+}

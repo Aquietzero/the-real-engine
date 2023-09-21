@@ -1,4 +1,4 @@
-// slippy walk seven mdp
+// slippery walk seven mdp
 import { MDP } from '../mdp'
 import * as _ from 'lodash'
 import { ID, State, Transition, Action } from '../types'

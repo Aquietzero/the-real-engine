@@ -4,8 +4,8 @@ import * as echarts from 'echarts'
 import * as _ from 'lodash'
 import d1 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-mc'
 import d2 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-sarsa'
-import d3 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-qLearning'
-import d4 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-doubleQLearning'
+import d3 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-q-learning'
+import d4 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-double-q-learning'
 
 const results = [{
   data: d1,
@@ -122,7 +122,7 @@ const StateValueEvaluation: React.FC = () => {
 
   return (
     <div className="flex flex-col">
-      <h2 className="mt-10">Slippy Walk Seven</h2>
+      <h2 className="mt-10">Slippery Walk Seven</h2>
       <div className="mt-20" id="mc" />
       <div className="mt-20" id="sarsa" />
       <div className="mt-20" id="q-learning" />

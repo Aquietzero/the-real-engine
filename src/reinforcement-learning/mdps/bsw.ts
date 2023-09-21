@@ -1,4 +1,4 @@
-// bandit slippy world mdp
+// bandit slippery world mdp
 import { MDP } from '../mdp'
 import * as _ from 'lodash'
 import { ID, State, Transition, Action } from '../types'

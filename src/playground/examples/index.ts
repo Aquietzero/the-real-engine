@@ -50,11 +50,11 @@ import BasicRayTracer from './ray-tracer/basic-ray-tracer'
 
 import FrozenLake from './reinforcement-learning/frozen-lake/frozen-lake'
 import FrozenLakePolicyIteration from './reinforcement-learning/frozen-lake/policy-iteration'
-import BanditSlippyWorld from './reinforcement-learning/bernoulli-bandit/bandit-slippy-world'
+import BanditSlipperyWorld from './reinforcement-learning/bernoulli-bandit/bandit-slippery-world'
 import TwoArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/two-armed-bandit'
 import NArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/n-armed-bandit'
 import StateValueEvaluation from './reinforcement-learning/random-walk/state-value-evaluation'
-import SlippyWalkSeven from './reinforcement-learning/random-walk/slippy-walk-seven'
+import SlipperyWalkSeven from './reinforcement-learning/random-walk/slippery-walk-seven'
 
 export default {
   math: {
@@ -117,10 +117,10 @@ export default {
   'reinforcement-learning': {
     FrozenLake,
     FrozenLakePolicyIteration,
-    BanditSlippyWorld,
+    BanditSlipperyWorld,
     TwoArmedBernoulliBandit,
     NArmedBernoulliBandit,
     StateValueEvaluation,
-    SlippyWalkSeven,
+    SlipperyWalkSeven,
   },
 }
