@@ -51,8 +51,6 @@ import BasicRayTracer from './ray-tracer/basic-ray-tracer'
 import FrozenLake from './reinforcement-learning/frozen-lake/frozen-lake'
 import FrozenLakePolicyIteration from './reinforcement-learning/frozen-lake/policy-iteration'
 import FrozenLakeStateValueEvaluation from './reinforcement-learning/frozen-lake/state-value-evaluation'
-// import BanditSlipperyWorld from './reinforcement-learning/bernoulli-bandit/bandit-slippery-world'
-// import TwoArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/two-armed-bandit'
 import NArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/n-armed-bandit'
 import StateValueEvaluation from './reinforcement-learning/random-walk/state-value-evaluation'
 import SlipperyWalkSeven from './reinforcement-learning/random-walk/slippery-walk-seven'
@@ -119,8 +117,6 @@ export default {
     FrozenLake,
     FrozenLakePolicyIteration,
     FrozenLakeStateValueEvaluation,
-    // BanditSlipperyWorld,
-    // TwoArmedBernoulliBandit,
     NArmedBernoulliBandit,
     StateValueEvaluation,
     SlipperyWalkSeven,

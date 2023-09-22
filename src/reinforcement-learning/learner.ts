@@ -84,6 +84,7 @@ export class Learner {
 const run = () => {
   // const mdp = new SWS_MDP()
   const mdp = new FL_MDP(4, [5, 7, 11, 12])
+  // const mdp = new FL_MDP(8, [19, 29, 35, 41, 42, 46, 49, 52, 54, 59])
   // const mdp = new RandomWalk_MDP()
   // console.log(mdp.info())
   const env = new Environment(mdp)
