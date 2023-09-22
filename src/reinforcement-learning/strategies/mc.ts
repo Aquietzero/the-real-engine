@@ -39,7 +39,7 @@ export const mc = (env: Environment, opts?: MCLearningOpts) => {
   )
 
   const piTrack: any = []
-  const Q = full([nS, nA])
+  const Q = full([nS, nA], 0)
   const QTrack = full([nEpisodes, nS, nA])
 
   const selectAction = (state: ID, Q: any, epsilon: number) => {

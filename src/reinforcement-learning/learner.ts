@@ -3,9 +3,19 @@ import * as path from 'path'
 
 import * as _ from 'lodash'
 import { Environment } from './environment'
-import { Policy, policyEvaluation } from './policy'
+import { Policy, policyIteration } from './policy'
 import { SWS_MDP } from './mdps/sws'
-import { mc, sarsa, q, doubleQ, sarsaLambda, qLambda } from './strategies'
+import { FL_MDP } from './mdps/fl'
+import {
+  mc,
+  sarsa,
+  q,
+  doubleQ,
+  sarsaLambda,
+  qLambda,
+  dynaQ,
+  trajectorySampling,
+} from './strategies'
 
 const strategies = [
   {
@@ -31,6 +41,14 @@ const strategies = [
   {
     name: 'q-lambda',
     exec: qLambda,
+  },
+  {
+    name: 'dyna-q',
+    exec: dynaQ,
+  },
+  {
+    name: 'trajectory-sampling',
+    exec: trajectorySampling,
   },
 ]
 
@@ -64,25 +82,16 @@ export class Learner {
 }
 
 const run = () => {
-  const sws = new SWS_MDP()
-  console.log(sws.info())
-  const env = new Environment(sws)
-  const allRightPolicy = {
-    1: 1,
-    2: 1,
-    3: 1,
-    4: 1,
-    5: 1,
-    6: 1,
-    7: 1,
-  }
-  const policy = new Policy(sws.states, allRightPolicy)
-  const correctV = policyEvaluation(policy, sws, 0.99)
+  // const mdp = new SWS_MDP()
+  const mdp = new FL_MDP(4, [5, 7, 11, 12])
+  console.log(mdp.info())
+  const env = new Environment(mdp)
+  const correctV = policyIteration(mdp, 0.99)
   console.log('correct V: ', correctV)
 
   const learner = new Learner()
   _.each(strategies, (strategy) => {
-    learner.learn(env, strategy, { gamma: 0.99 }, 'sws')
+    learner.learn(env, strategy, { gamma: 0.99, nEpisodes: 10000 }, 'fl')
   })
 }
 

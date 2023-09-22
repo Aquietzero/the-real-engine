@@ -13,7 +13,15 @@ export class Policy {
       this.actionMap = policy
     } else {
       _.each(this.states, (state) => {
-        this.actionMap[state.id] = _.random(0, state.actions.length - 1, false)
+        if (!state.actions || state.actions.length === 0) {
+          this.actionMap[state.id] = -1
+        } else {
+          this.actionMap[state.id] = _.random(
+            0,
+            state.actions.length - 1,
+            false
+          )
+        }
       })
     }
   }

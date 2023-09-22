@@ -70,7 +70,7 @@ export class FL_MDP extends MDP {
       for (let col = 0; col < N; col++) {
         const id = stateId(row, col)
         const state = new State(id)
-        state.isDone = this.isGoal(id) || this.isHole(id)
+        state.isDone = this.isDone(id)
         state.isGoal = this.isGoal(id)
         const actionFunctions = { up, left, right, down }
         const actions = _.map(['up', 'right', 'down', 'left'], (actionName) => {
@@ -81,6 +81,13 @@ export class FL_MDP extends MDP {
         this.states[id] = state
       }
     }
+
+    this.actionSpace = [
+      new Action('up'),
+      new Action('right'),
+      new Action('down'),
+      new Action('left'),
+    ]
   }
 
   isGoal(id: number): boolean {
@@ -89,5 +96,9 @@ export class FL_MDP extends MDP {
 
   isHole(id: number): boolean {
     return _.includes(this.holes, id)
+  }
+
+  isDone(id: number): boolean {
+    return this.isGoal(id) || this.isHole(id)
   }
 }

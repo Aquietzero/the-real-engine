@@ -1,4 +1,3 @@
-
 import * as React from 'react'
 import * as echarts from 'echarts'
 import * as _ from 'lodash'
@@ -8,6 +7,8 @@ import d3 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-wi
 import d4 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-double-q'
 import d5 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-sarsa-lambda'
 import d6 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-q-lambda'
+import d7 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-dyna-q'
+import d8 from '@TRE/reinforcement-learning/result/sws/state-value-evaluation-with-trajectory-sampling'
 
 const results = [{
   data: d1,
@@ -33,6 +34,14 @@ const results = [{
   data: d6,
   name: 'Q(λ)',
   el: 'q-lambda',
+}, {
+  data: d7,
+  name: 'dyna Q',
+  el: 'dyna-q',
+}, {
+  data: d8,
+  name: 'trajectory sampling',
+  el: 'trajectory-sampling',
 }]
 
 const correctStateValue: any = {
@@ -133,12 +142,7 @@ const StateValueEvaluation: React.FC = () => {
   return (
     <div className="flex flex-col">
       <h2 className="mt-10">Slippery Walk Seven</h2>
-      <div className="mt-20" id="mc" />
-      <div className="mt-20" id="sarsa" />
-      <div className="mt-20" id="sarsa-lambda" />
-      <div className="mt-20" id="q-learning" />
-      <div className="mt-20" id="double-q-learning" />
-      <div className="mt-20" id="q-lambda" />
+      {_.map(results, result => <div className="mt-20" id={result.el} />)}
     </div>
   )
 }

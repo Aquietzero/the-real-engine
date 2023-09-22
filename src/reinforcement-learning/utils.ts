@@ -45,6 +45,19 @@ export const nArrayScale = (arr: any, factor: number = 1): any => {
   return _.map(arr, (subDim) => nArrayScale(subDim, factor))
 }
 
+export const nArrayReduce = (arr: any, func: Function, initial: any): any => {
+  if (!_.isArray(arr[0])) {
+    return _.reduce(arr, (accumulated, val) => func(accumulated, val), initial)
+  }
+
+  return _.reduce(
+    arr,
+    (accumulated, subDim) =>
+      func(accumulated, nArrayReduce(subDim, func, initial)),
+    initial
+  )
+}
+
 export const empty = (row: number, col?: number) => {
   if (!col) return zeros(row)
   return new Array(row).fill(new Array(col).fill(0))
