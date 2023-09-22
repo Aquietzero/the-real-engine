@@ -102,13 +102,12 @@ export const learn = (
     progressBar.update((e + 1) / nEpisodes)
   })
 
-  const template = (data: string) => `export default ${data}`
-  const dir = path.join(__dirname, 'result', resultDir)
+  const dir = path.join(__dirname, '../../assets/RL-results', resultDir)
 
   fs.ensureDirSync(dir)
   fs.writeFileSync(
-    path.join(dir, `mean_episode_reward_with_${strategy.name}.ts`),
-    template(JSON.stringify(meanEpisodeReward))
+    path.join(dir, `mean-episode-reward-with-${strategy.name}.json`),
+    JSON.stringify(meanEpisodeReward)
   )
 
   progressBar.stop()

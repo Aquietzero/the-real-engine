@@ -1,26 +1,22 @@
-
 import * as React from 'react'
 import * as echarts from 'echarts'
 import * as _ from 'lodash'
-import d1 from '@TRE/reinforcement-learning/result/random-walk/state-value-evaluation-with-mc'
-import d2 from '@TRE/reinforcement-learning/result/random-walk/state-value-evaluation-with-td'
-import d3 from '@TRE/reinforcement-learning/result/random-walk/state-value-evaluation-with-ntd'
-import d4 from '@TRE/reinforcement-learning/result/random-walk/state-value-evaluation-with-td-lambda'
+import { fetchResults } from '../utils'
 
-const results = [{
-  data: d1,
+const resultsInfo = [{
+  file: 'state-value-evaluation-with-mc.json',
   name: 'Monte Carlo',
   el: 'mc',
 }, {
-  data: d2,
+  file: 'state-value-evaluation-with-td.json',
   name: 'Temporal Difference',
   el: 'td',
 }, {
-  data: d3,
+  file: 'state-value-evaluation-with-ntd.json',
   name: 'N-step Temporal Difference',
   el: 'ntd',
 }, {
-  data: d4,
+  file: 'state-value-evaluation-with-td-lambda.json',
   name: 'Temporal Difference λ',
   el: 'td-lambda',
 }]
@@ -48,83 +44,83 @@ const byState = (VTrack: number[][]) => {
 const StateValueEvaluation: React.FC = () => {
 
   React.useEffect(() => {
-    _.each(results, (result: any) => {
-      const data = byState(result.data.VTrack)
-      const chart = echarts.init(document.getElementById(result.el))
+    fetchResults('random-walk', resultsInfo).then(results => {
+      _.each(results, (result: any) => {
+        const data = byState(result.data.VTrack)
+        const chart = echarts.init(document.getElementById(result.el))
 
-      chart.resize({ width: 1200, height: 400 })
+        chart.resize({ width: 1200, height: 400 })
 
-      chart.setOption({
-        grid: {
-          right: '20%'
-        },
-        legend: {
-          orient: 'vertical',
-          top: 'center',
-          right: 0,
-          data: _.keys(_.range(result.data.V.length)),
-        },
-        title: {
-          text: result.name,
-          x: 'center',
-        } as any,
-        xAxis: {
-          type: 'value',
-          min: 30,
-        } as any,
-        yAxis: {
-          type: 'value',
-          splitLine: {
-            show: true,
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            label: {
-              formatter: (params: any) => `episode: ${params.value}`
+        chart.setOption({
+          grid: {
+            right: '20%'
+          },
+          legend: {
+            orient: 'vertical',
+            top: 'center',
+            right: 0,
+            data: _.keys(_.range(result.data.V.length)),
+          },
+          title: {
+            text: result.name,
+            x: 'center',
+          } as any,
+          xAxis: {
+            type: 'value',
+            min: 30,
+          } as any,
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true,
             }
-          }
-        },
-        // dataZoom: [
-        //   { show: true, xAxisIndex: [0], realtime: true },
-        //   { type: 'inside', xAxisIndex: [0], realtime: true },
-        // ],
-        series: [..._.map(data, (nState, index) => ({
-          type: 'line',
-          name,
+          },
           tooltip: {
-            valueFormatter: (value: any) => value.toFixed(6),
+            trigger: 'axis',
+            axisPointer: {
+              label: {
+                formatter: (params: any) => `episode: ${params.value}`
+              }
+            }
           },
-          data: _.map(nState, (y, x) => [x.toFixed(0), y]),
-          symbol: 'none',
-          smooth: true,
-          lineStyle: {
-            // color: 'black',
-          },
-          markLine: {
-            symbol: ['none', 'none'],
-            data: [
-              {
-                yAxis: correctStateValue[index + 1],
-                lineStyle: { type: 'solid', color: '#000' },
-                label: { formatter: `v(s${index+1}) = {c}` },
-                emphasis: { disabled: true },
-              },
-            ]
-          }
-        }))] as any
+          // dataZoom: [
+          //   { show: true, xAxisIndex: [0], realtime: true },
+          //   { type: 'inside', xAxisIndex: [0], realtime: true },
+          // ],
+          series: [..._.map(data, (nState, index) => ({
+            type: 'line',
+            name,
+            tooltip: {
+              valueFormatter: (value: any) => value.toFixed(6),
+            },
+            data: _.map(nState, (y, x) => [x.toFixed(0), y]),
+            symbol: 'none',
+            smooth: true,
+            lineStyle: {
+              // color: 'black',
+            },
+            markLine: {
+              symbol: ['none', 'none'],
+              data: [
+                {
+                  yAxis: correctStateValue[index + 1],
+                  lineStyle: { type: 'solid', color: '#000' },
+                  label: { formatter: `v(s${index+1}) = {c}` },
+                  emphasis: { disabled: true },
+                },
+              ]
+            }
+          }))] as any
+        })
       })
     })
-  })
+  }, [])
+  
 
   return (
     <div className="flex flex-col">
       <h2 className="mt-10">Random Walk</h2>
-      <div className="mt-20" id="mc" />
-      <div className="mt-20" id="td" />
-      <div className="mt-20" id="ntd" />
-      <div className="mt-20" id="td-lambda" />
+      {_.map(resultsInfo, result => <div className="mt-20" id={result.el} />)}
     </div>
   )
 }

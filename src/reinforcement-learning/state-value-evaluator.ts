@@ -271,7 +271,6 @@ const policy = new Policy(rw.states, allLeftPolicy)
 const correctV = policyEvaluation(policy, rw)
 const evaluator = new StateValueEvaluator()
 
-const { V, VTrack } = evaluator.tdLambdaPrediction(policy, env)
 // const Vs = zeros(7)
 // _.times(10, () => {
 //   // const { V: estimateV, VTrack } = evaluator.tdPrediction(policy, env)
@@ -285,11 +284,32 @@ const { V, VTrack } = evaluator.tdLambdaPrediction(policy, env)
 // })
 // console.log(Vs)
 
-const template = (data: string) => `export default ${data}`
-const dir = path.join(__dirname, 'result', 'random-walk')
+const strategies = [
+  {
+    name: 'mc',
+    exec: 'mcPrediction',
+  },
+  {
+    name: 'td',
+    exec: 'tdPrediction',
+  },
+  {
+    name: 'ntd',
+    exec: 'ntdPrediction',
+  },
+  {
+    name: 'td-lambda',
+    exec: 'tdLambdaPrediction',
+  },
+]
 
-fs.ensureDirSync(dir)
-fs.writeFileSync(
-  path.join(dir, `state-value-evaluation-with-td-lambda.ts`),
-  template(JSON.stringify({ V, VTrack }))
-)
+_.each(strategies, (strategy) => {
+  const { V, VTrack } = (evaluator as any)[strategy.exec](policy, env)
+  const dir = path.join(__dirname, '../../assets/RL-results', 'random-walk')
+
+  fs.ensureDirSync(dir)
+  fs.writeFileSync(
+    path.join(dir, `state-value-evaluation-with-${strategy.name}.json`),
+    JSON.stringify({ V, VTrack })
+  )
+})

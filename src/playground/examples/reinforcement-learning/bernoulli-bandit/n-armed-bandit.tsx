@@ -3,133 +3,161 @@ import * as React from 'react'
 import * as echarts from 'echarts'
 import * as _ from 'lodash'
 import { BSW_MDP } from '@TRE/reinforcement-learning/mdps/bsw'
-import d1 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_exploitation'
-import d2 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_exploration'
-import d3 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_epsilon_greedy'
-import d4 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_linearly_decaying_epsilon_greedy'
-import d5 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_exp_decaying_epsilon_greedy'
-import d6 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_optimistic_initialization'
-import d7 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_softmax'
-import d8 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_upper_confidence_bound'
-import d9 from '@TRE/reinforcement-learning/result/n-armed-bandit/mean_episode_reward_with_thompson_sampling'
-
+import { fetchResults } from '../utils'
 const mdp = new BSW_MDP()
 const gridLength = 80
 const margin = 0
 
-const data = {
-  'exploitation': d1,
-  'exploration': d2,
-  'epsilon_greedy': d3,
-  'linearly_decaying_epsilon_greedy': d4,
-  'exp_decaying_epsilon_greedy': d5,
-  'optimistic_initialization': d6,
-  'softmax': d7,
-  'upper_confidence_bound': d8,
-  'thompson_sampling': d9,
-}
+const resultsInfo = [{
+  file: 'mean-episode-reward-with-exploitation.json',
+  name: 'Exploitation',
+  el: 'exploitation',
+}, {
+  file: 'mean-episode-reward-with-exploration.json',
+  name: 'Exploration',
+  el: 'exploration',
+}, {
+  file: 'mean-episode-reward-with-epsilon_greedy.json',
+  name: 'Epsilon Greedy',
+  el: 'epsilon-greedy',
+}, {
+  file: 'mean-episode-reward-with-linearly_decaying_epsilon_greedy.json',
+  name: 'Linearly Decaying Epsilon Greedy',
+  el: 'linearly-decaying-epsilon-greedy',
+}, {
+  file: 'mean-episode-reward-with-exp_decaying_epsilon_greedy.json',
+  name: 'EXP Decaying Epsilon Greedy',
+  le: 'exp-decaying-epsilon-greedy',
+}, {
+  file: 'mean-episode-reward-with-optimistic_initialization.json',
+  name: 'Optimistic Initialization',
+  el: 'optimistic-initialization',
+}, {
+  file: 'mean-episode-reward-with-softmax.json',
+  name: 'Softmax',
+  el: 'softmax',
+}, {
+  file: 'mean-episode-reward-with-upper_confidence_bound.json',
+  name: 'Upper Confidence Bound',
+  el: 'upper-confidence-bound',
+}, {
+  file: 'mean-episode-reward-with-thompson_sampling.json',
+  name: 'Thompson Sampling',
+  el: 'thompson-sampling',
+}]
 
 const NArmedBernoulliBandit: React.FC = () => {
   const board = [0, 1, 2]
 
   React.useEffect(() => {
-    const chart1 = echarts.init(document.getElementById('mean-episode-reward'))
-    const chart2 = echarts.init(document.getElementById('zoom-on-best'))
+    fetchResults('n-armed-bandit', resultsInfo).then(results => {
+      const chart1 = echarts.init(document.getElementById('mean-episode-reward'))
+      const chart2 = echarts.init(document.getElementById('zoom-on-best'))
 
-    chart1.resize({ width: 1200, height: 400 })
-    chart2.resize({ width: 1200, height: 400 })
+      chart1.resize({ width: 1200, height: 400 })
+      chart2.resize({ width: 1200, height: 400 })
 
-    chart1.setOption({
-      grid: {
-        right: '20%'
-      },
-      legend: {
-        orient: 'vertical',
-        top: 'center',
-        right: 0,
-        data: _.keys(data),
-      },
-      title: {
-        text: 'Mean Episode Reward',
-        x: 'center',
-      } as any,
-      xAxis: {
-        type: 'value',
-        min: 30,
-      } as any,
-      yAxis: { type: 'value' },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            formatter: (params: any) => `episode: ${params.value}`
-          }
-        }
-      },
-      // dataZoom: [
-      //   { show: true, xAxisIndex: [0], realtime: true },
-      //   { type: 'inside', xAxisIndex: [0], realtime: true },
-      // ],
-      series: [..._.map(data, (series, name) => ({
-        type: 'line',
-        name,
-        tooltip: {
-          valueFormatter: (value: any) => value.toFixed(6),
+      chart1.setOption({
+        grid: {
+          right: '20%'
         },
-        data: _.map(series, (y, x) => [x.toFixed(0), y]),
-        symbol: 'none',
-        smooth: true,
-        lineStyle: {
-          // color: 'black',
-        }
-      }))] as any
-    })
-    chart2.setOption({
-      grid: {
-        right: '20%'
-      },
-      legend: {
-        orient: 'vertical',
-        top: 'center',
-        right: 0,
-        data: _.keys(_.omit(data, 'exploitation', 'exploration')),
-      },
-      title: {
-        text: 'Mean Episode Reward (Zoom on best)',
-        x: 'center',
-      } as any,
-      xAxis: {
-        type: 'value',
-        min: 1000,
-      },
-      yAxis: {
-        type: 'value',
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            formatter: (params: any) => `episode: ${params.value}`
-          }
-        }
-      },
-      // dataZoom: [
-      //   { show: true, xAxisIndex: [0], realtime: true },
-      //   { type: 'inside', xAxisIndex: [0], realtime: true },
-      // ],
-      series: [..._.map(_.omit(data, 'exploitation', 'exploration'), (series, name) => ({
-        type: 'line',
-        name,
-        tooltip: {
-          valueFormatter: (value: any) => value.toFixed(6),
+        legend: {
+          orient: 'vertical',
+          top: 'center',
+          right: 0,
+          data: _.map(resultsInfo, 'name'),
         },
-        data: _.map(series, (y, x) => [x.toFixed(0), y]),
-        symbol: 'none',
-        smooth: true,
-        lineStyle: {
-          // color: 'black',
-        }
-      }))] as any
+        title: {
+          text: 'Mean Episode Reward',
+          x: 'center',
+        } as any,
+        xAxis: {
+          type: 'value',
+          min: 30,
+        } as any,
+        yAxis: { type: 'value' },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            label: {
+              formatter: (params: any) => `episode: ${params.value}`
+            }
+          }
+        },
+        // dataZoom: [
+        //   { show: true, xAxisIndex: [0], realtime: true },
+        //   { type: 'inside', xAxisIndex: [0], realtime: true },
+        // ],
+        series: [..._.map(results, (result: any) => {
+          const series: number[] = result.data
+          const name: string = result.name
+          return {
+            type: 'line',
+            name,
+            tooltip: {
+              valueFormatter: (value: any) => value.toFixed(6),
+            },
+            data: _.map(series, (y, x) => [x.toFixed(0), y]),
+            symbol: 'none',
+            smooth: true,
+            lineStyle: {
+              // color: 'black',
+            }
+          }
+        })] as any
+      })
+      chart2.setOption({
+        grid: {
+          right: '20%'
+        },
+        legend: {
+          orient: 'vertical',
+          top: 'center',
+          right: 0,
+          data: _.keys(_.omit(_.map(resultsInfo, 'name'), 'Exploitation', 'Exploration')),
+        },
+        title: {
+          text: 'Mean Episode Reward (Zoom on best)',
+          x: 'center',
+        } as any,
+        xAxis: {
+          type: 'value',
+          min: 1000,
+        },
+        yAxis: {
+          type: 'value',
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            label: {
+              formatter: (params: any) => `episode: ${params.value}`
+            }
+          }
+        },
+        // dataZoom: [
+        //   { show: true, xAxisIndex: [0], realtime: true },
+        //   { type: 'inside', xAxisIndex: [0], realtime: true },
+        // ],
+        series: [..._.map(
+          _.filter(results, (result: any) => result.name !== 'Exploitation' || result.name !== 'Exploration'), (result: any) => {
+          const series: number[] = result.data
+          const name: string = result.name
+          return {
+            type: 'line',
+            name,
+            tooltip: {
+              valueFormatter: (value: any) => value.toFixed(6),
+            },
+            data: _.map(series, (y, x) => [x.toFixed(0), y]),
+            symbol: 'none',
+            smooth: true,
+            lineStyle: {
+              // color: 'black',
+            }
+          }
+        })] as any
+      })
     })
   })
 

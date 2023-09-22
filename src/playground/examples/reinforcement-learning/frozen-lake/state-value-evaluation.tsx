@@ -1,45 +1,38 @@
 import * as React from 'react'
 import * as echarts from 'echarts'
 import * as _ from 'lodash'
-import d1 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-mc'
-import d2 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-sarsa'
-import d3 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-q'
-import d4 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-double-q'
-import d5 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-sarsa-lambda'
-import d6 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-q-lambda'
-import d7 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-dyna-q'
-import d8 from '@TRE/reinforcement-learning/result/fl/state-value-evaluation-with-trajectory-sampling'
+import { fetchResults } from '../utils'
 
-const results = [{
-  data: d1,
+const resultsInfo = [{
+  file: 'state-value-evaluation-with-mc.json',
   name: 'Monte Carlo',
   el: 'mc',
 }, {
-  data: d2,
+  file: 'state-value-evaluation-with-sarsa.json',
   name: 'SARSA',
   el: 'sarsa',
 }, {
-  data: d3,
+  file: 'state-value-evaluation-with-q.json',
   name: 'Q Learning',
-  el: 'q-learning',
+  el: 'q',
 }, {
-  data: d4,
+  file: 'state-value-evaluation-with-double-q.json',
   name: 'Double Q Learning',
-  el: 'double-q-learning',
+  el: 'double-q',
 }, {
-  data: d5,
+  file: 'state-value-evaluation-with-sarsa-lambda.json',
   name: 'SARSA(λ)',
   el: 'sarsa-lambda',
 }, {
-  data: d6,
+  file: 'state-value-evaluation-with-q-lambda.json',
   name: 'Q(λ)',
   el: 'q-lambda',
 }, {
-  data: d7,
+  file: 'state-value-evaluation-with-dyna-q.json',
   name: 'dyna Q',
   el: 'dyna-q',
 }, {
-  data: d8,
+  file: 'state-value-evaluation-with-trajectory-sampling.json',
   name: 'trajectory sampling',
   el: 'trajectory-sampling',
 }]
@@ -76,72 +69,74 @@ const byState = (QTrack: number[][][]) => {
 const FrozenLakeStateValueEvaluation: React.FC = () => {
 
   React.useEffect(() => {
-    _.each(results, (result: any) => {
-      const data = byState(result.data.QTrack)
-      const chart = echarts.init(document.getElementById(result.el))
+    fetchResults('fl', resultsInfo).then(results => {
+      _.each(results, (result: any) => {
+        const data = byState(result.data.QTrack)
+        const chart = echarts.init(document.getElementById(result.el))
 
-      chart.resize({ width: 1400, height: 600 })
+        chart.resize({ width: 1400, height: 600 })
 
-      chart.setOption({
-        grid: {
-          right: '20%'
-        },
-        legend: {
-          orient: 'vertical',
-          top: 'center',
-          right: 0,
-          data: _.keys(_.range(result.data.V.length)),
-        },
-        title: {
-          text: result.name,
-          x: 'center',
-        } as any,
-        xAxis: {
-          type: 'value',
-          min: 30,
-        } as any,
-        yAxis: {
-          type: 'value',
-          splitLine: {
-            show: true,
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            label: {
-              formatter: (params: any) => `episode: ${params.value}`
+        chart.setOption({
+          grid: {
+            right: '20%'
+          },
+          legend: {
+            orient: 'vertical',
+            top: 'center',
+            right: 0,
+            data: _.keys(_.range(result.data.V.length)),
+          },
+          title: {
+            text: result.name,
+            x: 'center',
+          } as any,
+          xAxis: {
+            type: 'value',
+            min: 30,
+          } as any,
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true,
             }
-          }
-        },
-        // dataZoom: [
-        //   { show: true, xAxisIndex: [0], realtime: true },
-        //   { type: 'inside', xAxisIndex: [0], realtime: true },
-        // ],
-        series: [..._.map(data, (nState, index) => ({
-          type: 'line',
-          name,
+          },
           tooltip: {
-            valueFormatter: (value: any) => value.toFixed(6),
+            trigger: 'axis',
+            axisPointer: {
+              label: {
+                formatter: (params: any) => `episode: ${params.value}`
+              }
+            }
           },
-          data: _.map(nState, (y, x) => [x.toFixed(0), y]),
-          symbol: 'none',
-          smooth: true,
-          lineStyle: {
-            // color: 'black',
-          },
-          markLine: {
-            symbol: ['none', 'none'],
-            data: [
-              {
-                yAxis: correctStateValue[index + 1],
-                lineStyle: { type: 'solid', color: '#000' },
-                label: { formatter: `v(s${index+1}) = {c}` },
-                emphasis: { disabled: true },
-              },
-            ]
-          }
-        }))] as any
+          // dataZoom: [
+          //   { show: true, xAxisIndex: [0], realtime: true },
+          //   { type: 'inside', xAxisIndex: [0], realtime: true },
+          // ],
+          series: [..._.map(data, (nState, index) => ({
+            type: 'line',
+            name,
+            tooltip: {
+              valueFormatter: (value: any) => value.toFixed(6),
+            },
+            data: _.map(nState, (y, x) => [x.toFixed(0), y]),
+            symbol: 'none',
+            smooth: true,
+            lineStyle: {
+              // color: 'black',
+            },
+            markLine: {
+              symbol: ['none', 'none'],
+              data: [
+                {
+                  yAxis: correctStateValue[index + 1],
+                  lineStyle: { type: 'solid', color: '#000' },
+                  label: { formatter: `v(s${index+1}) = {c}` },
+                  emphasis: { disabled: true },
+                },
+              ]
+            }
+          }))] as any
+        })
       })
     })
   })
@@ -149,7 +144,7 @@ const FrozenLakeStateValueEvaluation: React.FC = () => {
   return (
     <div className="flex flex-col">
       <h2 className="mt-10">Slippery Walk Seven</h2>
-      {_.map(results, result => <div className="mt-20" id={result.el} />)}
+      {_.map(resultsInfo, result => <div className="mt-20" id={result.el} />)}
     </div>
   )
 }

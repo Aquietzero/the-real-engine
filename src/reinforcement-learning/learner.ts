@@ -6,6 +6,7 @@ import { Environment } from './environment'
 import { Policy, policyIteration } from './policy'
 import { SWS_MDP } from './mdps/sws'
 import { FL_MDP } from './mdps/fl'
+import { RandomWalk_MDP } from './mdps/random-wark'
 import {
   mc,
   sarsa,
@@ -69,13 +70,12 @@ export class Learner {
     console.log(`${strategy.name} learning begins...`)
     const result = strategy.exec(env, strategyOpts)
 
-    const template = (data: string) => `export default ${data}`
-    const dir = path.join(__dirname, 'result', resultDir)
+    const dir = path.join(__dirname, '../../assets/RL-results', resultDir)
 
     fs.ensureDirSync(dir)
     fs.writeFileSync(
-      path.join(dir, `state-value-evaluation-with-${strategy.name}.ts`),
-      template(JSON.stringify(result))
+      path.join(dir, `state-value-evaluation-with-${strategy.name}.json`),
+      JSON.stringify(result)
     )
     console.log(`${strategy.name} learning finishes...`)
   }
@@ -84,7 +84,8 @@ export class Learner {
 const run = () => {
   // const mdp = new SWS_MDP()
   const mdp = new FL_MDP(4, [5, 7, 11, 12])
-  console.log(mdp.info())
+  // const mdp = new RandomWalk_MDP()
+  // console.log(mdp.info())
   const env = new Environment(mdp)
   const correctV = policyIteration(mdp, 0.99)
   console.log('correct V: ', correctV)
