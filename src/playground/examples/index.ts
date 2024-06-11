@@ -55,6 +55,8 @@ import NArmedBernoulliBandit from './reinforcement-learning/bernoulli-bandit/n-a
 import StateValueEvaluation from './reinforcement-learning/random-walk/state-value-evaluation'
 import SlipperyWalkSeven from './reinforcement-learning/random-walk/slippery-walk-seven'
 
+import ConvOperations from './interactive-convnet/conv-operations'
+
 export default {
   math: {
     VectorsExample,
@@ -121,4 +123,7 @@ export default {
     StateValueEvaluation,
     SlipperyWalkSeven,
   },
+  'interactive-convnets': {
+    ConvOperations,
+  }
 }

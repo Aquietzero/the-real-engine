@@ -9,7 +9,6 @@ import {
   nArrayReduce,
   choice,
 } from '../utils'
-import { select } from 'd3'
 
 interface TrajectorySamplingOpts extends LearningOpts {
   maxTrajectoryDepth: number

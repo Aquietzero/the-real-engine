@@ -33,9 +33,9 @@ export const renderImage = (width: number = 500) => {
   canvas.width = width
   canvas.height = height
 
-  // const { camera, world } = threeBallsScene(aspectRatio)
+  const { camera, world } = threeBallsScene(aspectRatio)
   // const { camera, world } = manyBallsScene(aspectRatio)
-  const { camera, world } = cornellBoxScene(aspectRatio)
+  // const { camera, world } = cornellBoxScene(aspectRatio)
   // const { camera, world } = boxesAndBallsScene(aspectRatio)
 
   const lights = new Hittables()
